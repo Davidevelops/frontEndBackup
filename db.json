@@ -1,0 +1,292 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Wireless Headphones Pro",
+      "variants": 3,
+      "category": "Electronics",
+      "status": "Active",
+      "price": 79.99,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 450,
+      "currentStock": 120,
+      "forecastAccuracy": 92.5,
+      "forecast": "200-250",
+      "restockDate": "June 15,2023",
+      "restockQuantity": 200
+    },
+    {
+      "id": 2,
+      "name": "Premium Cotton T-Shirt",
+      "variants": 1,
+      "category": "Clothing",
+      "status": "Active",
+      "price": 24.99,
+      "stockLevel": "Restock Immediately",
+      "totalSales": 320,
+      "currentStock": 18,
+      "forecastAccuracy": 88.0
+    },
+    {
+      "id": 3,
+      "name": "Smartphone Case",
+      "variants": 4,
+      "category": "Electronics",
+      "status": "Low Stock",
+      "price": 14.99,
+      "stockLevel": "Restock Immediately",
+      "totalSales": 220,
+      "currentStock": 12,
+      "forecastAccuracy": 90.4
+    },
+    {
+      "id": 4,
+      "name": "Ceramic Coffee Mug",
+      "variants": 1,
+      "category": "Home & Garden",
+      "status": "Inactive",
+      "price": 12.5,
+      "stockLevel": "Out of Stock",
+      "totalSales": 140,
+      "currentStock": 0,
+      "forecastAccuracy": 85.7
+    },
+    {
+      "id": 5,
+      "name": "Gaming Mouse",
+      "variants": 2,
+      "category": "Electronics",
+      "status": "Active",
+      "price": 39.99,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 510,
+      "currentStock": 150,
+      "forecastAccuracy": 94.1
+    },
+    {
+      "id": 6,
+      "name": "Leather Wallet",
+      "variants": 1,
+      "category": "Accessories",
+      "status": "Active",
+      "price": 29.95,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 300,
+      "currentStock": 95,
+      "forecastAccuracy": 89.9
+    },
+    {
+      "id": 7,
+      "name": "Bluetooth Speaker",
+      "variants": 2,
+      "category": "Electronics",
+      "status": "Low Stock",
+      "price": 54.99,
+      "stockLevel": "Restock Immediately",
+      "totalSales": 280,
+      "currentStock": 15,
+      "forecastAccuracy": 87.5
+    },
+    {
+      "id": 8,
+      "name": "Yoga Mat",
+      "variants": 3,
+      "category": "Sports & Outdoors",
+      "status": "Inactive",
+      "price": 22.99,
+      "stockLevel": "Out of Stock",
+      "totalSales": 210,
+      "currentStock": 0,
+      "forecastAccuracy": 84.2
+    },
+    {
+      "id": 9,
+      "name": "Scented Candle Set",
+      "variants": 2,
+      "category": "Home & Garden",
+      "status": "Active",
+      "price": 18.49,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 400,
+      "currentStock": 135,
+      "forecastAccuracy": 91.3
+    },
+    {
+      "id": 10,
+      "name": "Running Shoes",
+      "variants": 4,
+      "category": "Clothing",
+      "status": "Low Stock",
+      "price": 64.99,
+      "stockLevel": "Restock Immediately",
+      "totalSales": 350,
+      "currentStock": 10,
+      "forecastAccuracy": 88.4
+    },
+    {
+      "id": 11,
+      "name": "LED Desk Lamp",
+      "variants": 2,
+      "category": "Home & Garden",
+      "status": "Active",
+      "price": 27.5,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 310,
+      "currentStock": 80,
+      "forecastAccuracy": 92.0
+    },
+    {
+      "id": 12,
+      "name": "Portable Power Bank",
+      "variants": 3,
+      "category": "Electronics",
+      "status": "Active",
+      "price": 32.99,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 520,
+      "currentStock": 160,
+      "forecastAccuracy": 95.2
+    },
+    {
+      "id": 13,
+      "name": "Hiking Backpack",
+      "variants": 2,
+      "category": "Sports & Outdoors",
+      "status": "Low Stock",
+      "price": 59.99,
+      "stockLevel": "Restock Immediately",
+      "totalSales": 260,
+      "currentStock": 14,
+      "forecastAccuracy": 86.8
+    },
+    {
+      "id": 14,
+      "name": "Glass Water Bottle",
+      "variants": 1,
+      "category": "Home & Garden",
+      "status": "Active",
+      "price": 16.75,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 380,
+      "currentStock": 110,
+      "forecastAccuracy": 90.5
+    },
+    {
+      "id": 15,
+      "name": "Noise-Cancelling Earbuds",
+      "variants": 3,
+      "category": "Electronics",
+      "status": "Active",
+      "price": 89.99,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 600,
+      "currentStock": 175,
+      "forecastAccuracy": 96.0
+    },
+    {
+      "id": 16,
+      "name": "Men's Leather Belt",
+      "variants": 2,
+      "category": "Accessories",
+      "status": "Inactive",
+      "price": 21.99,
+      "stockLevel": "Out of Stock",
+      "totalSales": 190,
+      "currentStock": 0,
+      "forecastAccuracy": 83.6
+    },
+    {
+      "id": 17,
+      "name": "Bamboo Cutting Board Set",
+      "variants": 2,
+      "category": "Home & Garden",
+      "status": "Active",
+      "price": 25.49,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 340,
+      "currentStock": 125,
+      "forecastAccuracy": 89.7
+    },
+    {
+      "id": 18,
+      "name": "Sports Water Bottle",
+      "variants": 4,
+      "category": "Sports & Outdoors",
+      "status": "Low Stock",
+      "price": 14.25,
+      "stockLevel": "Restock Immediately",
+      "totalSales": 300,
+      "currentStock": 16,
+      "forecastAccuracy": 88.2
+    },
+    {
+      "id": 19,
+      "name": "Women’s Summer Dress",
+      "variants": 3,
+      "category": "Clothing",
+      "status": "Active",
+      "price": 34.99,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 410,
+      "currentStock": 130,
+      "forecastAccuracy": 91.8
+    },
+    {
+      "id": 20,
+      "name": "USB-C Charging Cable",
+      "variants": 5,
+      "category": "Electronics",
+      "status": "Active",
+      "price": 9.99,
+      "stockLevel": "Sufficient Stock",
+      "totalSales": 700,
+      "currentStock": 220,
+      "forecastAccuracy": 97.1
+    }
+  ],
+
+  "stockManagement": [
+    {
+      "id": 1,
+      "name": "Wireless Headphones Pro",
+      "variants": [1, 2, 3, 4, 5],
+      "category": "Electronics",
+      "remainingUnits": 3
+    },
+    {
+      "id": 2,
+      "name": "Wireless Headphones Pro",
+      "variants": [1, 2, 3, 4, 5],
+      "category": "Electronics",
+      "remainingUnits": 4
+    },
+    {
+      "id": 3,
+      "name": "Wireless Headphones Pro",
+      "variants": [1, 2, 3, 4, 5],
+      "category": "Electronics",
+      "remainingUnits": 13
+    },
+    {
+      "id": 4,
+      "name": "Wireless Headphones Pro",
+      "variants": [1, 2, 3, 4, 5],
+      "category": "Electronics",
+      "remainingUnits": 18
+    },
+    {
+      "id": 5,
+      "name": "Wireless Headphones Pro",
+      "variants": [1, 2, 3, 4, 5],
+      "category": "Electronics",
+      "remainingUnits": 24
+    },
+    {
+      "id": 6,
+      "name": "Wireless Headphones Pro",
+      "variants": [1, 2, 3, 4, 5],
+      "category": "Electronics",
+      "remainingUnits": 25
+    }
+  ]
+}
