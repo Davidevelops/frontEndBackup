@@ -37,7 +37,7 @@ import {
   Gauge,
   Trash2,
   Copy,
-  ShoppingCart, // Added for sales icon
+  ShoppingCart,
 } from "lucide-react";
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -47,9 +47,10 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  ResponsiveContainer,
 } from "recharts";
 import { apiEndpoints } from "@/lib/apiEndpoints";
-import Link from "next/link"; // Added for navigation
+import Link from "next/link";
 
 interface Props {
   product: SingleProduct;
@@ -357,7 +358,7 @@ export default function ProductDetails({ product }: Props) {
               </div>
 
               <div className="flex items-center gap-3">
-                {/* Sales Button - Added this new button */}
+                {/* Sales Button */}
                 <Link
                   href={`/dashboard/variantSales/${product.groupId}/variants/${product.id}/sales`}
                 >
@@ -744,19 +745,11 @@ export default function ProductDetails({ product }: Props) {
                 No sales data available for this product.
               </p>
             ) : (
-              <div ref={chartContainerRef} className="h-96 overflow-x-auto">
-                <div
-                  style={{
-                    width: `${
-                      Math.max(salesData.length, forecastData.length) * 40
-                    }px`,
-                    height: "100%",
-                  }}
-                >
+              <div className="h-96 w-full">
+                <ResponsiveContainer width="100%" height="100%">
                   <LineChart
-                    width={Math.max(salesData.length, forecastData.length) * 40}
-                    height={384}
                     data={combinedData}
+                    margin={{ right: 30, left: 20, top: 20, bottom: 20 }}
                   >
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis
@@ -767,7 +760,7 @@ export default function ProductDetails({ product }: Props) {
                           month: "short",
                         })} '${String(date.getFullYear()).slice(-2)}`;
                       }}
-                      interval={Math.floor(salesData.length / 10)} // reduce clutter
+                      interval={Math.floor(combinedData.length / 12)}
                     />
                     <YAxis />
                     <Tooltip
@@ -802,7 +795,7 @@ export default function ProductDetails({ product }: Props) {
                       name="Forecast"
                     />
                   </LineChart>
-                </div>
+                </ResponsiveContainer>
               </div>
             )}
           </div>

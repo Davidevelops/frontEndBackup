@@ -340,7 +340,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 	return (
 		<TooltipProvider>
 			<div className="space-y-6">
-				
 				<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-purple-100/80">
 					<div className="flex flex-col sm:flex-row gap-4 max-w-4xl mx-auto">
 						<div className="flex-1 relative">
@@ -356,7 +355,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 					</div>
 				</div>
 
-			
 				<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-purple-100/80 overflow-hidden">
 					<div className="overflow-x-auto">
 						<table className="w-full">
@@ -402,7 +400,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 									const products = group.products || []
 									const productCount = products.length
 									const lastUpdated = new Date(group.updatedAt).toLocaleDateString()
-									const variantNames = products.map(p => p.name).join(', ') || 'No variants'
 
 									return (
 										<tr key={group.id} className="hover:bg-purple-50/30 transition-colors duration-200 group">
@@ -446,9 +443,13 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 													{products.length > 0 ? (
 														<div className="space-y-2">
 															{products.slice(0, 3).map((product, index) => (
-																<div key={product.id} className="flex items-center gap-2">
-																	<div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/60 rounded-lg text-center px-3 py-1.5 flex-1">
-																		<span className="text-sm font-medium text-blue-700 text-center">
+																<Link
+																	href={`/dashboard/product-view/${group.id}/${product.id}`}
+																	key={product.id}
+																	className="flex items-center gap-2 group/variant"
+																>
+																	<div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/60 rounded-lg px-3 py-1.5 flex-1 hover:bg-blue-100/80 hover:border-blue-300/80 hover:shadow-blue-200/30 hover:shadow-sm transition-all duration-200 cursor-pointer">
+																		<span className="text-sm font-medium text-blue-700 group-hover/variant:text-blue-800">
 																			{product.name}
 																		</span>
 																	</div>
@@ -457,7 +458,7 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 																			+{products.length - 3} more
 																		</span>
 																	)}
-																</div>
+																</Link>
 															))}
 														</div>
 													) : (
@@ -484,7 +485,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 											</td>
 											<td className="py-4 px-6">
 												<div className="flex items-center justify-center gap-2">
-												
 													<Tooltip>
 														<TooltipTrigger asChild>
 															<button
@@ -499,7 +499,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 														</TooltipContent>
 													</Tooltip>
 
-													
 													<Tooltip>
 														<TooltipTrigger asChild>
 															<button
@@ -514,7 +513,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 														</TooltipContent>
 													</Tooltip>
 
-												
 													<AlertDialog>
 														<AlertDialogTrigger asChild>
 															<button
@@ -563,7 +561,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 						</table>
 					</div>
 
-				
 					{filteredProductGroups.length === 0 && (
 						<div className="text-center py-16">
 							<div className="max-w-2xl mx-auto">
@@ -585,7 +582,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 					)}
 				</div>
 
-			
 				{totalPages > 1 && (
 					<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-purple-100/80">
 						<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -683,7 +679,6 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 					</div>
 				)}
 
-			
 				<Dialog open={open} onOpenChange={setIsOpen}>
 					<DialogContent className="bg-white/95 backdrop-blur-sm border border-gray-200/60 max-w-md">
 						<DialogHeader>

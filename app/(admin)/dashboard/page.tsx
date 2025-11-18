@@ -1,7 +1,6 @@
 "use client";
 import { useProductStore } from "@/lib/productStore";
-import DashboardOverview from "../components/DashboardOverview";
-
+import DashboardOverview from "@/components/DashboardOverview";
 import { useEffect } from "react";
 import React from "react";
 import Supplier from "@/components/supplierSection";
