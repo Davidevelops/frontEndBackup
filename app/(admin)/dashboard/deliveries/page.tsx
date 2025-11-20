@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Delivery, DeliveryStatus } from "@/lib/types";
 import DeliveryList from "@/components/DeliveryList";
 import CreateDelivery from "@/components/CreateDelivery";
+import RecommendationsPanel from "@/components/RecommendationsPanel";
 import {
   Truck,
   CheckCircle,
@@ -160,6 +161,27 @@ export default function DeliveriesPage() {
             </div>
           </div>
 
+          {/* Recommendations Panel Loading */}
+          <div className="mb-8">
+            <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 shadow-xs">
+              <div className="flex items-center justify-between mb-4">
+                <div className="h-6 w-48 bg-gray-200 rounded-lg animate-pulse"></div>
+                <div className="h-8 w-8 bg-gray-200 rounded-lg animate-pulse"></div>
+              </div>
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl animate-pulse">
+                    <div className="w-8 h-8 bg-gray-200 rounded-lg"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                      <div className="h-3 w-24 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             {[...Array(4)].map((_, i) => (
               <div
@@ -210,6 +232,7 @@ export default function DeliveriesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="flex items-center gap-4 mb-4 lg:mb-0">
             <div className="relative">
@@ -254,6 +277,12 @@ export default function DeliveriesPage() {
           </div>
         </div>
 
+        {/* Recommendations Panel */}
+        <div className="mb-8">
+          <RecommendationsPanel />
+        </div>
+
+        {/* Stats Cards */}
         {deliveries && deliveries.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div 
@@ -342,6 +371,7 @@ export default function DeliveriesPage() {
           </div>
         )}
 
+        {/* Filters Section */}
         {deliveries && deliveries.length > 0 && (
           <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl p-6 mb-8 shadow-xs">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
@@ -470,6 +500,7 @@ export default function DeliveriesPage() {
           </div>
         )}
 
+        {/* Dashboard Info Panel */}
         {deliveries && deliveries.length > 0 && (
           <div className="bg-gradient-to-r from-blue-50/80 to-indigo-50/80 backdrop-blur-sm border border-blue-200/60 rounded-2xl p-6 mb-8 shadow-xs">
             <div className="flex items-center gap-4">
@@ -507,6 +538,7 @@ export default function DeliveriesPage() {
           </div>
         )}
 
+        {/* Delivery List */}
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-gray-100/80 overflow-hidden hover:shadow-sm transition-shadow duration-200">
           {deliveries === null ? (
             <div className="text-center py-20">

@@ -15,6 +15,7 @@ import {
 	ChevronDown,
 	LayoutDashboard,
 	Zap,
+	TrendingUp,
 } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -54,11 +55,19 @@ const isSingleSection = (section: MenuSection): section is SingleMenuSection => 
 
 export default function Sidebar() {
 	const [isCollapsed, setIsCollapsed] = useState(false)
-	const [openDropdown, setOpenDropdown] = useState<string | null>(null)
+	const [openDropdowns, setOpenDropdowns] = useState<Set<string>>(new Set())
 	const pathname = usePathname()
 
 	const toggleDropdown = (dropdown: string) => {
-		setOpenDropdown(openDropdown === dropdown ? null : dropdown)
+		setOpenDropdowns(prev => {
+			const newSet = new Set(prev)
+			if (newSet.has(dropdown)) {
+				newSet.delete(dropdown)
+			} else {
+				newSet.add(dropdown)
+			}
+			return newSet
+		})
 	}
 
 	const menuSections: MenuSection[] = [
@@ -94,8 +103,11 @@ export default function Sidebar() {
 			id: "sales",
 			label: "Sales",
 			icon: ShoppingCart,
-			href: "/dashboard/sales",
-			type: "single"
+			type: "dropdown",
+			items: [
+				{ href: "/dashboard/sales", label: "Sales Data", icon: ShoppingCart },
+				{ href: "/dashboard/forecast", label: "Sales Forecast", icon: TrendingUp }, 
+			]
 		},
 		{
 			id: "management",
@@ -121,13 +133,13 @@ export default function Sidebar() {
 	return (
 		<div
 			className={`
-				bg-white/95 backdrop-blur-xl border-r border-gray-200/60
+				bg-white border-r border-[#E2E8F0]
 				transition-all duration-300 ease-in-out h-screen relative
 				${isCollapsed ? "w-16" : "w-64"}
-				shadow-xl
+				shadow-sm
 			`}
 		>
-			<div className="flex items-center justify-between p-4 border-b border-gray-200/40">
+			<div className="flex items-center justify-between p-4 border-b border-[#E2E8F0]">
 				<div
 					className={`flex items-center gap-3 transition-all duration-300 ${
 						isCollapsed
@@ -136,19 +148,18 @@ export default function Sidebar() {
 					}`}
 				>
 					<div className="relative">
-						<div className="bg-gradient-to-br from-purple-600 via-purple-700 to-purple-800 p-2.5 rounded-xl shadow-lg shadow-purple-500/40 relative overflow-hidden">
+						<div className="bg-[#1E293B] p-2.5 rounded-lg relative overflow-hidden">
 							<div className="relative z-10">
 								<Package size={20} className="text-white" />
 							</div>
-							<div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12"></div>
 						</div>
 						<div className="absolute -top-1 -right-1">
-							<Zap size={12} className="text-yellow-300 fill-yellow-300 animate-pulse" />
+							<Zap size={12} className="text-[#FBBF24] fill-[#FBBF24] animate-pulse" />
 						</div>
 					</div>
 					
 					<div>
-						<h1 className="font-bold text-2xl bg-gradient-to-r from-purple-600 to-purple-800 bg-clip-text text-transparent drop-shadow-sm">
+						<h1 className="font-bold text-2xl text-[#0F172A]">
 							InventoryPro
 						</h1>
 					</div>
@@ -156,12 +167,12 @@ export default function Sidebar() {
 
 				<button
 					onClick={() => setIsCollapsed(!isCollapsed)}
-					className="p-2 hover:bg-purple-100/80 rounded-lg transition-all duration-200 shrink-0 group"
+					className="p-2 hover:bg-[#F1F5F9] rounded-lg transition-all duration-200 shrink-0 group"
 				>
 					{isCollapsed ? (
-						<ChevronRight size={16} className="text-purple-600 group-hover:text-purple-700" />
+						<ChevronRight size={16} className="text-[#334155] group-hover:text-[#0F172A]" />
 					) : (
-						<ChevronLeft size={16} className="text-purple-600 group-hover:text-purple-700" />
+						<ChevronLeft size={16} className="text-[#334155] group-hover:text-[#0F172A]" />
 					)}
 				</button>
 			</div>
@@ -178,16 +189,16 @@ export default function Sidebar() {
 								href={section.href}
 								key={section.id}
 								className={`
-									flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group
+									flex items-center gap-3 p-3 rounded-lg transition-all duration-200 group
 									${
 										isActiveItem
-											? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md shadow-purple-500/25"
-											: "text-gray-600 hover:bg-purple-50/80 hover:text-purple-700 hover:shadow-sm"
+											? "bg-[#1E293B] text-white shadow-sm"
+											: "text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
 									}
 									${isCollapsed ? "justify-center" : ""}
 								`}
 							>
-								<div className={`${isActiveItem ? "text-white" : "text-purple-500 group-hover:text-purple-600"}`}>
+								<div className={`${isActiveItem ? "text-white" : "text-[#334155] group-hover:text-[#1E293B]"}`}>
 									<Icon size={20} />
 								</div>
 
@@ -201,7 +212,7 @@ export default function Sidebar() {
 								</span>
 
 								{isCollapsed && (
-									<div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 shadow-lg">
+									<div className="absolute left-full ml-2 px-2 py-1 bg-[#1E293B] text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 shadow-lg">
 										{section.label}
 									</div>
 								)}
@@ -210,7 +221,7 @@ export default function Sidebar() {
 					}
 
 					if (isDropdownSection(section)) {
-						const isDropdownOpen = openDropdown === section.id
+						const isDropdownOpen = openDropdowns.has(section.id)
 						const hasActiveChild = section.items.some(item => isActive(item.href))
 						
 						return (
@@ -218,16 +229,16 @@ export default function Sidebar() {
 								<button
 									onClick={() => toggleDropdown(section.id)}
 									className={`
-										flex items-center gap-3 p-3 rounded-xl transition-all duration-200 group w-full
+										flex items-center gap-3 p-3 rounded-lg transition-all duration-200 group w-full
 										${
 											hasActiveChild
-												? "bg-gradient-to-r from-purple-50 to-purple-100 text-purple-700 border border-purple-200/60 shadow-sm"
-												: "text-gray-600 hover:bg-purple-50/80 hover:text-purple-700 hover:shadow-sm"
+												? "bg-[#F8FAFC] text-[#0F172A] border border-[#E2E8F0]"
+												: "text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
 										}
 										${isCollapsed ? "justify-center" : ""}
 									`}
 								>
-									<div className={`${hasActiveChild ? "text-purple-600" : "text-purple-500 group-hover:text-purple-600"}`}>
+									<div className={`${hasActiveChild ? "text-[#1E293B]" : "text-[#334155] group-hover:text-[#1E293B]"}`}>
 										<Icon size={20} />
 									</div>
 
@@ -244,21 +255,21 @@ export default function Sidebar() {
 										<ChevronDown
 											size={16}
 											className={`
-												text-purple-400 transition-transform duration-200
-												${isDropdownOpen ? "rotate-180 text-purple-600" : ""}
+												text-[#64748B] transition-transform duration-200
+												${isDropdownOpen ? "rotate-180 text-[#1E293B]" : ""}
 											`}
 										/>
 									)}
 
 									{isCollapsed && (
-										<div className="absolute left-full ml-2 px-2 py-1 bg-gray-900 text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 shadow-lg">
+										<div className="absolute left-full ml-2 px-2 py-1 bg-[#1E293B] text-white text-sm rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 shadow-lg">
 											{section.label}
 										</div>
 									)}
 								</button>
 
 								{!isCollapsed && isDropdownOpen && (
-									<div className="ml-4 mt-1 space-y-1 border-l-2 border-purple-200/40 pl-3">
+									<div className="ml-4 mt-1 space-y-1 border-l-2 border-[#E2E8F0] pl-3">
 										{section.items.map((item) => {
 											const ItemIcon = item.icon
 											const isActiveItem = isActive(item.href)
@@ -271,14 +282,14 @@ export default function Sidebar() {
 														flex items-center gap-3 p-2 rounded-lg transition-all duration-200 group
 														${
 															isActiveItem
-																? "bg-gradient-to-r from-purple-500 to-purple-600 text-white shadow-md shadow-purple-500/25"
-																: "text-gray-600 hover:bg-purple-50/80 hover:text-purple-700"
+																? "bg-[#1E293B] text-white shadow-sm"
+																: "text-[#475569] hover:bg-[#F1F5F9] hover:text-[#0F172A]"
 														}
 													`}
 												>
 													<ItemIcon
 														size={16}
-														className={isActiveItem ? "text-white" : "text-purple-500"}
+														className={isActiveItem ? "text-white" : "text-[#334155]"}
 													/>
 													<span className="font-medium text-sm">
 														{item.label}

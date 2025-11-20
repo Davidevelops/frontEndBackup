@@ -20,6 +20,7 @@ import {
 	ChevronsLeft,
 	ChevronsRight,
 	Search,
+	ChartNoAxesColumnIncreasing,
 } from "lucide-react"
 import Link from "next/link"
 import { Button } from "./ui/button"
@@ -326,11 +327,11 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 	if (!productGroups || productGroups.length === 0) {
 		return (
 			<div className="text-center py-12">
-				<Package className="mx-auto h-16 w-16 text-purple-300 mb-4" />
-				<h3 className="text-lg font-semibold text-gray-600">
+				<Package className="mx-auto h-16 w-16 text-[#CBD5E1] mb-4" />
+				<h3 className="text-lg font-semibold text-[#475569]">
 					No products found
 				</h3>
-				<p className="text-gray-500">
+				<p className="text-[#64748B]">
 					Start by adding your first product group
 				</p>
 			</div>
@@ -340,100 +341,89 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 	return (
 		<TooltipProvider>
 			<div className="space-y-6">
-				<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-purple-100/80">
+				<div className="bg-white rounded-xl p-6 border border-[#E2E8F0]">
 					<div className="flex flex-col sm:flex-row gap-4 max-w-4xl mx-auto">
 						<div className="flex-1 relative">
-							<Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+							<Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#64748B]" />
 							<input
 								type="text"
 								placeholder="Search product groups by name..."
 								value={searchTerm}
 								onChange={(e) => setSearchTerm(e.target.value)}
-								className="w-full pl-12 pr-4 py-3 border border-purple-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+								className="w-full pl-12 pr-4 py-3 border border-[#CBD5E1] rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none transition-all duration-200"
 							/>
 						</div>
 					</div>
 				</div>
 
-				<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-purple-100/80 overflow-hidden">
+				<div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
 					<div className="overflow-x-auto">
 						<table className="w-full">
 							<thead>
-								<tr className="border-b border-purple-100/80 bg-gradient-to-r from-purple-50/50 to-indigo-50/50">
-									<th className="text-left py-4 px-6 font-semibold text-gray-700">
+								<tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
+									<th className="text-left py-4 px-6 font-semibold text-[#334155]">
 										<div className="flex items-center gap-2">
-											<BarChart3 className="h-4 w-4 text-purple-600" />
+											<BarChart3 className="h-4 w-4 text-[#1E293B]" />
 											Product Group
 										</div>
 									</th>
-									<th className="text-center py-4 px-6 font-semibold text-gray-700">
+									<th className="text-center py-4 px-6 font-semibold text-[#334155]">
 										<div className="flex items-center justify-center gap-2">
-											<Package className="h-4 w-4 text-green-600" />
+											<Package className="h-4 w-4 text-[#334155]" />
 											Variants Count
 										</div>
 									</th>
-									<th className="text-left py-4 px-6 font-semibold text-gray-700">
+									<th className="text-left py-4 px-6 font-semibold text-[#334155]">
 										<div className="flex items-center gap-2">
-											<Package className="h-4 w-4 text-blue-600" />
+											<Package className="h-4 w-4 text-[#334155]" />
 											Variant Names
 										</div>
 									</th>
-									<th className="text-center py-4 px-6 font-semibold text-gray-700">
+									<th className="text-center py-4 px-6 font-semibold text-[#334155]">
 										<div className="flex items-center justify-center gap-2">
-											<TrendingUp className="h-4 w-4 text-orange-600" />
+											<TrendingUp className="h-4 w-4 text-[#334155]" />
 											Status
 										</div>
 									</th>
-									<th className="text-center py-4 px-6 font-semibold text-gray-700">
+									<th className="text-center py-4 px-6 font-semibold text-[#334155]">
 										<div className="flex items-center justify-center gap-2">
-											<Calendar className="h-4 w-4 text-gray-600" />
+											<Calendar className="h-4 w-4 text-[#64748B]" />
 											Last Updated
 										</div>
 									</th>
-									<th className="text-center py-4 px-6 font-semibold text-gray-700">
+									<th className="text-center py-4 px-6 font-semibold text-[#334155]">
 										Actions
 									</th>
 								</tr>
 							</thead>
-							<tbody className="divide-y divide-purple-100/80">
-								{currentProductGroups.map((group) => {
+							<tbody className="divide-y divide-[#F1F5F9]">
+								{currentProductGroups.map((group, index) => {
 									const products = group.products || []
 									const productCount = products.length
 									const lastUpdated = new Date(group.updatedAt).toLocaleDateString()
 
 									return (
-										<tr key={group.id} className="hover:bg-purple-50/30 transition-colors duration-200 group">
+										<tr key={group.id} className={`transition-colors duration-200 group ${
+											index % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'
+										} hover:bg-[#F1F5F9]`}>
 											<td className="py-4 px-6">
 												<div className="flex items-center gap-3">
-													<div className="bg-gradient-to-r from-purple-500 to-purple-600 p-2 rounded-xl">
+													<div className="bg-[#1E293B] p-2 rounded-lg">
 														<BarChart3 className="h-5 w-5 text-white" />
 													</div>
 													<div>
-														<div className="font-semibold text-gray-800 group-hover:text-purple-600 transition-colors">
-															{group.name}
+														<div className="font-semibold text-[#0F172A] text-xs group-hover:text-[#1E293B] transition-colors">
+															{group.name.toUpperCase()}
 														</div>
-														<button
-															onClick={() => handleCopyId(group.id)}
-															className="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-colors duration-200 group/copy mt-1"
-														>
-															<span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded border">
-																ID: {group.id.slice(0, 8)}...
-															</span>
-															{copiedId === group.id ? (
-																<Check className="h-3 w-3 text-green-500" />
-															) : (
-																<Copy className="h-3 w-3 opacity-0 group-hover/copy:opacity-100 transition-opacity" />
-															)}
-														</button>
 													</div>
 												</div>
 											</td>
 											<td className="py-4 px-6">
 												<div className="flex flex-col items-center gap-1">
-													<span className="font-semibold text-gray-800 text-lg">
+													<span className="font-semibold text-[#0F172A] text-lg">
 														{productCount}
 													</span>
-													<span className="text-sm text-gray-500">
+													<span className="text-sm text-[#64748B]">
 														variant{productCount !== 1 ? 's' : ''}
 													</span>
 												</div>
@@ -448,13 +438,13 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 																	key={product.id}
 																	className="flex items-center gap-2 group/variant"
 																>
-																	<div className="bg-blue-50/80 backdrop-blur-sm border border-blue-200/60 rounded-lg px-3 py-1.5 flex-1 hover:bg-blue-100/80 hover:border-blue-300/80 hover:shadow-blue-200/30 hover:shadow-sm transition-all duration-200 cursor-pointer">
-																		<span className="text-sm font-medium text-blue-700 group-hover/variant:text-blue-800">
-																			{product.name}
+																	<div className="bg-[#F1F5F9] text-center border border-[#E2E8F0] rounded-lg px-3 py-1.5 flex-1 hover:bg-[#E2E8F0] hover:border-[#CBD5E1] transition-all duration-200 cursor-pointer">
+																		<span className="text-xs font-medium text-[#334155] group-hover/variant:text-[#1E293B]">
+																			{product.name.toUpperCase()}
 																		</span>
 																	</div>
 																	{index === 2 && products.length > 3 && (
-																		<span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+																		<span className="text-xs text-[#64748B] bg-[#F1F5F9] px-2 py-1 rounded-full">
 																			+{products.length - 3} more
 																		</span>
 																	)}
@@ -463,14 +453,14 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 														</div>
 													) : (
 														<div className="text-center py-2">
-															<span className="text-sm text-gray-400 italic">No variants</span>
+															<span className="text-sm text-[#94A3B8] italic">No variants</span>
 														</div>
 													)}
 												</div>
 											</td>
 											<td className="py-4 px-6">
 												<div className="flex justify-center">
-													<span className="px-3 py-1.5 rounded-full text-sm font-semibold bg-green-100 text-green-800 border border-green-200 flex items-center gap-2">
+													<span className="px-3 py-1.5 rounded-full text-xs text-center font-semibold bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0] flex items-center gap-2">
 														<TrendingUp className="h-4 w-4" />
 														Forecast Ready
 													</span>
@@ -478,72 +468,123 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 											</td>
 											<td className="py-4 px-6">
 												<div className="flex justify-center">
-													<span className="text-sm text-gray-600">
+													<span className="text-sm text-[#64748B]">
 														{lastUpdated}
 													</span>
 												</div>
 											</td>
 											<td className="py-4 px-6">
 												<div className="flex items-center justify-center gap-2">
+													{/* Details Button - Navigates to first variant */}
+													{products.length > 0 ? (
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<Link
+																	href={`/dashboard/product-view/${group.id}/${products[0].id}`}
+																	className="flex items-center gap-2 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#334155] hover:text-[#1E293B] border border-[#E2E8F0] px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
+																>
+																	<ChartNoAxesColumnIncreasing className="h-4 w-4" />
+																	Details
+																</Link>
+															</TooltipTrigger>
+															<TooltipContent className="bg-[#1E293B] text-white border-0">
+																<div className="text-center">
+																	<p className="font-semibold">View Variant</p>
+																	<p className="text-xs text-[#CBD5E1] mt-1">View Variant Performance</p>
+																</div>
+															</TooltipContent>
+														</Tooltip>
+													) : (
+														<Tooltip>
+															<TooltipTrigger asChild>
+																<button
+																	className="flex items-center gap-2 bg-[#F1F5F9] text-[#94A3B8] border border-[#E2E8F0] px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium cursor-not-allowed"
+																	disabled
+																>
+																	<ChartNoAxesColumnIncreasing className="h-4 w-4" />
+																	Details
+																</button>
+															</TooltipTrigger>
+															<TooltipContent className="bg-[#1E293B] text-white border-0">
+																<div className="text-center">
+																	<p className="font-semibold">No Variants</p>
+																	<p className="text-xs text-[#CBD5E1] mt-1">Add a variant to view details</p>
+																</div>
+															</TooltipContent>
+														</Tooltip>
+													)}
+													
+													{/* Add Variant Button */}
 													<Tooltip>
 														<TooltipTrigger asChild>
 															<button
-																className="p-2.5 bg-green-50/80 backdrop-blur-sm border border-green-200/60 text-green-600 rounded-xl hover:bg-green-100/80 hover:border-green-300/80 hover:shadow-green-200/30 hover:shadow-sm transition-all duration-200"
+																className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
 																onClick={() => openAddVariantDialog(group.id)}
 															>
 																<Plus className="h-4 w-4" />
+																Add 
 															</button>
 														</TooltipTrigger>
-														<TooltipContent>
-															<p>Add Variant</p>
+														<TooltipContent className="bg-[#1E293B] text-white border-0">
+															<div className="text-center">
+																<p className="font-semibold">Add Variant</p>
+																<p className="text-xs text-[#CBD5E1] mt-1">Create new product variant</p>
+															</div>
 														</TooltipContent>
 													</Tooltip>
 
+													{/* Edit Group Button */}
 													<Tooltip>
 														<TooltipTrigger asChild>
 															<button
-																className="p-2.5 bg-purple-50/80 backdrop-blur-sm border border-purple-200/60 text-purple-600 rounded-xl hover:bg-purple-100/80 hover:border-purple-300/80 hover:shadow-purple-200/30 hover:shadow-sm transition-all duration-200"
+																className="flex items-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 hover:text-green-800 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
 																onClick={() => openEditDialog(group.id, group.name)}
 															>
 																<Edit3 className="h-4 w-4" />
+																Edit
 															</button>
 														</TooltipTrigger>
-														<TooltipContent>
-															<p>Edit Group</p>
+														<TooltipContent className="bg-[#1E293B] text-white border-0">
+															<div className="text-center">
+																<p className="font-semibold">Edit Group</p>
+																<p className="text-xs text-[#CBD5E1] mt-1">Update product group details</p>
+															</div>
 														</TooltipContent>
 													</Tooltip>
 
+													{/* Archive Button */}
 													<AlertDialog>
 														<AlertDialogTrigger asChild>
-															<button
-																className="p-2.5 bg-red-50/80 backdrop-blur-sm border border-red-200/60 text-red-600 rounded-xl hover:bg-red-100/80 hover:border-red-300/80 hover:shadow-red-200/30 hover:shadow-sm transition-all duration-200"
+															<button 
+																className="flex items-center gap-2 bg-[#FEF2F2] hover:bg-[#FECACA] text-[#DC2626] hover:text-[#B91C1C] px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
 															>
 																<Trash2 className="h-4 w-4" />
+																Archive
 															</button>
 														</AlertDialogTrigger>
-														<AlertDialogContent className="bg-white/95 backdrop-blur-sm border border-gray-200/60">
+														<AlertDialogContent className="bg-white border border-[#FECACA] rounded-xl">
 															<AlertDialogHeader>
 																<div className="flex items-center gap-3 mb-2">
-																	<div className="bg-red-100 p-2 rounded-xl">
-																		<Archive className="h-6 w-6 text-red-600" />
+																	<div className="bg-[#FEF2F2] p-2 rounded-lg">
+																		<Archive className="h-6 w-6 text-[#DC2626]" />
 																	</div>
-																	<AlertDialogTitle className="text-gray-900">
+																	<AlertDialogTitle className="text-[#0F172A]">
 																		Archive Product Group?
 																	</AlertDialogTitle>
 																</div>
-																<AlertDialogDescription className="text-gray-600">
+																<AlertDialogDescription className="text-[#475569]">
 																	This will archive the entire "
-																	<strong>{group.name}</strong>" group including all{" "}
+																	<strong className="text-[#DC2626]">{group.name}</strong>" group including all{" "}
 																	{productCount} variant/s. Archived data is preserved for
 																	analytics and can be restored later.
 																</AlertDialogDescription>
 															</AlertDialogHeader>
 															<AlertDialogFooter>
-																<AlertDialogCancel className="bg-gray-100/80 backdrop-blur-sm border border-gray-200/60 hover:bg-gray-200/80">
+																<AlertDialogCancel className="bg-[#F8FAFC] border border-[#CBD5E1] text-[#334155] hover:bg-[#F1F5F9]">
 																	Cancel
 																</AlertDialogCancel>
 																<AlertDialogAction
-																	className="bg-red-500/90 backdrop-blur-sm text-white hover:bg-red-600/90 border border-red-400/30"
+																	className="bg-[#DC2626] hover:bg-[#B91C1C] text-white"
 																	onClick={() => handleArchiveProduct(group.id)}
 																	disabled={loading}
 																>
@@ -564,14 +605,14 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 					{filteredProductGroups.length === 0 && (
 						<div className="text-center py-16">
 							<div className="max-w-2xl mx-auto">
-								<div className="border p-6 rounded-2xl bg-purple-50 border-purple-200 inline-block">
-									<div className="bg-white p-4 rounded-2xl w-20 h-20 mx-auto mb-6">
-										<Package className="h-10 w-10 text-purple-600 mx-auto" />
+								<div className="border p-6 rounded-xl bg-[#F8FAFC] border-[#E2E8F0] inline-block">
+									<div className="bg-white p-4 rounded-xl w-20 h-20 mx-auto mb-6">
+										<Package className="h-10 w-10 text-[#64748B] mx-auto" />
 									</div>
-									<h3 className="text-2xl font-bold text-gray-800 mb-3">
+									<h3 className="text-2xl font-bold text-[#0F172A] mb-3">
 										No product groups found
 									</h3>
-									<p className="text-gray-500 text-lg max-w-md mx-auto">
+									<p className="text-[#64748B] text-lg max-w-md mx-auto">
 										{searchTerm
 											? "Try adjusting your search terms"
 											: "Get started by creating your first product group"}
@@ -583,15 +624,15 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 				</div>
 
 				{totalPages > 1 && (
-					<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-purple-100/80">
+					<div className="bg-white rounded-xl p-6 border border-[#E2E8F0]">
 						<div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-							<div className="text-sm text-gray-600">
+							<div className="text-sm text-[#64748B]">
 								Showing{" "}
-								<span className="font-semibold text-gray-800">
+								<span className="font-semibold text-[#0F172A]">
 									{startIndex + 1}-{Math.min(endIndex, totalItems)}
 								</span>{" "}
 								of{" "}
-								<span className="font-semibold text-gray-800">{totalItems}</span>{" "}
+								<span className="font-semibold text-[#0F172A]">{totalItems}</span>{" "}
 								product group{totalItems !== 1 ? "s" : ""}
 							</div>
 
@@ -599,17 +640,17 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 								<button
 									onClick={goToFirstPage}
 									disabled={currentPage === 1}
-									className="p-2 rounded-lg border border-purple-200 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+									className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
 								>
-									<ChevronsLeft className="h-4 w-4 text-purple-600" />
+									<ChevronsLeft className="h-4 w-4 text-[#64748B]" />
 								</button>
 
 								<button
 									onClick={goToPrevPage}
 									disabled={currentPage === 1}
-									className="p-2 rounded-lg border border-purple-200 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+									className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
 								>
-									<ChevronLeft className="h-4 w-4 text-purple-600" />
+									<ChevronLeft className="h-4 w-4 text-[#64748B]" />
 								</button>
 
 								<div className="flex items-center gap-1">
@@ -631,8 +672,8 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 												onClick={() => goToPage(pageNum)}
 												className={`min-w-[40px] h-10 rounded-lg border transition-all duration-200 font-medium ${
 													currentPage === pageNum
-														? "bg-gradient-to-r from-purple-500 to-purple-600 text-white border-purple-600 shadow-lg shadow-purple-500/25"
-														: "border-purple-200 text-gray-700 hover:bg-purple-50"
+														? "bg-[#1E293B] text-white border-[#1E293B]"
+														: "border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC]"
 												}`}
 											>
 												{pageNum}
@@ -644,66 +685,66 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 								<button
 									onClick={goToNextPage}
 									disabled={currentPage === totalPages}
-									className="p-2 rounded-lg border border-purple-200 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+									className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
 								>
-									<ChevronRight className="h-4 w-4 text-purple-600" />
+									<ChevronRight className="h-4 w-4 text-[#64748B]" />
 								</button>
 
 								<button
 									onClick={goToLastPage}
 									disabled={currentPage === totalPages}
-									className="p-2 rounded-lg border border-purple-200 hover:bg-purple-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+									className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
 								>
-									<ChevronsRight className="h-4 w-4 text-purple-600" />
+									<ChevronsRight className="h-4 w-4 text-[#64748B]" />
 								</button>
 							</div>
 
 							<div className="flex items-center gap-2 text-sm">
-								<span className="text-gray-600">Show:</span>
+								<span className="text-[#64748B]">Show:</span>
 								<select
 									value={itemsPerPage}
 									onChange={(e) => {
 										setItemsPerPage(Number(e.target.value))
 										setCurrentPage(1)
 									}}
-									className="border border-purple-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+									className="border border-[#CBD5E1] rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none transition-all duration-200"
 								>
 									<option value={10}>10</option>
 									<option value={25}>25</option>
 									<option value={50}>50</option>
 									<option value={100}>100</option>
 								</select>
-								<span className="text-gray-600">per page</span>
+								<span className="text-[#64748B]">per page</span>
 							</div>
 						</div>
 					</div>
 				)}
 
 				<Dialog open={open} onOpenChange={setIsOpen}>
-					<DialogContent className="bg-white/95 backdrop-blur-sm border border-gray-200/60 max-w-md">
+					<DialogContent className="bg-white border border-[#E2E8F0] max-w-md rounded-xl">
 						<DialogHeader>
-							<DialogTitle className="flex items-center gap-2 text-purple-900">
+							<DialogTitle className="flex items-center gap-2 text-[#0F172A]">
 								<NotebookPen className="h-5 w-5" />
 								Update Product Group
 							</DialogTitle>
 						</DialogHeader>
 						<div className="space-y-4">
 							<div>
-								<Label className="text-gray-700">Group Name</Label>
+								<Label className="text-[#334155]">Group Name</Label>
 								<Input
 									value={productName}
 									onChange={(e) => setProductName(e.target.value)}
-									className="mt-1 border-purple-200 focus:border-purple-500 bg-white/80 backdrop-blur-sm"
+									className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
 									placeholder="Enter new group name..."
 								/>
 							</div>
 							{error && (
-								<div className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">
+								<div className="text-[#DC2626] text-sm bg-[#FEF2F2] p-2 rounded-lg">
 									{error}
 								</div>
 							)}
 							<Button
-								className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
+								className="w-full bg-[#1E293B] hover:bg-[#0F172A] text-white"
 								onClick={() => handleUpdateDetails(currentGroupId)}
 								disabled={loading}
 							>
@@ -714,9 +755,9 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 				</Dialog>
 
 				<Dialog open={addVariantOpen} onOpenChange={setAddVariantOpen}>
-					<DialogContent className="bg-white/95 backdrop-blur-sm border border-gray-200/60 max-w-md">
+					<DialogContent className="bg-white border border-[#E2E8F0] max-w-md rounded-xl">
 						<DialogHeader>
-							<DialogTitle className="flex items-center gap-2 text-purple-900">
+							<DialogTitle className="flex items-center gap-2 text-[#0F172A]">
 								<Plus className="h-5 w-5" />
 								Add Product Variant
 							</DialogTitle>
@@ -728,8 +769,8 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 									variant={addMode === "partial" ? "default" : "outline"}
 									className={`flex-1 ${
 										addMode === "partial"
-											? "bg-purple-500 hover:bg-purple-600 text-white"
-											: "border-purple-200 bg-white/80 backdrop-blur-sm"
+											? "bg-[#1E293B] hover:bg-[#0F172A] text-white"
+											: "border-[#CBD5E1] bg-white"
 									}`}
 									onClick={() => setAddMode("partial")}
 								>
@@ -740,8 +781,8 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 									variant={addMode === "full" ? "default" : "outline"}
 									className={`flex-1 ${
 										addMode === "full"
-											? "bg-purple-500 hover:bg-purple-600 text-white"
-											: "border-purple-200 bg-white/80 backdrop-blur-sm"
+											? "bg-[#1E293B] hover:bg-[#0F172A] text-white"
+											: "border-[#CBD5E1] bg-white"
 									}`}
 									onClick={() => setAddMode("full")}
 								>
@@ -750,24 +791,24 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 							</div>
 
 							<div>
-								<Label className="text-gray-700">Variant Name *</Label>
+								<Label className="text-[#334155]">Variant Name *</Label>
 								<Input
 									value={variantData.name}
 									onChange={(e) =>
 										handleVariantFieldChange("name", e.target.value)
 									}
-									className="mt-1 border-purple-200 focus:border-purple-500 bg-white/80 backdrop-blur-sm"
+									className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
 									placeholder="Enter variant name..."
 								/>
 							</div>
 
 							{addMode === "full" && (
 								<div className="space-y-3 border-t pt-3">
-									<Label className="text-gray-700 font-semibold">
+									<Label className="text-[#334155] font-semibold">
 										Settings *
 									</Label>
 									<div>
-										<Label className="text-gray-600 text-sm">
+										<Label className="text-[#475569] text-sm">
 											Classification *
 										</Label>
 										<Input
@@ -778,12 +819,12 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 													e.target.value,
 												)
 											}
-											className="mt-1 border-purple-200 focus:border-purple-500 bg-white/80 backdrop-blur-sm"
+											className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
 											placeholder="e.g., fast"
 										/>
 									</div>
 									<div>
-										<Label className="text-gray-600 text-sm">
+										<Label className="text-[#475569] text-sm">
 											Service Level (%) *
 										</Label>
 										<Input
@@ -797,12 +838,12 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 													e.target.value,
 												)
 											}
-											className="mt-1 border-purple-200 focus:border-purple-500 bg-white/80 backdrop-blur-sm"
+											className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
 											placeholder="90"
 										/>
 									</div>
 									<div>
-										<Label className="text-gray-600 text-sm">
+										<Label className="text-[#475569] text-sm">
 											Fill Rate (%) *
 										</Label>
 										<Input
@@ -813,12 +854,12 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 											onChange={(e) =>
 												handleSettingFieldChange("fillRate", e.target.value)
 											}
-											className="mt-1 border-purple-200 focus:border-purple-500 bg-white/80 backdrop-blur-sm"
+											className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
 											placeholder="90"
 										/>
 									</div>
 									<div>
-										<Label className="text-gray-600 text-sm">
+										<Label className="text-[#475569] text-sm">
 											Safety Stock Method *
 										</Label>
 										<Input
@@ -831,7 +872,7 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 													e.target.value,
 												)
 											}
-											className="mt-1 border-purple-200 focus:border-purple-500 bg-white/80 backdrop-blur-sm"
+											className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
 											placeholder="e.g., dynamic"
 										/>
 									</div>
@@ -839,13 +880,13 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 							)}
 
 							{error && (
-								<div className="text-red-600 text-sm bg-red-50 p-2 rounded-lg">
+								<div className="text-[#DC2626] text-sm bg-[#FEF2F2] p-2 rounded-lg">
 									{error}
 								</div>
 							)}
 
 							<Button
-								className="w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white"
+								className="w-full bg-[#1E293B] hover:bg-[#0F172A] text-white"
 								onClick={() => handleAddVariant(currentGroupId)}
 								disabled={loading || !isFormValid()}
 							>

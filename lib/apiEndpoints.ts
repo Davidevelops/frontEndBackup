@@ -119,6 +119,10 @@ export class ApiEndpoints {
 			return `${this.backendUrl}/suppliers/${supplierId}/products`
 		}
 	}
+
+recommendations() {
+  return `${this.backendUrl}/recommendations`;
+}
 }
 
 export const apiEndpoints = new ApiEndpoints()

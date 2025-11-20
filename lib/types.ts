@@ -210,3 +210,37 @@ export interface Category {
 export interface CategoriesResponse {
 	data: Category[]
 }
+
+
+export interface SalesData {
+  date: string;
+  productId: string;
+  quantity: number;
+  revenue: number;
+}
+
+export interface ForecastRequest {
+  salesData: SalesData[];
+  periods: number;
+  confidenceLevel: number;
+}
+
+export interface ForecastResult {
+  date: string;
+  predictedSales: number;
+  lowerBound: number;
+  upperBound: number;
+}
+
+export interface ForecastResponse {
+  data: {
+    id: string;
+    forecast: ForecastResult[];
+    accuracy: number;
+    generatedAt: string;
+    metadata: {
+      periods: number;
+      method: string;
+    };
+  };
+}

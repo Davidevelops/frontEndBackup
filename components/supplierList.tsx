@@ -175,16 +175,16 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
 
   if (!supplier) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-6">
+      <div className="min-h-screen bg-[#F1F5F9] p-6">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-12 shadow-xs border border-gray-100/80 text-center">
-            <div className="bg-gradient-to-br from-gray-100 to-gray-200 p-4 rounded-2xl w-20 h-20 mx-auto mb-6">
-              <Truck className="h-10 w-10 text-gray-400 mx-auto" />
+          <div className="bg-white rounded-xl p-12 border border-[#E2E8F0] text-center">
+            <div className="bg-[#F1F5F9] p-4 rounded-xl w-20 h-20 mx-auto mb-6">
+              <Truck className="h-10 w-10 text-[#64748B] mx-auto" />
             </div>
-            <h2 className="text-2xl font-bold text-gray-700 mb-3">
+            <h2 className="text-2xl font-bold text-[#334155] mb-3">
               No Suppliers Found
             </h2>
-            <p className="text-gray-500 text-lg">
+            <p className="text-[#64748B] text-lg">
               There are no suppliers to display.
             </p>
           </div>
@@ -195,33 +195,33 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-6">
+      <div className="min-h-screen bg-[#F1F5F9] p-6">
         <div className="max-w-7xl mx-auto">
           {/* Header Section */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-xs border border-gray-100/80 mb-8">
+          <div className="bg-white rounded-xl p-8 border border-[#E2E8F0] mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 p-4 rounded-2xl shadow-lg shadow-purple-500/20">
+                  <div className="bg-[#1E293B] p-4 rounded-xl">
                     <Users className="h-8 w-8 text-white" />
                   </div>
-                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-green-400 border-2 border-white rounded-full animate-pulse"></div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#16A34A] border-2 border-white rounded-full animate-pulse"></div>
                 </div>
                 <div>
-                  <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 bg-clip-text text-transparent">
+                  <h1 className="text-4xl font-bold text-[#0F172A]">
                     Supplier Management
                   </h1>
                   <div className="flex items-center gap-4 mt-3">
-                    <p className="text-gray-600 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-100 shadow-xs">
-                      <Truck className="h-4 w-4 text-purple-500" />
-                      <span className="font-semibold text-gray-800">
+                    <p className="text-[#475569] flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
+                      <Truck className="h-4 w-4 text-[#1E293B]" />
+                      <span className="font-semibold text-[#0F172A]">
                         {supplier.length}
                       </span>{" "}
                       supplier{supplier.length !== 1 ? "s" : ""} registered
                     </p>
-                    <p className="text-gray-600 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-100 shadow-xs">
-                      <BarChart3 className="h-4 w-4 text-blue-500" />
-                      <span className="font-semibold text-gray-800">
+                    <p className="text-[#475569] flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
+                      <BarChart3 className="h-4 w-4 text-[#334155]" />
+                      <span className="font-semibold text-[#0F172A]">
                         {supplier.reduce(
                           (acc, sup) => acc + (sup.products?.length || 0),
                           0
@@ -236,19 +236,19 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
               <div className="flex items-center gap-3">
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                   <DialogTrigger asChild>
-                    <button className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30">
+                    <button className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
                       <Plus className="h-5 w-5" />
                       Add Supplier
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-sm border border-gray-200/80 rounded-2xl shadow-xl">
+                  <DialogContent className="sm:max-w-[425px] bg-white border border-[#E2E8F0] rounded-xl">
                     <DialogHeader className="space-y-4">
-                      <DialogTitle className="flex items-center gap-2 text-xl font-bold text-gray-800">
-                        <Users className="h-6 w-6 text-purple-600" />
+                      <DialogTitle className="flex items-center gap-2 text-xl font-bold text-[#0F172A]">
+                        <Users className="h-6 w-6 text-[#1E293B]" />
                         Add New Supplier
                       </DialogTitle>
 
-                      <DialogDescription className="text-gray-600">
+                      <DialogDescription className="text-[#475569]">
                         Enter the details for the new supplier.
                       </DialogDescription>
                     </DialogHeader>
@@ -256,25 +256,25 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                     <div className="space-y-6 py-4">
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-[#334155]">
                             Supplier Name *
                           </label>
-                          <input
-                            type="text"
-                            value={newSupplier.name}
-                            onChange={(e) =>
-                              setNewSupplier((prev) => ({
-                                ...prev,
-                                name: e.target.value,
-                              }))
-                            }
-                            placeholder="Enter supplier name"
-                            className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
-                          />
+                        <input
+                          type="text"
+                          value={newSupplier.name}
+                          onChange={(e) =>
+                            setNewSupplier((prev) => ({
+                              ...prev,
+                              name: e.target.value,
+                            }))
+                          }
+                          placeholder="Enter supplier name"
+                          className="w-full px-3 py-3 border border-[#CBD5E1] rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none transition-all duration-200"
+                        />
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-[#334155]">
                             Lead Time (days) *
                           </label>
                           <input
@@ -288,9 +288,9 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                                 leadTime: parseInt(e.target.value) || 1,
                               }))
                             }
-                            className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                            className="w-full px-3 py-3 border border-[#CBD5E1] focus:outline-none rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200"
                           />
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-[#64748B]">
                             Average delivery time in days
                           </p>
                         </div>
@@ -300,7 +300,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                     <div className="flex gap-3 pt-4">
                       <button
                         onClick={() => setIsAddDialogOpen(false)}
-                        className="flex items-center gap-2 flex-1 justify-center border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-3 rounded-xl font-medium transition-all duration-200"
+                        className="flex items-center gap-2 flex-1 justify-center border border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC] px-4 py-3 rounded-lg font-medium transition-all duration-200"
                       >
                         <X className="h-4 w-4" />
                         Cancel
@@ -308,7 +308,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                       <button
                         onClick={handleAddSupplier}
                         disabled={!newSupplier.name.trim()}
-                        className="flex items-center gap-2 flex-1 justify-center bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30"
+                        className="flex items-center gap-2 flex-1 justify-center bg-[#1E293B] hover:bg-[#0F172A] disabled:bg-[#CBD5E1] disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-medium transition-all duration-200"
                       >
                         <Save className="h-4 w-4" />
                         Create Supplier
@@ -323,45 +323,45 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
           {/* Stats Cards */}
           {supplier && supplier.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-purple-700 mb-1">
+                    <p className="text-sm font-medium text-[#334155] mb-1">
                       Total Suppliers
                     </p>
-                    <p className="text-3xl font-bold text-gray-800">
+                    <p className="text-3xl font-bold text-[#0F172A]">
                       {supplier.length}
                     </p>
                   </div>
-                  <div className="bg-white p-3 rounded-xl shadow-xs">
-                    <Users className="h-6 w-6 text-purple-600" />
+                  <div className="bg-white p-3 rounded-lg">
+                    <Users className="h-6 w-6 text-[#1E293B]" />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+              <div className="bg-[#F0FDF4] border border-[#BBF7D0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-green-700 mb-1">
+                    <p className="text-sm font-medium text-[#166534] mb-1">
                       Active Suppliers
                     </p>
-                    <p className="text-3xl font-bold text-gray-800">
+                    <p className="text-3xl font-bold text-[#0F172A]">
                       {supplier.filter((sup) => !sup.deletedAt).length}
                     </p>
                   </div>
-                  <div className="bg-white p-3 rounded-xl shadow-xs">
-                    <Shield className="h-6 w-6 text-green-600" />
+                  <div className="bg-white p-3 rounded-lg">
+                    <Shield className="h-6 w-6 text-[#16A34A]" />
                   </div>
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+              <div className="bg-[#F1F5F9] border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-blue-700 mb-1">
+                    <p className="text-sm font-medium text-[#334155] mb-1">
                       Avg Lead Time
                     </p>
-                    <p className="text-3xl font-bold text-gray-800">
+                    <p className="text-3xl font-bold text-[#0F172A]">
                       {Math.round(
                         supplier.reduce((acc, sup) => acc + sup.leadTime, 0) /
                           supplier.length
@@ -369,8 +369,8 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                       days
                     </p>
                   </div>
-                  <div className="bg-white p-3 rounded-xl shadow-xs">
-                    <Clock className="h-6 w-6 text-blue-600" />
+                  <div className="bg-white p-3 rounded-lg">
+                    <Clock className="h-6 w-6 text-[#334155]" />
                   </div>
                 </div>
               </div>
@@ -378,19 +378,19 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
           )}
 
           {/* Search Section */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-gray-100/80 mb-8">
+          <div className="bg-white rounded-xl p-6 border border-[#E2E8F0] mb-8">
             <div className="flex flex-col sm:flex-row gap-4 max-w-4xl mx-auto">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#64748B]" />
                 <input
                   type="text"
                   placeholder="Search suppliers by name..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                  className="w-full pl-12 pr-4 py-3 border border-[#CBD5E1] rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none transition-all duration-200"
                 />
               </div>
-              <button className="flex items-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white border border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-md hover:border-gray-300">
+              <button className="flex items-center gap-2 bg-white hover:bg-[#F8FAFC] border border-[#CBD5E1] text-[#334155] px-6 py-3 rounded-lg font-medium transition-all duration-200 hover:border-[#94A3B8]">
                 <Filter className="h-4 w-4" />
                 Filter
               </button>
@@ -398,45 +398,45 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
           </div>
 
           {/* Supplier Table */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-gray-100/80 mb-8 overflow-hidden">
+          <div className="bg-white rounded-xl border border-[#E2E8F0] mb-8 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-100/80 bg-gradient-to-r from-purple-50/50 to-indigo-50/50">
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                  <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
+                    <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Truck className="h-4 w-4 text-purple-600" />
+                        <Truck className="h-4 w-4 text-[#1E293B]" />
                         Supplier
                       </div>
                     </th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                    <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Clock className="h-4 w-4 text-blue-600" />
+                        <Clock className="h-4 w-4 text-[#334155]" />
                         Lead Time
                       </div>
                     </th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                    <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Package className="h-4 w-4 text-green-600" />
+                        <Package className="h-4 w-4 text-[#334155]" />
                         Products
                       </div>
                     </th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                    <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Calendar className="h-4 w-4 text-gray-600" />
+                        <Calendar className="h-4 w-4 text-[#64748B]" />
                         Last Updated
                       </div>
                     </th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                    <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       Status
                     </th>
-                    <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                    <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100/80">
-                  {currentSuppliers.map((sup) => (
+                <tbody className="divide-y divide-[#F1F5F9]">
+                  {currentSuppliers.map((sup, index) => (
                     <TableRow
                       key={sup.id}
                       supplier={sup}
@@ -445,6 +445,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                       isCopied={copiedId === sup.id}
                       refresh={refresh}
                       onViewDetails={handleViewDetails}
+                      rowIndex={index}
                     />
                   ))}
                 </tbody>
@@ -455,14 +456,14 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
             {filteredSuppliers.length === 0 && (
               <div className="text-center py-12">
                 <div className="max-w-2xl mx-auto">
-                  <div className="border p-6 rounded-2xl bg-purple-50 border-purple-200 inline-block">
-                    <div className="bg-white p-4 rounded-2xl w-20 h-20 mx-auto mb-6">
-                      <Truck className="h-10 w-10 text-purple-600 mx-auto" />
+                  <div className="border p-6 rounded-xl bg-[#F8FAFC] border-[#E2E8F0] inline-block">
+                    <div className="bg-white p-4 rounded-xl w-20 h-20 mx-auto mb-6">
+                      <Truck className="h-10 w-10 text-[#64748B] mx-auto" />
                     </div>
-                    <h2 className="text-2xl font-bold text-gray-800 mb-3">
+                    <h2 className="text-2xl font-bold text-[#0F172A] mb-3">
                       No suppliers found
                     </h2>
-                    <p className="text-gray-500 mb-8 text-lg">
+                    <p className="text-[#64748B] mb-8 text-lg">
                       {searchTerm
                         ? "Try adjusting your search terms"
                         : "Get started by adding your first supplier"}
@@ -473,7 +474,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                         onOpenChange={setIsAddDialogOpen}
                       >
                         <DialogTrigger asChild>
-                          <button className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30">
+                          <button className="inline-flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-8 py-4 rounded-lg font-semibold transition-all duration-200">
                             <Plus className="h-5 w-5" />
                             Add Your First Supplier
                           </button>
@@ -488,15 +489,15 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-gray-100/80 mb-8">
+            <div className="bg-white rounded-xl p-6 border border-[#E2E8F0] mb-8">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                <div className="text-sm text-gray-600">
+                <div className="text-sm text-[#64748B]">
                   Showing{" "}
-                  <span className="font-semibold text-gray-800">
+                  <span className="font-semibold text-[#0F172A]">
                     {startIndex + 1}-{Math.min(endIndex, totalItems)}
                   </span>{" "}
                   of{" "}
-                  <span className="font-semibold text-gray-800">
+                  <span className="font-semibold text-[#0F172A]">
                     {totalItems}
                   </span>{" "}
                   supplier{totalItems !== 1 ? "s" : ""}
@@ -507,18 +508,18 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                   <button
                     onClick={goToFirstPage}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
-                    <ChevronsLeft className="h-4 w-4 text-gray-600" />
+                    <ChevronsLeft className="h-4 w-4 text-[#64748B]" />
                   </button>
 
                   {/* Previous Page Button */}
                   <button
                     onClick={goToPrevPage}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
-                    <ChevronLeft className="h-4 w-4 text-gray-600" />
+                    <ChevronLeft className="h-4 w-4 text-[#64748B]" />
                   </button>
 
                   {/* Page Numbers */}
@@ -541,8 +542,8 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                           onClick={() => goToPage(pageNum)}
                           className={`min-w-[40px] h-10 rounded-lg border transition-all duration-200 font-medium ${
                             currentPage === pageNum
-                              ? "bg-gradient-to-r from-purple-500 to-purple-600 text-white border-purple-600 shadow-lg shadow-purple-500/25"
-                              : "border-gray-200 text-gray-700 hover:bg-gray-50"
+                              ? "bg-[#1E293B] text-white border-[#1E293B]"
+                              : "border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC]"
                           }`}
                         >
                           {pageNum}
@@ -555,38 +556,38 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
-                    <ChevronRight className="h-4 w-4 text-gray-600" />
+                    <ChevronRight className="h-4 w-4 text-[#64748B]" />
                   </button>
 
                   {/* Last Page Button */}
                   <button
                     onClick={goToLastPage}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                    className="p-2 rounded-lg border border-[#CBD5E1] hover:bg-[#F8FAFC] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   >
-                    <ChevronsRight className="h-4 w-4 text-gray-600" />
+                    <ChevronsRight className="h-4 w-4 text-[#64748B]" />
                   </button>
                 </div>
 
                 {/* Items Per Page Selector */}
                 <div className="flex items-center gap-2 text-sm">
-                  <span className="text-gray-600">Show:</span>
+                  <span className="text-[#64748B]">Show:</span>
                   <select
                     value={itemsPerPage}
                     onChange={(e) => {
                       setItemsPerPage(Number(e.target.value));
                       setCurrentPage(1); // Reset to first page when changing items per page
                     }}
-                    className="border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                    className="border border-[#CBD5E1] rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200"
                   >
                     <option value={10}>10</option>
                     <option value={25}>25</option>
                     <option value={50}>50</option>
                     <option value={100}>100</option>
                   </select>
-                  <span className="text-gray-600">per page</span>
+                  <span className="text-[#64748B]">per page</span>
                 </div>
               </div>
             </div>
@@ -595,25 +596,25 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
           {/* Supplier Details Modal */}
           {selectedSupplier && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl p-8 max-w-md w-full shadow-xl border border-gray-200/80 mx-auto">
+              <div className="bg-white rounded-xl p-8 max-w-md w-full border border-[#E2E8F0] mx-auto">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="bg-gradient-to-br from-purple-500 to-purple-600 p-3 rounded-xl">
+                  <div className="bg-[#1E293B] p-3 rounded-lg">
                     <Truck className="h-6 w-6 text-white" />
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-800">
+                  <h3 className="text-2xl font-bold text-[#0F172A]">
                     {selectedSupplier.name}
                   </h3>
                 </div>
                 <div className="space-y-4 text-sm">
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Supplier ID:</span>
+                  <div className="flex justify-between items-center py-2 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Supplier ID:</span>
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm bg-gray-100 px-2 py-1 rounded border">
+                      <span className="font-mono text-sm bg-[#F1F5F9] px-2 py-1 rounded border">
                         {selectedSupplier.id}
                       </span>
                       <button
                         onClick={() => handleCopyId(selectedSupplier.id)}
-                        className="flex items-center gap-1 text-xs text-purple-600 hover:text-purple-700 bg-purple-50 hover:bg-purple-100 px-2 py-1 rounded border border-purple-200 transition-colors"
+                        className="flex items-center gap-1 text-xs text-[#1E293B] hover:text-[#0F172A] bg-[#F1F5F9] hover:bg-[#E2E8F0] px-2 py-1 rounded border border-[#CBD5E1] transition-colors"
                       >
                         {copiedId === selectedSupplier.id ? (
                           <Check className="h-3 w-3" />
@@ -624,34 +625,34 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                       </button>
                     </div>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Lead Time:</span>
-                    <span className="font-medium text-gray-800">
+                  <div className="flex justify-between items-center py-2 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Lead Time:</span>
+                    <span className="font-medium text-[#0F172A]">
                       {selectedSupplier.leadTime} days
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Products:</span>
-                    <span className="font-medium text-gray-800">
+                  <div className="flex justify-between items-center py-2 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Products:</span>
+                    <span className="font-medium text-[#0F172A]">
                       {selectedSupplier.products?.length || 0}
                     </span>
                   </div>
-                  <div className="flex justify-between items-center py-2 border-b border-gray-100">
-                    <span className="text-gray-600">Created:</span>
-                    <span className="font-medium text-gray-800">
+                  <div className="flex justify-between items-center py-2 border-b border-[#F1F5F9]">
+                    <span className="text-[#64748B]">Created:</span>
+                    <span className="font-medium text-[#0F172A]">
                       {new Date(selectedSupplier.createdAt).toLocaleDateString()}
                     </span>
                   </div>
                   <div className="flex justify-between items-center py-2">
-                    <span className="text-gray-600">Last Updated:</span>
-                    <span className="font-medium text-gray-800">
+                    <span className="text-[#64748B]">Last Updated:</span>
+                    <span className="font-medium text-[#0F172A]">
                       {new Date(selectedSupplier.updatedAt).toLocaleDateString()}
                     </span>
                   </div>
                 </div>
                 <button
                   onClick={() => setSelectedSupplier(null)}
-                  className="mt-8 w-full bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white py-3.5 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30"
+                  className="mt-8 w-full bg-[#1E293B] hover:bg-[#0F172A] text-white py-3.5 rounded-lg font-semibold transition-all duration-200"
                 >
                   Close Details
                 </button>
@@ -671,6 +672,7 @@ function TableRow({
   isCopied,
   refresh,
   onViewDetails,
+  rowIndex,
 }: {
   supplier: Supplier;
   router: any;
@@ -678,6 +680,7 @@ function TableRow({
   isCopied: boolean;
   refresh: () => Promise<void>;
   onViewDetails: (supplier: Supplier) => void;
+  rowIndex: number;
 }) {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -746,22 +749,22 @@ function TableRow({
   const getStatusBadge = (leadTime: number) => {
     if (leadTime <= 3) {
       return (
-        <span className="inline-flex items-center gap-1 bg-green-50 text-green-700 px-2.5 py-1 rounded-full text-xs font-medium border border-green-200">
-          <div className="h-1.5 w-1.5 bg-green-500 rounded-full"></div>
+        <span className="inline-flex items-center gap-1 bg-[#F0FDF4] text-[#166534] px-2.5 py-1 rounded-full text-xs font-medium border border-[#BBF7D0]">
+          <div className="h-1.5 w-1.5 bg-[#16A34A] rounded-full"></div>
           Fast Delivery
         </span>
       );
     } else if (leadTime <= 7) {
       return (
-        <span className="inline-flex items-center gap-1 bg-yellow-50 text-yellow-700 px-2.5 py-1 rounded-full text-xs font-medium border border-yellow-200">
-          <div className="h-1.5 w-1.5 bg-yellow-500 rounded-full"></div>
+        <span className="inline-flex items-center gap-1 bg-[#FEFCE8] text-[#854D0E] px-2.5 py-1 rounded-full text-xs font-medium border border-[#FEF08A]">
+          <div className="h-1.5 w-1.5 bg-[#EAB308] rounded-full"></div>
           Standard Delivery
         </span>
       );
     } else {
       return (
-        <span className="inline-flex items-center gap-1 bg-red-50 text-red-700 px-2.5 py-1 rounded-full text-xs font-medium border border-red-200">
-          <div className="h-1.5 w-1.5 bg-red-500 rounded-full"></div>
+        <span className="inline-flex items-center gap-1 bg-[#FEF2F2] text-[#991B1B] px-2.5 py-1 rounded-full text-xs font-medium border border-[#FECACA]">
+          <div className="h-1.5 w-1.5 bg-[#DC2626] rounded-full"></div>
           Slow Delivery
         </span>
       );
@@ -770,32 +773,34 @@ function TableRow({
 
   return (
     <>
-      <tr className="hover:bg-purple-50/30 transition-colors duration-200 group">
+      <tr className={`transition-colors duration-200 group ${
+        rowIndex % 2 === 0 ? 'bg-white' : 'bg-[#F8FAFC]'
+      } hover:bg-[#F1F5F9]`}>
         <td className="py-4 px-6">
           <div className="flex items-center justify-center gap-3">
-            <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-2 rounded-xl shadow-xs">
-              <Truck className="h-4 w-4 text-purple-600" />
+            <div className="bg-[#F1F5F9] p-2 rounded-lg">
+              <Truck className="h-4 w-4 text-[#334155]" />
             </div>
             <div className="text-center">
               <div className="flex items-center gap-2 justify-center">
-                <h3 className="font-semibold text-gray-800 group-hover:text-purple-600 transition-colors duration-200">
-                  {supplier.name}
+                <h3 className="font-semibold text-[#0F172A] group-hover:text-[#1E293B] transition-colors duration-200">
+                  {supplier.name.toUpperCase()}
                 </h3>
                 {supplier.deletedAt && (
-                  <span className="text-xs bg-red-50 text-red-600 px-2 py-1 rounded-full border border-red-200">
+                  <span className="text-xs bg-[#FEF2F2] text-[#DC2626] px-2 py-1 rounded-full border border-[#FECACA]">
                     Inactive
                   </span>
                 )}
               </div>
               <button
                 onClick={() => onCopyId(supplier.id)}
-                className="flex items-center gap-1 text-xs text-gray-500 hover:text-purple-600 transition-colors duration-200 group/copy mt-1 justify-center"
+                className="flex items-center gap-1 text-xs text-[#64748B] hover:text-[#1E293B] transition-colors duration-200 group/copy mt-1 justify-center"
               >
-                <span className="font-mono bg-gray-100 px-1.5 py-0.5 rounded border">
+                <span className="font-mono bg-[#F1F5F9] px-1.5 py-0.5 rounded border">
                   ID: {supplier.id.slice(0, 8)}...
                 </span>
                 {isCopied ? (
-                  <Check className="h-3 w-3 text-green-500" />
+                  <Check className="h-3 w-3 text-[#16A34A]" />
                 ) : (
                   <Copy className="h-3 w-3 opacity-0 group-hover/copy:opacity-100 transition-opacity" />
                 )}
@@ -805,23 +810,23 @@ function TableRow({
         </td>
         <td className="py-4 px-6">
           <div className="flex items-center justify-center gap-2">
-            <span className="font-semibold text-gray-800">
+            <span className="font-semibold text-[#0F172A]">
               {supplier.leadTime}
             </span>
-            <span className="text-sm text-gray-500">days</span>
+            <span className="text-sm text-[#64748B]">days</span>
           </div>
         </td>
         <td className="py-4 px-6">
           <div className="flex items-center justify-center gap-2">
-            <span className="font-semibold text-gray-800">{productCount}</span>
-            <span className="text-sm text-gray-500">
+            <span className="font-semibold text-[#0F172A]">{productCount}</span>
+            <span className="text-sm text-[#64748B]">
               product{productCount !== 1 ? "s" : ""}
             </span>
           </div>
         </td>
         <td className="py-4 px-6">
           <div className="flex justify-center">
-            <span className="text-sm text-gray-600">
+            <span className="text-sm text-[#64748B]">
               {new Date(supplier.updatedAt).toLocaleDateString()}
             </span>
           </div>
@@ -832,53 +837,65 @@ function TableRow({
           </div>
         </td>
         <td className="py-4 px-6">
-          <div className="flex items-center justify-center gap-3">
-            <Tooltip>
+          <div className="flex items-center justify-center gap-2">
+            {/* Quick View Button */}
+            {/* <Tooltip>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => onViewDetails(supplier)}
-                  className="p-3 text-gray-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl transition-all duration-200 hover:shadow-md"
+                  className="flex items-center gap-2 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#334155] hover:text-[#1E293B] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
                 >
-                  <Eye className="h-5 w-5" />
+                  <Eye className="h-4 w-4" />
+                  View
                 </button>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>View Details</p>
+              <TooltipContent className="bg-[#1E293B] text-white border-0">
+                <div className="text-center">
+                  <p className="font-semibold">Quick View</p>
+                  <p className="text-xs text-[#CBD5E1] mt-1">See basic supplier details</p>
+                </div>
               </TooltipContent>
             </Tooltip>
-            
+             */}
+            {/* Full Details Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href={`/dashboard/supplier/${supplier.id}`}
-                  className="p-3 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 hover:shadow-md"
+                  className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
                 >
-                  <BarChart3 className="h-5 w-5" />
+                  <BarChart3 className="h-4 w-4" />
+                  Details
                 </Link>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>View Full Details</p>
+              <TooltipContent className="bg-[#1E293B] text-white border-0">
+                <div className="text-center">
+                  <p className="font-semibold">Full Details</p>
+                  <p className="text-xs text-[#CBD5E1] mt-1">View complete supplier page with products</p>
+                </div>
               </TooltipContent>
             </Tooltip>
 
+            {/* Edit Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                   <DialogTrigger asChild>
                     <button 
-                      className="p-3 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-xl transition-all duration-200 hover:shadow-md"
+                      className="flex items-center gap-2 bg-[#F0FDF4] hover:bg-[#DCFCE7] text-[#166534] hover:text-[#15803D] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
                     >
-                      <Edit className="h-5 w-5" />
+                      <Edit className="h-4 w-4" />
+                      Edit
                     </button>
                   </DialogTrigger>
-                  <DialogContent className="sm:max-w-[425px] bg-white/95 backdrop-blur-sm border border-gray-200/80 rounded-2xl shadow-xl">
+                  <DialogContent className="sm:max-w-[425px] bg-white border border-[#E2E8F0] rounded-xl">
                     <DialogHeader className="space-y-4">
-                      <DialogTitle className="flex items-center gap-2 text-xl font-bold text-gray-800">
-                        <Edit className="h-6 w-6 text-purple-600" />
+                      <DialogTitle className="flex items-center gap-2 text-xl font-bold text-[#0F172A]">
+                        <Edit className="h-6 w-6 text-[#1E293B]" />
                         Edit Supplier
                       </DialogTitle>
 
-                      <DialogDescription className="text-gray-600">
+                      <DialogDescription className="text-[#475569]">
                         Update the supplier information for {supplier.name}.
                       </DialogDescription>
                     </DialogHeader>
@@ -886,7 +903,7 @@ function TableRow({
                     <div className="space-y-6 py-4">
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-[#334155]">
                             Supplier Name *
                           </label>
                           <input
@@ -895,12 +912,12 @@ function TableRow({
                             onChange={(e) =>
                               setEditForm((prev) => ({ ...prev, name: e.target.value }))
                             }
-                            className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                            className="w-full px-3 py-3 border border-[#CBD5E1] rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200"
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <label className="text-sm font-medium text-gray-700">
+                          <label className="text-sm font-medium text-[#334155]">
                             Lead Time (days) *
                           </label>
                           <input
@@ -914,9 +931,9 @@ function TableRow({
                                 leadTime: parseInt(e.target.value) || 1,
                               }))
                             }
-                            className="w-full px-3 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 bg-white/80 backdrop-blur-sm"
+                            className="w-full px-3 py-3 border border-[#CBD5E1] rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200"
                           />
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-[#64748B]">
                             Average delivery time in days
                           </p>
                         </div>
@@ -926,7 +943,7 @@ function TableRow({
                     <div className="flex gap-3 pt-4">
                       <button
                         onClick={() => setIsEditDialogOpen(false)}
-                        className="flex items-center gap-2 flex-1 justify-center border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-3 rounded-xl font-medium transition-all duration-200"
+                        className="flex items-center gap-2 flex-1 justify-center border border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC] px-4 py-3 rounded-lg font-medium transition-all duration-200"
                       >
                         <X className="h-4 w-4" />
                         Cancel
@@ -934,7 +951,7 @@ function TableRow({
                       <button
                         onClick={handleSaveEdit}
                         disabled={!editForm.name.trim()}
-                        className="flex items-center gap-2 flex-1 justify-center bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 disabled:cursor-not-allowed text-white px-4 py-3 rounded-xl font-medium transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30"
+                        className="flex items-center gap-2 flex-1 justify-center bg-[#1E293B] hover:bg-[#0F172A] disabled:bg-[#CBD5E1] disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-medium transition-all duration-200"
                       >
                         <Save className="h-4 w-4" />
                         Save Changes
@@ -943,11 +960,15 @@ function TableRow({
                   </DialogContent>
                 </Dialog>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Edit Supplier</p>
+              <TooltipContent className="bg-[#1E293B] text-white border-0">
+                <div className="text-center">
+                  <p className="font-semibold">Edit Supplier</p>
+                  <p className="text-xs text-[#CBD5E1] mt-1">Update supplier name and lead time</p>
+                </div>
               </TooltipContent>
             </Tooltip>
 
+            {/* Delete Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <AlertDialog
@@ -956,33 +977,34 @@ function TableRow({
                 >
                   <AlertDialogTrigger asChild>
                     <button 
-                      className="p-3 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 hover:shadow-md"
+                      className="flex items-center gap-2 bg-[#FEF2F2] hover:bg-[#FECACA] text-[#DC2626] hover:text-[#B91C1C] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
                     >
-                      <Trash2 className="h-5 w-5" />
+                      <Trash2 className="h-4 w-4" />
+                      Delete
                     </button>
                   </AlertDialogTrigger>
-                  <AlertDialogContent className="bg-white/95 backdrop-blur-sm border border-red-200/80 rounded-2xl shadow-xl">
+                  <AlertDialogContent className="bg-white border border-[#FECACA] rounded-xl">
                     <AlertDialogHeader className="space-y-4">
                       <div className="flex items-center gap-3">
-                        <div className="bg-red-100 p-3 rounded-full">
-                          <Trash2 className="h-6 w-6 text-red-600" />
+                        <div className="bg-[#FEF2F2] p-3 rounded-full">
+                          <Trash2 className="h-6 w-6 text-[#DC2626]" />
                         </div>
-                        <AlertDialogTitle className="text-xl font-bold text-gray-800">
+                        <AlertDialogTitle className="text-xl font-bold text-[#0F172A]">
                           Delete Supplier
                         </AlertDialogTitle>
                       </div>
 
-                      <AlertDialogDescription className="text-gray-600 text-base">
+                      <AlertDialogDescription className="text-[#475569] text-base">
                         Are you sure you want to delete{" "}
-                        <strong className="text-red-600">"{supplier.name}"</strong>?
+                        <strong className="text-[#DC2626]">"{supplier.name}"</strong>?
                         This action cannot be undone.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
 
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-4 mt-4">
+                    <div className="bg-[#FEF2F2] border border-[#FECACA] rounded-lg p-4 mt-4">
                       <div className="flex items-start gap-3">
-                        <Trash2 className="h-5 w-5 text-red-600 mt-0.5 flex-shrink-0" />
-                        <div className="text-sm text-red-800">
+                        <Trash2 className="h-5 w-5 text-[#DC2626] mt-0.5 flex-shrink-0" />
+                        <div className="text-sm text-[#DC2626]">
                           <strong>Warning:</strong> This will permanently delete the
                           supplier and may affect associated products.
                         </div>
@@ -990,12 +1012,12 @@ function TableRow({
                     </div>
 
                     <AlertDialogFooter className="flex gap-3 pt-4">
-                      <AlertDialogCancel className="flex-1 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-xl py-3 font-medium transition-all duration-200">
+                      <AlertDialogCancel className="flex-1 border border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC] rounded-lg py-3 font-medium transition-all duration-200">
                         Cancel
                       </AlertDialogCancel>
                       <AlertDialogAction
                         onClick={handleDeleteSupplier}
-                        className="flex-1 bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white rounded-xl py-3 font-medium transition-all duration-200 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30"
+                        className="flex-1 bg-[#DC2626] hover:bg-[#B91C1C] text-white rounded-lg py-3 font-medium transition-all duration-200"
                       >
                         Delete Supplier
                       </AlertDialogAction>
@@ -1003,8 +1025,11 @@ function TableRow({
                   </AlertDialogContent>
                 </AlertDialog>
               </TooltipTrigger>
-              <TooltipContent>
-                <p>Delete Supplier</p>
+              <TooltipContent className="bg-[#1E293B] text-white border-0">
+                <div className="text-center">
+                  <p className="font-semibold">Delete Supplier</p>
+                  <p className="text-xs text-[#CBD5E1] mt-1">Permanently remove this supplier</p>
+                </div>
               </TooltipContent>
             </Tooltip>
           </div>
