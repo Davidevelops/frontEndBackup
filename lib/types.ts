@@ -244,3 +244,27 @@ export interface ForecastResponse {
     };
   };
 }
+
+export interface Forecast {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  dataDepth: number;
+  forecastStartDate: string;
+  forecastEndDate: string;
+  entries?: ForecastEntry[];
+}
+
+export interface ForecastEntry {
+  id: string;
+  date: string;
+  yhat: number;
+  yhatLower: number;
+  yhatUpper: number;
+  forecastId: string;
+}
+
+export interface ForecastSelection {
+  type: 'latest' | 'all' | 'specific';
+  forecastId?: string;
+}

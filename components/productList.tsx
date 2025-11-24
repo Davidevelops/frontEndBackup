@@ -811,7 +811,7 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 										<Label className="text-[#475569] text-sm">
 											Classification *
 										</Label>
-										<Input
+										<select
 											value={variantData.setting?.classification || ""}
 											onChange={(e) =>
 												handleSettingFieldChange(
@@ -819,9 +819,12 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 													e.target.value,
 												)
 											}
-											className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
-											placeholder="e.g., fast"
-										/>
+											className="w-full mt-1 border border-[#CBD5E1] rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none transition-all duration-200"
+										>
+											<option value="">Select classification</option>
+											<option value="fast">Fast</option>
+											<option value="slow">Slow</option>
+										</select>
 									</div>
 									<div>
 										<Label className="text-[#475569] text-sm">

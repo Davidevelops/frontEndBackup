@@ -80,13 +80,25 @@ export class ApiEndpoints {
 		}
 	}
 
-	forecast(groupId: string, productId: string, forecastId?: string) {
-		if (forecastId) {
-			return `${this.backendUrl}/groups/${groupId}/products/${productId}/forecasts/${forecastId}`
-		} else {
-			return `${this.backendUrl}/groups/${groupId}/products/${productId}/forecasts`
-		}
-	}
+	forecast(groupId: string, productId: string, forecastId?: string, queryParams?: Record<string, string | number | boolean>) {
+  let baseUrl = `${this.backendUrl}/groups/${groupId}/products/${productId}/forecasts`;
+  
+  if (forecastId) {
+    baseUrl += `/${forecastId}`;
+  }
+  
+  if (queryParams) {
+    const params = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, value.toString());
+      }
+    });
+    baseUrl += `?${params.toString()}`;
+  }
+  
+  return baseUrl;
+}
 
 	delivery(deliveryId?: string) {
 		if (deliveryId) {
