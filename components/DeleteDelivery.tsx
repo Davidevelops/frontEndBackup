@@ -59,14 +59,14 @@ export default function DeleteDelivery({
   const modalContent = (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="bg-white rounded-2xl max-w-md w-full animate-in fade-in-90 zoom-in-90">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <Trash2 className="h-5 w-5 text-red-600" />
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <Trash2 className="h-5 w-5 text-gray-700" />
             Delete Delivery
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
             disabled={loading}
           >
             <X className="h-5 w-5" />
@@ -74,7 +74,7 @@ export default function DeleteDelivery({
         </div>
 
         <div className="p-6">
-          <div className="flex items-center gap-3 text-amber-600 bg-amber-50 p-4 rounded-lg mb-4">
+          <div className="flex items-center gap-3 text-gray-700 bg-gray-100 p-4 rounded-lg mb-4">
             <AlertTriangle className="h-5 w-5 flex-shrink-0" />
             <p className="text-sm font-medium">
               Are you sure you want to delete this delivery? This action cannot
@@ -84,11 +84,11 @@ export default function DeleteDelivery({
 
           <div className="bg-gray-50 rounded-lg p-4 mb-6">
             <div className="flex items-center gap-3 mb-3">
-              <div className="bg-purple-100 p-2 rounded-lg">
-                <Truck className="h-5 w-5 text-purple-600" />
+              <div className="bg-gray-200 p-2 rounded-lg">
+                <Truck className="h-5 w-5 text-gray-700" />
               </div>
               <div>
-                <h4 className="font-semibold text-gray-800">
+                <h4 className="font-semibold text-gray-900">
                   Delivery #{delivery.id.slice(0, 8)}
                 </h4>
                 <p className="text-sm text-gray-600">
@@ -103,10 +103,10 @@ export default function DeleteDelivery({
                 <span
                   className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
                     delivery.status === "completed"
-                      ? "bg-green-100 text-green-800"
+                      ? "bg-gray-200 text-gray-800"
                       : delivery.status === "cancelled"
-                      ? "bg-red-100 text-red-800"
-                      : "bg-purple-100 text-purple-800"
+                      ? "bg-gray-200 text-gray-800"
+                      : "bg-gray-200 text-gray-800"
                   }`}
                 >
                   {delivery.status}
@@ -114,17 +114,17 @@ export default function DeleteDelivery({
               </div>
               <div>
                 <span className="text-gray-600">Items:</span>
-                <span className="ml-2 font-medium">{totalItems}</span>
+                <span className="ml-2 font-medium text-gray-900">{totalItems}</span>
               </div>
               <div>
                 <span className="text-gray-600">Products:</span>
-                <span className="ml-2 font-medium">
+                <span className="ml-2 font-medium text-gray-900">
                   {delivery.items.length}
                 </span>
               </div>
               <div>
                 <span className="text-gray-600">Requested:</span>
-                <span className="ml-2 font-medium">
+                <span className="ml-2 font-medium text-gray-900">
                   {formatDate(delivery.requestedAt)}
                 </span>
               </div>
@@ -135,7 +135,7 @@ export default function DeleteDelivery({
             <button
               onClick={onClose}
               disabled={loading}
-              className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
             >
               <X className="h-4 w-4" />
               Cancel
@@ -143,7 +143,7 @@ export default function DeleteDelivery({
             <button
               onClick={handleDelete}
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               <Trash2 className="h-4 w-4" />
               {loading ? "Deleting..." : "Delete Delivery"}

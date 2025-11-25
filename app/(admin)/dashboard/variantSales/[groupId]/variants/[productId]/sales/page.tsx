@@ -46,16 +46,16 @@ export default function SalesPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-6">
-        <div className="max-w-7xl mx-auto">
-          <Card className="bg-white/80 backdrop-blur-sm border border-gray-100/80 shadow-xs">
+      <div className="min-h-screen bg-[#F1F5F9] p-6">
+        <div className="max-w-[95rem] mx-auto">
+          <Card className="bg-white border border-[#E2E8F0]">
             <CardContent className="flex items-center justify-center py-20">
               <div className="text-center">
-                <Loader2 className="h-12 w-12 animate-spin text-purple-500 mx-auto mb-4" />
-                <p className="text-lg font-semibold text-gray-800">
+                <Loader2 className="h-12 w-12 animate-spin text-[#475569] mx-auto mb-4" />
+                <p className="text-lg font-semibold text-[#1E293B]">
                   Loading Sales Data
                 </p>
-                <p className="text-gray-600">
+                <p className="text-[#475569]">
                   Fetching your product analytics...
                 </p>
               </div>
@@ -68,20 +68,20 @@ export default function SalesPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-6">
-        <div className="max-w-7xl mx-auto">
-          <Card className="bg-white/80 backdrop-blur-sm border border-gray-100/80 shadow-xs">
+      <div className="min-h-screen bg-[#F1F5F9] p-6">
+        <div className="max-w-[95rem] mx-auto">
+          <Card className="bg-white border border-[#E2E8F0]">
             <CardContent className="text-center py-12">
-              <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <AlertTriangle className="h-8 w-8 text-red-600" />
+              <div className="w-16 h-16 bg-[#F1F5F9] rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertTriangle className="h-8 w-8 text-[#64748B]" />
               </div>
-              <div className="text-red-600 text-lg font-semibold mb-2">
+              <div className="text-[#1E293B] text-lg font-semibold mb-2">
                 Error Loading Data
               </div>
-              <p className="text-gray-600 mb-4">{error}</p>
+              <p className="text-[#475569] mb-4">{error}</p>
               <button
                 onClick={() => window.location.reload()}
-                className="bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-2 rounded-xl hover:from-purple-600 hover:to-purple-700 transition-all duration-200"
+                className="bg-[#1E293B] text-white px-6 py-2 rounded-xl hover:bg-[#0F172A] transition-all duration-200"
               >
                 Try Again
               </button>

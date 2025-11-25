@@ -34,21 +34,23 @@ export default function DeleteConfirmationDialog({
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<div className="flex items-center gap-3">
-						<div className="bg-red-100 p-2 rounded-full">
-							<AlertTriangle className="h-6 w-6 text-red-600" />
+						<div className="bg-slate-100 p-2 rounded-full">
+							<AlertTriangle className="h-6 w-6 text-slate-600" />
 						</div>
-						<AlertDialogTitle className="text-lg">{title}</AlertDialogTitle>
+						<AlertDialogTitle className="text-lg text-slate-800">{title}</AlertDialogTitle>
 					</div>
-					<AlertDialogDescription className="text-base text-gray-600 mt-2">
+					<AlertDialogDescription className="text-base text-slate-600 mt-2">
 						{description}
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>
-					<AlertDialogCancel disabled={isLoading}>Cancel</AlertDialogCancel>
+					<AlertDialogCancel disabled={isLoading} className="border-slate-300 text-slate-700 hover:bg-slate-50">
+						Cancel
+					</AlertDialogCancel>
 					<AlertDialogAction
 						onClick={onConfirm}
 						disabled={isLoading}
-						className="bg-red-600 hover:bg-red-700 text-white"
+						className="bg-slate-800 hover:bg-slate-700 text-white"
 					>
 						{isLoading ? "Deleting..." : "Delete"}
 					</AlertDialogAction>

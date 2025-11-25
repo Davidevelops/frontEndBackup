@@ -1,5 +1,5 @@
-import { ChartLine, Lightbulb, BarChart, TrendingUp, Zap, PackageCheck, TrendingUpIcon, Shield, AlertCircle, Target } from "lucide-react";
-import { ForecastDialog } from "./dialogs/ForecastDialog";
+import { ChartLine, Lightbulb, BarChart, TrendingUp, Zap, PackageCheck, TrendingUpIcon, Shield, AlertCircle, Target, TrendingDown } from "lucide-react";
+import { ForecastDialog } from "./ForecastDialog";
 
 interface ForecastInsightsProps {
   product: any;

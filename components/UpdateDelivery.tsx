@@ -115,14 +115,14 @@ export default function UpdateDelivery({
   const modalContent = (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
       <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in fade-in-90 zoom-in-90">
-        <div className="flex items-center justify-between p-6 border-b border-gray-100">
-          <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-            <RotateCcw className="h-5 w-5 text-purple-600" />
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <RotateCcw className="h-5 w-5 text-gray-700" />
             Update Delivery
           </h3>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
             disabled={loading}
           >
             <X className="h-5 w-5" />
@@ -137,8 +137,8 @@ export default function UpdateDelivery({
               onClick={() => setActiveTab("status")}
               className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${
                 activeTab === "status"
-                  ? "bg-white text-purple-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-800"
+                  ? "bg-white text-gray-900 shadow-sm border border-gray-300"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
               }`}
             >
               <Clock className="h-4 w-4" />
@@ -149,8 +149,8 @@ export default function UpdateDelivery({
               onClick={() => setActiveTab("schedule")}
               className={`flex-1 py-2 px-3 text-sm font-medium rounded-md transition-colors flex items-center justify-center gap-2 ${
                 activeTab === "schedule"
-                  ? "bg-white text-purple-600 shadow-sm"
-                  : "text-gray-600 hover:text-gray-800"
+                  ? "bg-white text-gray-900 shadow-sm border border-gray-300"
+                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-200"
               }`}
             >
               <Calendar className="h-4 w-4" />
@@ -163,28 +163,28 @@ export default function UpdateDelivery({
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-purple-600" />
+                    <Clock className="h-4 w-4 text-gray-600" />
                     Status
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => handleChange("status", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-white"
                     required
                   >
                     <option value="pending">Pending</option>
                     <option value="completed">Completed</option>
                     <option value="cancelled">Cancelled</option>
                   </select>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Current status: <span className="font-medium">{delivery.status}</span>
+                  <p className="text-xs text-gray-600 mt-1">
+                    Current status: <span className="font-medium text-gray-900">{delivery.status}</span>
                   </p>
                 </div>
 
                 {formData.status === "cancelled" && (
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-purple-600" />
+                      <Calendar className="h-4 w-4 text-gray-600" />
                       Cancellation Date
                     </label>
                     <input
@@ -193,7 +193,7 @@ export default function UpdateDelivery({
                       onChange={(e) =>
                         handleChange("cancelledAt", e.target.value)
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-white"
                       required
                     />
                   </div>
@@ -205,23 +205,23 @@ export default function UpdateDelivery({
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-purple-600" />
+                    <Clock className="h-4 w-4 text-gray-600" />
                     Requested Date
                   </label>
-                  <input
-                    type="date"
-                    value={formData.requestedAt}
-                    onChange={(e) =>
-                      handleChange("requestedAt", e.target.value)
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                    required
-                  />
+                    <input
+                      type="date"
+                      value={formData.requestedAt}
+                      onChange={(e) =>
+                        handleChange("requestedAt", e.target.value)
+                      }
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-white"
+                      required
+                    />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-purple-600" />
+                    <Calendar className="h-4 w-4 text-gray-600" />
                     Scheduled Arrival
                   </label>
                   <input
@@ -230,7 +230,7 @@ export default function UpdateDelivery({
                     onChange={(e) =>
                       handleChange("scheduledArrivalDate", e.target.value)
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-white"
                     required
                   />
                 </div>
@@ -241,7 +241,7 @@ export default function UpdateDelivery({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                 disabled={loading}
               >
                 <X className="h-4 w-4" />
@@ -250,7 +250,7 @@ export default function UpdateDelivery({
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 <Save className="h-4 w-4" />
                 {loading ? "Updating..." : "Update Delivery"}
@@ -261,7 +261,6 @@ export default function UpdateDelivery({
       </div>
     </div>
   );
-
 
   if (!mounted) return null;
 

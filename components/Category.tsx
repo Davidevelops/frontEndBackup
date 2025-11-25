@@ -112,22 +112,22 @@ export default function CategoryForm({
 	return (
 		<div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
 			<div className="bg-white rounded-2xl shadow-xl w-full max-w-md">
-				<div className="flex items-center justify-between p-6 border-b border-gray-200">
-					<h2 className="text-xl font-bold text-gray-800">
+				<div className="flex items-center justify-between p-6 border-b border-slate-200">
+					<h2 className="text-xl font-bold text-slate-800">
 						{category ? "Edit Category" : "Create New Category"}
 					</h2>
 					<button
 						onClick={handleClose}
-						className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+						className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
 						disabled={isSubmitting}
 					>
-						<X className="h-5 w-5 text-gray-500" />
+						<X className="h-5 w-5 text-slate-500" />
 					</button>
 				</div>
 
 				<form onSubmit={handleSubmit} className="p-6 space-y-4">
 					<div>
-						<label className="block text-sm font-medium text-gray-700 mb-2">
+						<label className="block text-sm font-medium text-slate-700 mb-2">
 							Category Name *
 						</label>
 						<input
@@ -135,8 +135,8 @@ export default function CategoryForm({
 							value={name}
 							onChange={(e) => handleNameChange(e.target.value)}
 							onBlur={handleBlur}
-							className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all ${
-								error ? "border-red-300" : "border-gray-300"
+							className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all ${
+								error ? "border-red-300" : "border-slate-300"
 							}`}
 							placeholder="Enter category name"
 							disabled={isSubmitting}
@@ -146,7 +146,7 @@ export default function CategoryForm({
 							{error ? (
 								<p className="text-red-500 text-sm">{error}</p>
 							) : (
-								<p className="text-gray-400 text-sm">
+								<p className="text-slate-400 text-sm">
 									{name.length}/50 characters
 								</p>
 							)}
@@ -157,7 +157,7 @@ export default function CategoryForm({
 						<button
 							type="button"
 							onClick={handleClose}
-							className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+							className="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-lg font-medium hover:bg-slate-50 transition-colors disabled:opacity-50"
 							disabled={isSubmitting}
 						>
 							Cancel
@@ -170,7 +170,7 @@ export default function CategoryForm({
 								name.trim().length < 2 ||
 								!!validateCategoryName(name)
 							}
-							className="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-lg font-medium hover:from-purple-600 hover:to-purple-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+							className="flex-1 px-4 py-2 bg-slate-800 text-white rounded-lg font-medium hover:bg-slate-700 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
 						>
 							<Save className="h-4 w-4" />
 							{isSubmitting ? "Saving..." : category ? "Update" : "Create"}

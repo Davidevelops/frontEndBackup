@@ -86,12 +86,12 @@ function SearchableDropdown({
           onChange={handleInputChange}
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 pr-10"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-white pr-10"
           placeholder={placeholder}
         />
-        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+        <div className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
           {loading ? (
-            <div className="h-4 w-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+            <div className="h-4 w-4 border-2 border-gray-500 border-t-transparent rounded-full animate-spin" />
           ) : (
             <ChevronDown className="h-4 w-4" />
           )}
@@ -101,9 +101,9 @@ function SearchableDropdown({
       {isOpen && (
         <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
           {loading ? (
-            <div className="p-4 text-center text-gray-500">Loading...</div>
+            <div className="p-4 text-center text-gray-600">Loading...</div>
           ) : filteredOptions.length === 0 ? (
-            <div className="p-4 text-center text-gray-500">
+            <div className="p-4 text-center text-gray-600">
               No options found
             </div>
           ) : (
@@ -111,10 +111,10 @@ function SearchableDropdown({
               <button
                 key={option.id}
                 type="button"
-                className={`w-full text-left px-4 py-2 hover:bg-purple-50 transition-colors ${
+                className={`w-full text-left px-4 py-2 hover:bg-gray-100 transition-colors ${
                   selectedOption?.id === option.id
-                    ? "bg-purple-100 text-purple-700"
-                    : ""
+                    ? "bg-gray-100 text-gray-900"
+                    : "text-gray-700"
                 }`}
                 onClick={() => handleSelect(option)}
               >
@@ -280,7 +280,7 @@ export default function CreateDelivery({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30"
+        className="flex items-center gap-2 bg-gray-800 hover:bg-gray-900 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-gray-500/25 hover:shadow-xl hover:shadow-gray-500/30"
       >
         <Plus className="h-5 w-5" />
         New Delivery
@@ -289,14 +289,14 @@ export default function CreateDelivery({
       {isOpen && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-6 border-b border-gray-100">
-              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-                <Package className="h-5 w-5 text-purple-600" />
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <Package className="h-5 w-5 text-gray-700" />
                 Create New Delivery
               </h3>
               <button
                 onClick={() => setIsOpen(false)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 hover:text-gray-900"
                 disabled={loading}
               >
                 <X className="h-5 w-5" />
@@ -307,7 +307,7 @@ export default function CreateDelivery({
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <Package className="h-4 w-4 text-purple-600" />
+                    <Package className="h-4 w-4 text-gray-600" />
                     Supplier *
                   </label>
                   <SearchableDropdown
@@ -326,7 +326,7 @@ export default function CreateDelivery({
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
-                    <Package className="h-4 w-4 text-purple-600" />
+                    <Package className="h-4 w-4 text-gray-600" />
                     Status
                   </label>
                   <select
@@ -337,7 +337,7 @@ export default function CreateDelivery({
                         status: e.target.value as "pending" | "completed" | "cancelled",
                       }))
                     }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-white"
                   >
                     <option value="pending">Pending</option>
                     <option value="completed">Completed</option>
@@ -348,13 +348,13 @@ export default function CreateDelivery({
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
-                      <Package className="h-4 w-4 text-purple-600" />
+                      <Package className="h-4 w-4 text-gray-600" />
                       Delivery Items *
                     </label>
                     <button
                       type="button"
                       onClick={addItem}
-                      className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1"
+                      className="text-sm text-gray-700 hover:text-gray-900 font-medium flex items-center gap-1"
                     >
                       <Plus className="h-4 w-4" />
                       Add Item
@@ -404,7 +404,7 @@ export default function CreateDelivery({
                                   parseInt(e.target.value) || 0,
                                 )
                               }
-                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-gray-500 bg-white"
                               placeholder="Quantity"
                               min="1"
                             />
@@ -414,7 +414,7 @@ export default function CreateDelivery({
                           <button
                             type="button"
                             onClick={() => removeItem(index)}
-                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors mt-2"
+                            className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors mt-2"
                           >
                             <X className="h-4 w-4" />
                           </button>
@@ -425,11 +425,11 @@ export default function CreateDelivery({
                 </div>
               </div>
 
-              <div className="flex gap-3 pt-6 mt-6 border-t border-gray-100">
+              <div className="flex gap-3 pt-6 mt-6 border-t border-gray-200">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 border border-gray-300 rounded-lg font-medium transition-colors flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   <X className="h-4 w-4" />
@@ -438,7 +438,7 @@ export default function CreateDelivery({
                 <button
                   type="submit"
                   disabled={loading}
-                  className="flex-1 px-4 py-2 bg-purple-500 hover:bg-purple-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                  className="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-900 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                 >
                   <Save className="h-4 w-4" />
                   {loading ? "Creating..." : "Create Delivery"}

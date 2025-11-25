@@ -198,7 +198,7 @@ export default function CategoriesPage() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-6">
+			<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
 				<div className="max-w-7xl mx-auto">
 					<div className="flex items-center justify-between mb-8">
 						<div className="flex items-center gap-4">
@@ -221,7 +221,7 @@ export default function CategoriesPage() {
 						{[...Array(3)].map((_, i) => (
 							<div
 								key={i}
-								className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-gray-100/80 animate-pulse"
+								className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 animate-pulse"
 							>
 								<div className="flex items-center justify-between">
 									<div className="space-y-2">
@@ -234,13 +234,13 @@ export default function CategoriesPage() {
 						))}
 					</div>
 
-					<div className="bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-xs border border-gray-100/80 animate-pulse">
+					<div className="bg-white rounded-2xl p-6 shadow-xs border border-slate-200 animate-pulse">
 						<div className="h-10 w-48 bg-gray-200 rounded-lg mb-6"></div>
 						<div className="space-y-4">
 							{[...Array(5)].map((_, i) => (
 								<div
 									key={i}
-									className="flex items-center justify-between py-4 border-b border-gray-100"
+									className="flex items-center justify-between py-4 border-b border-slate-200"
 								>
 									<div className="flex gap-4">
 										<div className="h-12 w-12 bg-gray-200 rounded-lg"></div>
@@ -260,31 +260,31 @@ export default function CategoriesPage() {
 	}
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-6">
+		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
 			<div className="max-w-7xl mx-auto">
 				<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
 					<div className="flex items-center gap-4 mb-4 lg:mb-0">
 						<div className="relative">
-							<div className="bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 p-3 rounded-2xl shadow-lg shadow-purple-500/20">
+							<div className="bg-slate-800 p-3 rounded-2xl shadow-lg">
 								<Folder className="h-8 w-8 text-white" />
 							</div>
-							<div className="absolute -top-1 -right-1 w-5 h-5 bg-green-400 border-2 border-white rounded-full animate-pulse"></div>
+							<div className="absolute -top-1 -right-1 w-5 h-5 bg-green-500 border-2 border-white rounded-full animate-pulse"></div>
 						</div>
 						<div>
-							<h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 bg-clip-text text-transparent">
+							<h1 className="text-4xl font-bold text-slate-800">
 								Categories
 							</h1>
 							<div className="flex items-center gap-4 mt-3">
-								<p className="text-gray-600 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-100 shadow-xs">
-									<TrendingUp className="h-4 w-4 text-purple-500" />
-									<span className="font-semibold text-gray-800">
+								<p className="text-slate-600 flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs">
+									<TrendingUp className="h-4 w-4 text-slate-600" />
+									<span className="font-semibold text-slate-800">
 										{categories?.length || 0}
 									</span>{" "}
 									total categories
 								</p>
-								<p className="text-gray-600 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-100 shadow-xs">
-									<BarChart3 className="h-4 w-4 text-blue-500" />
-									<span className="font-semibold text-gray-800">
+								<p className="text-slate-600 flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-slate-200 shadow-xs">
+									<BarChart3 className="h-4 w-4 text-slate-600" />
+									<span className="font-semibold text-slate-800">
 										{categories?.filter((cat) => !cat.deletedAt).length || 0}
 									</span>{" "}
 									active categories
@@ -296,7 +296,7 @@ export default function CategoriesPage() {
 					<div className="flex items-center gap-3">
 						<button
 							onClick={() => setIsFormOpen(true)}
-							className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:from-purple-600 hover:to-purple-700 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30"
+							className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-700 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30"
 						>
 							<Plus className="h-4 w-4" />
 							Add Category
@@ -306,77 +306,77 @@ export default function CategoriesPage() {
 
 				{categories && categories.length > 0 && (
 					<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-						<div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+						<div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-sm font-medium text-purple-700 mb-1">
+									<p className="text-sm font-medium text-slate-700 mb-1">
 										Total Categories
 									</p>
-									<p className="text-3xl font-bold text-gray-800">
+									<p className="text-3xl font-bold text-slate-800">
 										{categories.length}
 									</p>
 								</div>
-								<div className="bg-white p-3 rounded-xl shadow-xs">
-									<Folder className="h-6 w-6 text-purple-600" />
+								<div className="bg-slate-100 p-3 rounded-xl shadow-xs">
+									<Folder className="h-6 w-6 text-slate-700" />
 								</div>
 							</div>
 						</div>
 
-						<div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+						<div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-sm font-medium text-blue-700 mb-1">
+									<p className="text-sm font-medium text-slate-700 mb-1">
 										Total Product Groups
 									</p>
-									<p className="text-3xl font-bold text-gray-800">
+									<p className="text-3xl font-bold text-slate-800">
 										{categories.reduce(
 											(total, cat) => total + (cat.productGroups?.length || 0),
 											0,
 										)}
 									</p>
 								</div>
-								<div className="bg-white p-3 rounded-xl shadow-xs">
-									<BarChart3 className="h-6 w-6 text-blue-600" />
+								<div className="bg-slate-100 p-3 rounded-xl shadow-xs">
+									<BarChart3 className="h-6 w-6 text-slate-700" />
 								</div>
 							</div>
 						</div>
 
-						<div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+						<div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
 							<div className="flex items-center justify-between">
 								<div>
-									<p className="text-sm font-medium text-green-700 mb-1">
+									<p className="text-sm font-medium text-slate-700 mb-1">
 										System Status
 									</p>
-									<p className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-										<span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+									<p className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+										<span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
 										Operational
 									</p>
 								</div>
-								<div className="bg-white p-3 rounded-xl shadow-xs">
-									<TrendingUp className="h-6 w-6 text-green-600" />
+								<div className="bg-slate-100 p-3 rounded-xl shadow-xs">
+									<TrendingUp className="h-6 w-6 text-slate-700" />
 								</div>
 							</div>
 						</div>
 					</div>
 				)}
 
-				<div className="bg-gradient-to-r from-purple-50/80 to-indigo-50/80 backdrop-blur-sm border border-purple-200/60 rounded-2xl p-6 mb-8 shadow-xs">
+				<div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8 shadow-xs">
 					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 						<div className="flex items-center gap-4">
 							<div className="bg-white p-3 rounded-xl shadow-xs">
-								<TrendingUp className="h-6 w-6 text-purple-600" />
+								<TrendingUp className="h-6 w-6 text-slate-700" />
 							</div>
 							<div className="flex-1">
-								<h3 className="font-semibold text-gray-800 text-lg">
+								<h3 className="font-semibold text-slate-800 text-lg">
 									Category Management
 								</h3>
-								<p className="text-gray-600 mt-1">
+								<p className="text-slate-600 mt-1">
 									Manage your product categories. You have{" "}
-									<span className="font-semibold text-purple-600">
+									<span className="font-semibold text-slate-800">
 										{categories?.length || 0}
 									</span>{" "}
 									categories containing{" "}
-									<span className="font-semibold text-purple-600">
+									<span className="font-semibold text-slate-800">
 										{categories?.reduce(
 											(total, cat) => total + (cat.productGroups?.length || 0),
 											0,
@@ -388,7 +388,7 @@ export default function CategoriesPage() {
 						</div>
 
 						<div className="relative">
-							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+							<Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
 							<input
 								type="text"
 								placeholder="Search categories..."
@@ -397,29 +397,29 @@ export default function CategoriesPage() {
 									setSearchTerm(e.target.value)
 									setCurrentPage(1)
 								}}
-								className="pl-10 pr-4 py-2.5 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-500 transition-all duration-200 w-full lg:w-64"
+								className="pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-slate-500/20 focus:border-slate-500 transition-all duration-200 w-full lg:w-64"
 							/>
 						</div>
 					</div>
 				</div>
 
-				<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-gray-100/80 overflow-hidden hover:shadow-sm transition-shadow duration-200">
+				<div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden hover:shadow-sm transition-shadow duration-200">
 					{categories === null ? (
 						<div className="text-center py-20">
-							<div className="bg-gradient-to-br from-red-50 to-orange-50 border border-red-200 rounded-2xl p-8 max-w-md mx-auto shadow-xs">
+							<div className="bg-slate-50 border border-slate-200 rounded-2xl p-8 max-w-md mx-auto shadow-xs">
 								<div className="bg-white p-4 rounded-2xl w-16 h-16 mx-auto mb-4 shadow-xs">
-									<AlertCircle className="h-8 w-8 text-red-400 mx-auto" />
+									<AlertCircle className="h-8 w-8 text-slate-400 mx-auto" />
 								</div>
-								<h3 className="text-xl font-bold text-gray-800 mb-3">
+								<h3 className="text-xl font-bold text-slate-800 mb-3">
 									Failed to Load Categories
 								</h3>
-								<p className="text-gray-600 mb-6">
+								<p className="text-slate-600 mb-6">
 									There was an error fetching your categories data. Please check
 									your connection and try again.
 								</p>
 								<button
 									onClick={fetchCategoriesData}
-									className="bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-red-500/25 hover:shadow-xl hover:shadow-red-500/30"
+									className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30"
 								>
 									Try Again
 								</button>
@@ -427,20 +427,20 @@ export default function CategoriesPage() {
 						</div>
 					) : categories && categories.length === 0 ? (
 						<div className="text-center py-20">
-							<div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-2xl p-10 max-w-md mx-auto shadow-xs">
+							<div className="bg-slate-50 border border-slate-200 rounded-2xl p-10 max-w-md mx-auto shadow-xs">
 								<div className="bg-white p-4 rounded-2xl w-20 h-20 mx-auto mb-6 shadow-xs">
-									<Folder className="h-10 w-10 text-purple-400 mx-auto" />
+									<Folder className="h-10 w-10 text-slate-400 mx-auto" />
 								</div>
-								<h3 className="text-2xl font-bold text-gray-800 mb-3">
+								<h3 className="text-2xl font-bold text-slate-800 mb-3">
 									No Categories Found
 								</h3>
-								<p className="text-gray-600 mb-8">
+								<p className="text-slate-600 mb-8">
 									Start by creating your first product category to organize your
 									inventory.
 								</p>
 								<button
 									onClick={() => setIsFormOpen(true)}
-									className="flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:from-purple-600 hover:to-purple-700 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 mx-auto"
+									className="flex items-center gap-2 bg-slate-800 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:bg-slate-700 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30 mx-auto"
 								>
 									<Plus className="h-4 w-4" />
 									Create First Category
@@ -451,10 +451,10 @@ export default function CategoriesPage() {
 						<div className="p-6">
 							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
 								<div>
-									<h3 className="text-lg font-semibold text-gray-800">
+									<h3 className="text-lg font-semibold text-slate-800">
 										Category Records
 									</h3>
-									<p className="text-sm text-gray-600 mt-1">
+									<p className="text-sm text-slate-600 mt-1">
 										Showing {paginatedCategories.length} of{" "}
 										{filteredCategories.length} categories
 										{searchTerm &&
@@ -466,53 +466,53 @@ export default function CategoriesPage() {
 							<div className="overflow-x-auto">
 								<table className="w-full">
 									<thead>
-										<tr className="border-b border-gray-200">
-											<th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+										<tr className="border-b border-slate-200">
+											<th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
 												Name
 											</th>
-											<th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+											<th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
 												Product Groups
 											</th>
-											<th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+											<th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
 												Created
 											</th>
-											<th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+											<th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
 												Updated
 											</th>
-											<th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+											<th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
 												Status
 											</th>
-											<th className="text-left py-3 px-4 text-sm font-medium text-gray-600">
+											<th className="text-left py-3 px-4 text-sm font-medium text-slate-600">
 												Actions
 											</th>
 										</tr>
 									</thead>
-									<tbody className="divide-y divide-gray-100">
+									<tbody className="divide-y divide-slate-100">
 										{paginatedCategories.map((category) => (
 											<tr
 												key={category.id}
-												className="hover:bg-gray-50/50 transition-colors duration-150"
+												className="hover:bg-slate-50/50 transition-colors duration-150"
 											>
 												<td className="py-4 px-4">
-													<div className="text-sm font-semibold text-gray-900">
+													<div className="text-sm font-semibold text-slate-900">
 														{category.name}
 													</div>
-													<div className="text-xs text-gray-500 mt-1">
+													<div className="text-xs text-slate-500 mt-1">
 														ID: {category.id.slice(0, 8)}...
 													</div>
 												</td>
 												<td className="py-4 px-4">
-													<div className="text-sm text-gray-600">
+													<div className="text-sm text-slate-600">
 														{category.productGroups?.length || 0} groups
 													</div>
 												</td>
 												<td className="py-4 px-4">
-													<div className="text-sm text-gray-500">
+													<div className="text-sm text-slate-500">
 														{formatDate(category.createdAt)}
 													</div>
 												</td>
 												<td className="py-4 px-4">
-													<div className="text-sm text-gray-500">
+													<div className="text-sm text-slate-500">
 														{formatDate(category.updatedAt)}
 													</div>
 												</td>
@@ -531,19 +531,19 @@ export default function CategoriesPage() {
 													<div className="flex items-center gap-2">
 														<button
 															onClick={() => handleEdit(category)}
-															className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+															className="p-2 bg-green-100 text-green-600 hover:bg-green-200 hover:text-green-700 rounded-lg transition-colors flex items-center gap-1"
 															title="Edit category"
 															disabled={category.deletedAt !== null}
 														>
-															<Edit3 className="h-4 w-4" />
+															<Edit3 className="h-4 w-4" /> Edit
 														</button>
 														<button
 															onClick={() => handleDeleteClick(category)}
-															className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+															className="p-2 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700 rounded-lg transition-colors flex items-center gap-1"
 															title="Delete category"
 															disabled={category.deletedAt !== null}
 														>
-															<Trash2 className="h-4 w-4" />
+															<Trash2 className="h-4 w-4" /> Delete
 														</button>
 													</div>
 												</td>
@@ -554,8 +554,8 @@ export default function CategoriesPage() {
 							</div>
 
 							{totalPages > 1 && (
-								<div className="flex items-center justify-between border-t border-gray-200 pt-6 mt-6">
-									<div className="text-sm text-gray-600">
+								<div className="flex items-center justify-between border-t border-slate-200 pt-6 mt-6">
+									<div className="text-sm text-slate-600">
 										Page {currentPage} of {totalPages}
 									</div>
 									<div className="flex items-center gap-2">
@@ -564,7 +564,7 @@ export default function CategoriesPage() {
 												setCurrentPage((prev) => Math.max(prev - 1, 1))
 											}
 											disabled={currentPage === 1}
-											className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+											className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 										>
 											<ChevronLeft className="h-4 w-4" />
 											Previous
@@ -574,7 +574,7 @@ export default function CategoriesPage() {
 												setCurrentPage((prev) => Math.min(prev + 1, totalPages))
 											}
 											disabled={currentPage === totalPages}
-											className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+											className="flex items-center gap-1 px-3 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
 										>
 											Next
 											<ChevronRight className="h-4 w-4" />
