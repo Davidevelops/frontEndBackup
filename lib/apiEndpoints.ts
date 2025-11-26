@@ -135,6 +135,14 @@ export class ApiEndpoints {
 recommendations() {
   return `${this.backendUrl}/recommendations`;
 }
+
+excelProducts() {
+  return `${this.backendUrl}/excel/products`
+}
+
+excelSales() {
+  return `${this.backendUrl}/excel/sales`
+}
 }
 
 export const apiEndpoints = new ApiEndpoints()
