@@ -279,7 +279,6 @@ export default function DeliveriesPage() {
           </div>
         </div>
 
-      
         <Alert className="mb-6 bg-blue-50 border-blue-200">
           <Info className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-800">
@@ -287,7 +286,7 @@ export default function DeliveriesPage() {
           </AlertDescription>
         </Alert>
 
-     
+        {/* Enhanced Recommendations Panel */}
         <div className="mb-8">
           <RecommendationsPanel />
         </div>

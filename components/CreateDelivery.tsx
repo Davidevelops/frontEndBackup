@@ -14,7 +14,7 @@ import {
   getSuppliedProducts,
   getSuppliers,
 } from "@/lib/data/routes/supplier/supplier"
-
+import MiniRecommendationsPanel from "./MiniRecommendations"
 interface CreateDeliveryProps {
   onDeliveryCreated: () => void
 }
@@ -323,6 +323,9 @@ export default function CreateDelivery({
                     loading={loadingSuppliers}
                   />
                 </div>
+
+                {/* Mini Recommendations Panel - Only shows when supplier is selected */}
+                <MiniRecommendationsPanel supplierId={formData.supplierId || null} />
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
