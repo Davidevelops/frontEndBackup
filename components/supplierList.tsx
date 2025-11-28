@@ -173,10 +173,128 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
   const goToNextPage = () => goToPage(currentPage + 1);
   const goToPrevPage = () => goToPage(currentPage - 1);
 
-  if (!supplier) {
+  // FIX: Check if supplier is null OR empty array
+  if (!supplier || supplier.length === 0) {
     return (
       <div className="min-h-screen bg-[#F1F5F9] p-6">
         <div className="max-w-7xl mx-auto">
+          {/* Header Section - Always show even when no suppliers */}
+          <div className="bg-white rounded-xl p-8 border border-[#E2E8F0] mb-8">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="bg-[#1E293B] p-4 rounded-xl">
+                    <Users className="h-8 w-8 text-white" />
+                  </div>
+                  <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#16A34A] border-2 border-white rounded-full animate-pulse"></div>
+                </div>
+                <div>
+                  <h1 className="text-4xl font-bold text-[#0F172A]">
+                    Supplier Management
+                  </h1>
+                  <div className="flex items-center gap-4 mt-3">
+                    <p className="text-[#475569] flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
+                      <Truck className="h-4 w-4 text-[#1E293B]" />
+                      <span className="font-semibold text-[#0F172A]">0</span>{" "}
+                      suppliers registered
+                    </p>
+                    <p className="text-[#475569] flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
+                      <BarChart3 className="h-4 w-4 text-[#334155]" />
+                      <span className="font-semibold text-[#0F172A]">0</span>{" "}
+                      total products
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                  <DialogTrigger asChild>
+                    <button className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
+                      <Plus className="h-5 w-5" />
+                      Add Supplier
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px] bg-white border border-[#E2E8F0] rounded-xl">
+                    <DialogHeader className="space-y-4">
+                      <DialogTitle className="flex items-center gap-2 text-xl font-bold text-[#0F172A]">
+                        <Users className="h-6 w-6 text-[#1E293B]" />
+                        Add New Supplier
+                      </DialogTitle>
+
+                      <DialogDescription className="text-[#475569]">
+                        Enter the details for the new supplier.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-6 py-4">
+                      <div className="space-y-4">
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-[#334155]">
+                            Supplier Name *
+                          </label>
+                        <input
+                          type="text"
+                          value={newSupplier.name}
+                          onChange={(e) =>
+                            setNewSupplier((prev) => ({
+                              ...prev,
+                              name: e.target.value,
+                            }))
+                          }
+                          placeholder="Enter supplier name"
+                          className="w-full px-3 py-3 border border-[#CBD5E1] rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none transition-all duration-200"
+                        />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="text-sm font-medium text-[#334155]">
+                            Lead Time (days) *
+                          </label>
+                          <input
+                            type="number"
+                            min="1"
+                            max="365"
+                            value={newSupplier.leadTime}
+                            onChange={(e) =>
+                              setNewSupplier((prev) => ({
+                                ...prev,
+                                leadTime: parseInt(e.target.value) || 1,
+                              }))
+                            }
+                            className="w-full px-3 py-3 border border-[#CBD5E1] focus:outline-none rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200"
+                          />
+                          <p className="text-xs text-[#64748B]">
+                            Average delivery time in days
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 pt-4">
+                      <button
+                        onClick={() => setIsAddDialogOpen(false)}
+                        className="flex items-center gap-2 flex-1 justify-center border border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC] px-4 py-3 rounded-lg font-medium transition-all duration-200"
+                      >
+                        <X className="h-4 w-4" />
+                        Cancel
+                      </button>
+                      <button
+                        onClick={handleAddSupplier}
+                        disabled={!newSupplier.name.trim()}
+                        className="flex items-center gap-2 flex-1 justify-center bg-[#1E293B] hover:bg-[#0F172A] disabled:bg-[#CBD5E1] disabled:cursor-not-allowed text-white px-4 py-3 rounded-lg font-medium transition-all duration-200"
+                      >
+                        <Save className="h-4 w-4" />
+                        Create Supplier
+                      </button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+          </div>
+
+          {/* Empty State with Add Supplier Option */}
           <div className="bg-white rounded-xl p-12 border border-[#E2E8F0] text-center">
             <div className="bg-[#F1F5F9] p-4 rounded-xl w-20 h-20 mx-auto mb-6">
               <Truck className="h-10 w-10 text-[#64748B] mx-auto" />
@@ -184,9 +302,17 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
             <h2 className="text-2xl font-bold text-[#334155] mb-3">
               No Suppliers Found
             </h2>
-            <p className="text-[#64748B] text-lg">
-              There are no suppliers to display.
+            <p className="text-[#64748B] text-lg mb-8">
+              There are no suppliers to display. Get started by adding your first supplier.
             </p>
+            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+              <DialogTrigger asChild>
+                <button className="inline-flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-8 py-4 rounded-lg font-semibold transition-all duration-200">
+                  <Plus className="h-5 w-5" />
+                  Add Your First Supplier
+                </button>
+              </DialogTrigger>
+            </Dialog>
           </div>
         </div>
       </div>
@@ -452,8 +578,8 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
               </table>
             </div>
 
-            {/* Empty State */}
-            {filteredSuppliers.length === 0 && (
+            {/* Empty State for search results */}
+            {filteredSuppliers.length === 0 && searchTerm && (
               <div className="text-center py-12">
                 <div className="max-w-2xl mx-auto">
                   <div className="border p-6 rounded-xl bg-[#F8FAFC] border-[#E2E8F0] inline-block">
@@ -464,23 +590,8 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                       No suppliers found
                     </h2>
                     <p className="text-[#64748B] mb-8 text-lg">
-                      {searchTerm
-                        ? "Try adjusting your search terms"
-                        : "Get started by adding your first supplier"}
+                      Try adjusting your search terms
                     </p>
-                    {!searchTerm && (
-                      <Dialog
-                        open={isAddDialogOpen}
-                        onOpenChange={setIsAddDialogOpen}
-                      >
-                        <DialogTrigger asChild>
-                          <button className="inline-flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-8 py-4 rounded-lg font-semibold transition-all duration-200">
-                            <Plus className="h-5 w-5" />
-                            Add Your First Supplier
-                          </button>
-                        </DialogTrigger>
-                      </Dialog>
-                    )}
                   </div>
                 </div>
               </div>
@@ -838,25 +949,6 @@ function TableRow({
         </td>
         <td className="py-4 px-6">
           <div className="flex items-center justify-center gap-2">
-            {/* Quick View Button */}
-            {/* <Tooltip>
-              <TooltipTrigger asChild>
-                <button
-                  onClick={() => onViewDetails(supplier)}
-                  className="flex items-center gap-2 bg-[#F1F5F9] hover:bg-[#E2E8F0] text-[#334155] hover:text-[#1E293B] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
-                >
-                  <Eye className="h-4 w-4" />
-                  View
-                </button>
-              </TooltipTrigger>
-              <TooltipContent className="bg-[#1E293B] text-white border-0">
-                <div className="text-center">
-                  <p className="font-semibold">Quick View</p>
-                  <p className="text-xs text-[#CBD5E1] mt-1">See basic supplier details</p>
-                </div>
-              </TooltipContent>
-            </Tooltip>
-             */}
             {/* Full Details Button */}
             <Tooltip>
               <TooltipTrigger asChild>
