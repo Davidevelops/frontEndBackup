@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import apiClient from './axisoConfig';
+import apiClient from './axiosConfig';
 import { apiEndpoints } from './apiEndpoints';
 import toast from 'react-hot-toast';
 

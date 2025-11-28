@@ -1,5 +1,5 @@
 import { apiEndpoints } from "@/lib/apiEndpoints";
-import apiClient from "@/lib/axisoConfig";
+import apiClient from "@/lib/axiosConfig";
 
 export interface ImportResult {
   success?: boolean;

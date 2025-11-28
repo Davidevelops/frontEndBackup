@@ -1,4 +1,4 @@
-import apiClient from "@/lib/axisoConfig";
+import apiClient from "@/lib/axiosConfig";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 import { Category } from "@/lib/types";
 

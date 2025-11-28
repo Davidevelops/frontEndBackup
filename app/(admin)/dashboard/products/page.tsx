@@ -18,7 +18,7 @@ import {
 import { apiEndpoints } from "@/lib/apiEndpoints"
 import { exportProductsTemplate,importProducts, downloadBlob, ImportResult  } from "@/lib/data/routes/excel/excel"
 import toast from "react-hot-toast"
-import apiClient from "@/lib/axisoConfig"
+import apiClient from "@/lib/axiosConfig"
 
 export default function ProductsPage() {
   const [productGroups, setProductGroups] = useState<ProductGroup[] | null>(

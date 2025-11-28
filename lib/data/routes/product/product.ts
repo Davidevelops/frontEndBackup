@@ -1,6 +1,6 @@
 import { apiEndpoints } from "@/lib/apiEndpoints";
 import { ProductGroup, SalesResponse, Sale } from "@/lib/types";
-import apiClient from "@/lib/axisoConfig";
+import apiClient from "@/lib/axiosConfig";
 
 export const getProductList = async (): Promise<ProductGroup[] | null> => {
   try {

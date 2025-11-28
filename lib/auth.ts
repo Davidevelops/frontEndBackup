@@ -1,4 +1,4 @@
-import apiClient from "./axisoConfig";
+import apiClient from "./axiosConfig";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 
 export interface LoginCredentials {

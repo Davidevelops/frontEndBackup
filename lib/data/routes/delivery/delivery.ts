@@ -7,7 +7,7 @@ import {
   UpdateDeliveryScheduleData,
   DeliveryStatus,
 } from "@/lib/types";
-import apiClient from "@/lib/axisoConfig";
+import apiClient from "@/lib/axiosConfig";
 
 export const getAllDeliveries = async (status?: DeliveryStatus): Promise<Delivery[] | null> => {
   try {

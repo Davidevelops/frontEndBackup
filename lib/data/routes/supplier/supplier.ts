@@ -1,4 +1,4 @@
-import apiClient from "@/lib/axisoConfig";
+import apiClient from "@/lib/axiosConfig";
 import { Supplier } from "@/lib/types";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 

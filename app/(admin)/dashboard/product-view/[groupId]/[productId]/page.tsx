@@ -1,32 +1,53 @@
+"use client";
+
 import ProductDetails from "@/components/productDetails";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 import { SingleProduct } from "@/lib/types";
-import axios from "axios";
+import apiClient from "@/lib/axiosConfig";
+import { useEffect, useState, use } from "react";
 
-interface pageProps {
-	params: {
-		groupId: string;
-		productId: string;
-	};
+interface PageProps {
+  params: Promise<{
+    groupId: string;
+    productId: string;
+  }>;
 }
 
-export default async function page({ params }: pageProps) {
-	const { groupId, productId } = params;
+export default function Page({ params }: PageProps) {
 
-	const getProductDetails = async (): Promise<SingleProduct | null> => {
-		try {
-			let response = await axios.get(apiEndpoints.product(groupId, productId));
-			return response.data;
-		} catch (error) {
-			return null;
-		}
-	};
+  const { groupId, productId } = use(params);
+  
+  const [product, setProduct] = useState<SingleProduct | null>(null);
+  const [loading, setLoading] = useState(true);
 
-	const data = await getProductDetails();
+  useEffect(() => {
+    const getProductDetails = async () => {
+      try {
+        console.log('Fetching product with:', { groupId, productId });
+        const response = await apiClient.get(apiEndpoints.product(groupId, productId));
+        console.log('API Response:', response.data);
+        setProduct(response.data);
+      } catch (error: any) {
+        console.error('API Error details:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          url: error.config?.url
+        });
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-	return (
-		<div>
-			{data ? <ProductDetails product={data} /> : <div>Product not found</div>}
-		</div>
-	);
+    getProductDetails();
+  }, [groupId, productId]);
+
+  if (loading) return <div>Loading...</div>;
+
+  return (
+    <div>
+      {product ? <ProductDetails product={product} /> : <div>Product not found</div>}
+    </div>
+  );
 }

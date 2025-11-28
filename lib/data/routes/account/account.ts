@@ -1,6 +1,6 @@
 import { apiEndpoints } from "@/lib/apiEndpoints";
 import { Account, CreateAccountRequest, Permission } from "@/lib/types";
-import apiClient from "@/lib/axisoConfig";
+import apiClient from "@/lib/axiosConfig";
 
 export const getAccounts = async (): Promise<Account[] | null> => {
   try {
