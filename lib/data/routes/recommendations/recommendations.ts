@@ -1,6 +1,5 @@
-
 import { apiEndpoints } from "@/lib/apiEndpoints";
-import axios from "axios";
+import apiClient from "@/lib/axisoConfig";
 
 export interface Recommendation {
   coverageDays: number;
@@ -20,9 +19,7 @@ export interface RecommendationsResponse {
 
 export const getRecommendations = async (): Promise<Recommendation[] | null> => {
   try {
-    const response = await axios.get<RecommendationsResponse>(
-      apiEndpoints.recommendations()
-    );
+    const response = await apiClient.get<RecommendationsResponse>(apiEndpoints.recommendations());
     return response.data.data;
   } catch (error) {
     console.error("Error while getting recommendations: ", error);
