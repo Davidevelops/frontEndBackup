@@ -32,28 +32,112 @@ import { Button } from "@/components/ui/button"
 import { exportSalesTemplate, importSales, downloadBlob } from "@/lib/data/routes/excel/excel"
 import toast from "react-hot-toast"
 
+// Error types for better error handling
+interface ApiError {
+	message: string
+	status?: number
+	code?: string
+	details?: any
+}
+
+interface ImportError {
+	row?: number
+	message: string
+	field?: string
+	value?: any
+}
+
+interface ImportResponse {
+	groupsCreated?: number
+	groupsUpdated?: number
+	productsCreated?: number
+	productsUpdated?: number
+	errors?: ImportError[]
+	error?: string
+	message?: string
+}
+
+// Logging utility
+const logger = {
+	info: (message: string, data?: any) => {
+		console.log(`[INFO] ${message}`, data ? data : '')
+	},
+	warn: (message: string, data?: any) => {
+		console.warn(`[WARN] ${message}`, data ? data : '')
+	},
+	error: (message: string, error?: any) => {
+		console.error(`[ERROR] ${message}`, error ? error : '')
+	},
+	debug: (message: string, data?: any) => {
+		if (process.env.NODE_ENV === 'development') {
+			console.debug(`[DEBUG] ${message}`, data ? data : '')
+		}
+	}
+}
+
 export default function SalesPage() {
 	const [sales, setSales] = useState<Sale[] | null>(null)
 	const [loading, setLoading] = useState(true)
 	const [currentPage, setCurrentPage] = useState(1)
 	const [exporting, setExporting] = useState(false)
 	const [importing, setImporting] = useState(false)
+	const [fetchError, setFetchError] = useState<ApiError | null>(null)
 	const itemsPerPage = 10
 
-	
 	const [statusFilter, setStatusFilter] = useState<string>("all")
 	const [dateRange, setDateRange] = useState({
 		startDate: "",
 		endDate: "",
 	})
 
-	const fetchSalesData = async () => {
+	// Enhanced error handler
+	const handleError = (error: any, context: string, userMessage: string = "An error occurred") => {
+		const errorDetails: ApiError = {
+			message: error.message || 'Unknown error occurred',
+			status: error.response?.status,
+			code: error.code,
+			details: error.response?.data
+		}
+
+		logger.error(`Error in ${context}:`, errorDetails)
+		toast.error(userMessage)
+	}
+
+	const fetchSalesData = async (retryCount = 0): Promise<void> => {
+		const maxRetries = 3
+		const retryDelay = 1000 * Math.pow(2, retryCount) // Exponential backoff
+
 		try {
 			setLoading(true)
+			setFetchError(null)
+			logger.info('Fetching sales data', { retryCount })
+
 			const salesData = await getSales()
 			setSales(salesData)
-		} catch (error) {
+			logger.info('Sales data fetched successfully', {
+				salesCount: salesData!.length,
+				totalQuantity: salesData!.reduce((total, sale) => total + sale.quantity, 0)
+			})
+
+		} catch (error: any) {
+			const errorContext = `fetchSalesData (attempt ${retryCount + 1})`
+			
+			if (retryCount < maxRetries) {
+				logger.warn(`Retrying fetch after ${retryDelay}ms`, { retryCount })
+				setTimeout(() => fetchSalesData(retryCount + 1), retryDelay)
+				return
+			}
+
+			const apiError: ApiError = {
+				message: error.message,
+				status: error.response?.status,
+				details: error.response?.data
+			}
+			
+			setFetchError(apiError)
 			setSales(null)
+			handleError(error, errorContext, 'Failed to load sales data')
+
 		} finally {
 			setLoading(false)
 		}
@@ -63,38 +147,43 @@ export default function SalesPage() {
 		fetchSalesData()
 	}, [])
 
-	const handleExportSales = async () => {
+	const handleExportSales = async (): Promise<void> => {
 		setExporting(true)
 		try {
+			logger.info('Starting sales export')
+			
 			const blob = await exportSalesTemplate({ 
 				includeArchived: false 
 			})
 			
-			if (blob) {
-				downloadBlob(blob, `sales_${new Date().toISOString().split('T')[0]}.xlsx`)
-				toast.success("Sales exported successfully!")
-			} else {
-				toast.error("Failed to export sales data")
+			if (!blob) {
+				throw new Error('Export returned empty blob')
 			}
-		} catch (error) {
-			console.error("Export error:", error)
-			toast.error("Error exporting sales data")
+
+			if (blob.size === 0) {
+				throw new Error('Export returned empty file')
+			}
+
+			const filename = `sales_${new Date().toISOString().split('T')[0]}.xlsx`
+			downloadBlob(blob, filename)
+			
+			logger.info('Sales exported successfully', { filename, size: blob.size })
+			toast.success("Sales exported successfully!")
+
+		} catch (error: any) {
+			handleError(error, 'handleExportSales', 'Error exporting sales data')
 		} finally {
 			setExporting(false)
 		}
 	}
 
-	const handleImportSales = async (event: React.ChangeEvent<HTMLInputElement>) => {
-		const file = event.target.files?.[0]
-		if (!file) return
-
-		// STRICT validation - only .xlsx files allowed
+	const validateImportFile = (file: File): string | null => {
+		// File type validation
 		if (!file.name.endsWith('.xlsx')) {
-			toast.error("Please select an Excel file with .xlsx format only")
-			return
+			return "Please select an Excel file with .xlsx format only"
 		}
 
-		// Additional validation for file type
+		// MIME type validation
 		const validTypes = [
 			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 			'application/vnd.ms-excel',
@@ -102,34 +191,53 @@ export default function SalesPage() {
 		]
 		
 		if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx')) {
-			toast.error("Invalid file type. Please select a valid .xlsx Excel file")
-			return
+			return "Invalid file type. Please select a valid .xlsx Excel file"
 		}
 
-		// Validate file size
-		if (file.size > 10 * 1024 * 1024) {
-			toast.error("File size too large. Please select a file smaller than 10MB.")
-			return
+		// File size validation (10MB limit)
+		const maxSize = 10 * 1024 * 1024
+		if (file.size > maxSize) {
+			return "File size too large. Please select a file smaller than 10MB."
 		}
 
 		if (file.size === 0) {
-			toast.error("File is empty. Please select a valid file.")
+			return "File is empty. Please select a valid file."
+		}
+
+		return null
+	}
+
+	const handleImportSales = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+		const file = event.target.files?.[0]
+		if (!file) {
+			logger.warn('No file selected for import')
+			return
+		}
+
+		// Validate file
+		const validationError = validateImportFile(file)
+		if (validationError) {
+			toast.error(validationError)
+			logger.warn('File validation failed', { 
+				fileName: file.name, 
+				fileType: file.type, 
+				fileSize: file.size 
+			})
 			return
 		}
 
 		setImporting(true)
-		try {
-			console.log("Starting sales import with .xlsx file:", {
-				name: file.name,
-				type: file.type,
-				size: file.size
-			})
+		
+		logger.info('Starting sales import', {
+			name: file.name,
+			type: file.type,
+			size: file.size
+		})
 
-			// Use the importSales function from your excel utils
+		try {
 			const result = await importSales(file)
 
 			// Handle the result based on your backend response structure
-			// Use the properties from your ImportResult type
 			const groupsCreated = result.groupsCreated || 0
 			const groupsUpdated = result.groupsUpdated || 0
 			const productsCreated = result.productsCreated || 0
@@ -138,11 +246,16 @@ export default function SalesPage() {
 			
 			const totalChanges = groupsCreated + groupsUpdated + productsCreated + productsUpdated
 			
+			logger.info('Import completed with results', {
+				groupsCreated,
+				groupsUpdated,
+				productsCreated,
+				productsUpdated,
+				errorCount: errors.length,
+				totalChanges
+			})
+
 			if (errors.length > 0) {
-				const errorDetails = errors.slice(0, 3).map((error: any) => 
-					`Row ${error.row}: ${error.message || error.error}`
-				).join('; ')
-				
 				if (totalChanges > 0) {
 					toast.success(
 						`Import partially successful! ` +
@@ -150,11 +263,14 @@ export default function SalesPage() {
 						`Products: ${productsCreated} created, ${productsUpdated} updated. ` +
 						`But had ${errors.length} error(s)`
 					)
-					if (errorDetails) {
-						toast.error(`Errors: ${errorDetails}${errors.length > 3 ? '...' : ''}`)
-					}
+					// Log detailed errors
+					logger.warn('Import completed with errors', { 
+						errors: errors.slice(0, 5),
+						totalErrors: errors.length 
+					})
 				} else {
-					toast.error(`Import failed with errors: ${errorDetails}${errors.length > 3 ? '...' : ''}`)
+					toast.error("Import failed with errors")
+					logger.error('Import failed completely with errors', { errors })
 				}
 			} else if (totalChanges > 0) {
 				toast.success(
@@ -170,26 +286,29 @@ export default function SalesPage() {
 			await fetchSalesData()
 
 		} catch (error: any) {
-			console.error("Import error:", error)
-			
-			if (error.name === 'TypeError' && error.message.includes('fetch')) {
-				toast.error("Network error - cannot connect to server")
-			} else if (error.message) {
-				toast.error(`Import failed: ${error.message}`)
-			} else {
-				toast.error("Import failed due to an unknown error")
-			}
+			await handleImportError(error)
 		} finally {
 			setImporting(false)
 			event.target.value = ''
 		}
 	}
 
+	const handleImportError = async (error: any): Promise<void> => {
+		logger.error('Import process failed', error)
+
+		// Handle specific error types but show generic message
+		if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+			toast.error("Import timeout")
+			return
+		}
+
+		// Always show generic error to user
+		toast.error("Import failed")
+	}
 
 	const filteredSales = sales?.filter(sale => {
 		
 		const statusMatch = statusFilter === "all" || sale.status.toLowerCase() === statusFilter.toLowerCase();
-		
 		
 		const saleDate = new Date(sale.date);
 		const startDate = dateRange.startDate ? new Date(dateRange.startDate) : null;
@@ -200,7 +319,6 @@ export default function SalesPage() {
 			dateMatch = dateMatch && saleDate >= startDate;
 		}
 		if (endDate) {
-
 			const endOfDay = new Date(endDate);
 			endOfDay.setHours(23, 59, 59, 999);
 			dateMatch = dateMatch && saleDate <= endOfDay;
@@ -226,12 +344,10 @@ export default function SalesPage() {
 	const cancelledSales =
 		sales?.filter((sale) => sale.status === "cancelled").length || 0
 
-
 	useEffect(() => {
 		setCurrentPage(1)
 	}, [statusFilter, dateRange.startDate, dateRange.endDate])
 
-	
 	const handleDateRangeChange = (field: string, value: string) => {
 		setDateRange(prev => ({
 			...prev,
@@ -239,7 +355,6 @@ export default function SalesPage() {
 		}))
 	}
 
-	
 	const clearAllFilters = () => {
 		setStatusFilter("all")
 		setDateRange({
@@ -248,7 +363,6 @@ export default function SalesPage() {
 		})
 	}
 
-	
 	const hasActiveFilters = statusFilter !== "all" || dateRange.startDate || dateRange.endDate
 
 	const formatDate = (dateString: string) => {
@@ -578,11 +692,11 @@ export default function SalesPage() {
 									Failed to Load Sales
 								</h3>
 								<p className="text-[#64748B] mb-6">
-									There was an error fetching your sales data. Please check your
-									connection and try again.
+									{fetchError?.message || 'There was an error fetching your sales data.'}
+									{fetchError?.status && ` (Status: ${fetchError.status})`}
 								</p>
 								<button
-									onClick={fetchSalesData}
+									onClick={() => fetchSalesData()}
 									className="bg-[#DC2626] hover:bg-[#B91C1C] text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200"
 								>
 									Try Again

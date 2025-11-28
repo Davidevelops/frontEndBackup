@@ -16,37 +16,129 @@ import {
   Database,
 } from "lucide-react"
 import { apiEndpoints } from "@/lib/apiEndpoints"
-import { exportProductsTemplate,importProducts, downloadBlob, ImportResult  } from "@/lib/data/routes/excel/excel"
+import { exportProductsTemplate, importProducts, downloadBlob, ImportResult } from "@/lib/data/routes/excel/excel"
 import toast from "react-hot-toast"
 import apiClient from "@/lib/axiosConfig"
 
+// Error types for better error handling
+interface ApiError {
+  message: string
+  status?: number
+  code?: string
+  details?: any
+}
+
+interface ImportError {
+  row?: number
+  message: string
+  field?: string
+  value?: any
+}
+
+interface ImportResponse {
+  groupsCreated?: number
+  groupsUpdated?: number
+  productsCreated?: number
+  productsUpdated?: number
+  errors?: ImportError[]
+  error?: string
+  message?: string
+}
+
+// Logging utility
+const logger = {
+  info: (message: string, data?: any) => {
+    console.log(`[INFO] ${message}`, data ? data : '')
+  },
+  warn: (message: string, data?: any) => {
+    console.warn(`[WARN] ${message}`, data ? data : '')
+  },
+  error: (message: string, error?: any) => {
+    console.error(`[ERROR] ${message}`, error ? error : '')
+  },
+  debug: (message: string, data?: any) => {
+    if (process.env.NODE_ENV === 'development') {
+      console.debug(`[DEBUG] ${message}`, data ? data : '')
+    }
+  }
+}
+
 export default function ProductsPage() {
-  const [productGroups, setProductGroups] = useState<ProductGroup[] | null>(
-    null,
-  )
+  const [productGroups, setProductGroups] = useState<ProductGroup[] | null>(null)
   const [loading, setLoading] = useState(true)
   const [importing, setImporting] = useState(false)
   const [exporting, setExporting] = useState(false)
+  const [fetchError, setFetchError] = useState<ApiError | null>(null)
 
-  const fetchProducts = async () => {
+  // Enhanced error handler
+  const handleError = (error: any, context: string, userMessage: string = "An error occurred") => {
+    const errorDetails: ApiError = {
+      message: error.message || 'Unknown error occurred',
+      status: error.response?.status,
+      code: error.code,
+      details: error.response?.data
+    }
+
+    logger.error(`Error in ${context}:`, errorDetails)
+
+    // Show generic user message
+    toast.error(userMessage)
+
+    // Detailed errors are only in logs, not in toast
+  }
+
+  const fetchProducts = async (retryCount = 0): Promise<void> => {
+    const maxRetries = 3
+    const retryDelay = 1000 * Math.pow(2, retryCount) // Exponential backoff
+
     try {
-      console.log("🔄 Fetching products from:", apiEndpoints.productGroup());
+      setLoading(true)
+      setFetchError(null)
+      logger.info('Fetching products', { 
+        endpoint: apiEndpoints.productGroup(),
+        retryCount 
+      })
+
+      const response = await apiClient.get(apiEndpoints.productGroup())
       
-      // Use apiClient instead of fetch
-      const response = await apiClient.get(apiEndpoints.productGroup());
-      console.log("✅ Products data received:", response.data);
-      setProductGroups(response.data.data);
+      if (!response.data) {
+        throw new Error('No data received from server')
+      }
+
+      if (!response.data.data) {
+        logger.warn('Unexpected response structure', response.data)
+        throw new Error('Invalid response format from server')
+      }
+
+      setProductGroups(response.data.data)
+      logger.info('Products fetched successfully', {
+        groupCount: response.data.data.length,
+        totalProducts: response.data.data.reduce((total: number, group: ProductGroup) => 
+          total + (group.products?.length || 0), 0
+        )
+      })
+
     } catch (error: any) {
-      console.error("❌ Error fetching products:", {
+      const errorContext = `fetchProducts (attempt ${retryCount + 1})`
+      
+      if (retryCount < maxRetries && error.response?.status >= 500) {
+        logger.warn(`Retrying fetch after ${retryDelay}ms`, { retryCount })
+        setTimeout(() => fetchProducts(retryCount + 1), retryDelay)
+        return
+      }
+
+      const apiError: ApiError = {
         message: error.message,
         status: error.response?.status,
-        data: error.response?.data,
-        url: error.config?.url
-      });
-      setProductGroups(null);
-      toast.error("Failed to load products. Please check your connection.");
+        details: error.response?.data
+      }
+      
+      setFetchError(apiError)
+      setProductGroups(null)
+      handleError(error, errorContext, 'Failed to load products')
+
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
   }
 
@@ -54,34 +146,41 @@ export default function ProductsPage() {
     fetchProducts()
   }, [])
 
-  const handleExportProducts = async () => {
+  const handleExportProducts = async (): Promise<void> => {
     setExporting(true)
     try {
+      logger.info('Starting products export')
+      
       const blob = await exportProductsTemplate({ includeArchived: false })
-      if (blob) {
-        downloadBlob(blob, `products_${new Date().toISOString().split('T')[0]}.xlsx`)
-        toast.success("Products exported successfully!")
-      } else {
-        toast.error("Failed to export products template")
+      
+      if (!blob) {
+        throw new Error('Export returned empty blob')
       }
-    } catch (error) {
-      toast.error("Error exporting products")
+
+      if (blob.size === 0) {
+        throw new Error('Export returned empty file')
+      }
+
+      const filename = `products_${new Date().toISOString().split('T')[0]}.xlsx`
+      downloadBlob(blob, filename)
+      
+      logger.info('Products exported successfully', { filename, size: blob.size })
+      toast.success("Products exported successfully!")
+
+    } catch (error: any) {
+      handleError(error, 'handleExportProducts', 'Error exporting products')
     } finally {
       setExporting(false)
     }
   }
 
-  const handleImportProducts = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0]
-    if (!file) return
-
-    // STRICT validation - only .xlsx files allowed
+  const validateImportFile = (file: File): string | null => {
+    // File type validation
     if (!file.name.endsWith('.xlsx')) {
-      toast.error("Please select an Excel file with .xlsx format only")
-      return
+      return "Please select an Excel file with .xlsx format only"
     }
 
-    // Additional validation for file type
+    // MIME type validation
     const validTypes = [
       'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
       'application/vnd.ms-excel',
@@ -89,122 +188,173 @@ export default function ProductsPage() {
     ]
     
     if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx')) {
-      toast.error("Invalid file type. Please select a valid .xlsx Excel file")
-      return
+      return "Invalid file type. Please select a valid .xlsx Excel file"
     }
 
-    // Validate file size
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File size too large. Please select a file smaller than 10MB.")
-      return
+    // File size validation (10MB limit)
+    const maxSize = 10 * 1024 * 1024
+    if (file.size > maxSize) {
+      return "File size too large. Please select a file smaller than 10MB."
     }
 
     if (file.size === 0) {
-      toast.error("File is empty. Please select a valid file.")
+      return "File is empty. Please select a valid file."
+    }
+
+    return null
+  }
+
+  const handleImportProducts = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = event.target.files?.[0]
+    if (!file) {
+      logger.warn('No file selected for import')
+      return
+    }
+
+    // Validate file
+    const validationError = validateImportFile(file)
+    if (validationError) {
+      toast.error(validationError)
+      logger.warn('File validation failed', { 
+        fileName: file.name, 
+        fileType: file.type, 
+        fileSize: file.size 
+      })
       return
     }
 
     setImporting(true)
+    
+    logger.info('Starting products import', {
+      name: file.name,
+      type: file.type,
+      size: file.size
+    })
+
     try {
-      console.log("Starting import with .xlsx file:", {
-        name: file.name,
-        type: file.type,
-        size: file.size
+      const formData = new FormData()
+      formData.append("file", file)
+
+      const response = await apiClient.post<ImportResponse>(
+        `${apiEndpoints.excelProducts()}/import`, 
+        formData, 
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          timeout: 30000, // 30 second timeout for large files
+        }
+      )
+
+      logger.info('Import API response received', {
+        status: response.status,
+        data: response.data
       })
 
-      // Create FormData properly for multipart
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // Use apiClient for consistency
-      const response = await apiClient.post(`${apiEndpoints.excelProducts()}/import`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-
-      console.log("Import response status:", response.status)
-      console.log("Import response data:", response.data)
-
-      const result = response.data;
+      const result = response.data
 
       if (response.status === 200 || response.status === 201) {
-        // Handle the actual backend response structure
-        const groupsCreated = result.groupsCreated || 0
-        const groupsUpdated = result.groupsUpdated || 0
-        const productsCreated = result.productsCreated || 0
-        const productsUpdated = result.productsUpdated || 0
-        const errors = result.errors || []
-        
-        const totalChanges = groupsCreated + groupsUpdated + productsCreated + productsUpdated
-        
-        if (errors.length > 0) {
-          const errorDetails = errors.slice(0, 3).map((error: any) => 
-            `Row ${error.row}: ${error.message || error.error}`
-          ).join('; ')
-          
-          if (totalChanges > 0) {
-            toast.success(
-              `Import partially successful! ` +
-              `Groups: ${groupsCreated} created, ${groupsUpdated} updated. ` +
-              `Products: ${productsCreated} created, ${productsUpdated} updated. ` +
-              `But had ${errors.length} error(s)`
-            )
-            if (errorDetails) {
-              toast.error(`Errors: ${errorDetails}${errors.length > 3 ? '...' : ''}`)
-            }
-          } else {
-            toast.error(`Import failed with errors: ${errorDetails}${errors.length > 3 ? '...' : ''}`)
-          }
-        } else if (totalChanges > 0) {
-          toast.success(
-            `Import successful! ` +
-            `Groups: ${groupsCreated} created, ${groupsUpdated} updated. ` +
-            `Products: ${productsCreated} created, ${productsUpdated} updated.`
-          )
-        } else {
-          toast.success("Import completed - no changes made")
-        }
-        
-        // Auto-refresh after successful import
-        await fetchProducts()
+        await handleImportSuccess(result)
       } else {
-        // Handle HTTP error status
-        if (result.error) {
-          toast.error(`Import failed: ${result.error}`)
-        } else if (result.message) {
-          toast.error(`Import failed: ${result.message}`)
-        } else {
-          toast.error(`Import failed with status ${response.status}`)
-        }
+        handleImportFailure(result, response.status)
       }
 
     } catch (error: any) {
-      console.error("Import error:", error)
-      
-      if (error.response?.data?.error) {
-        toast.error(`Import failed: ${error.response.data.error}`)
-      } else if (error.response?.data?.message) {
-        toast.error(`Import failed: ${error.response.data.message}`)
-      } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        toast.error("Network error - cannot connect to server")
-      } else if (error.message) {
-        toast.error(`Import failed: ${error.message}`)
-      } else {
-        toast.error("Import failed due to an unknown error")
-      }
+      await handleImportError(error)
     } finally {
       setImporting(false)
+      // Reset file input
       event.target.value = ''
     }
   }
 
-  const totalProducts =
-    productGroups?.reduce(
-      (total, group) => total + (group.products?.length || 0),
-      0,
-    ) || 0
+  const handleImportSuccess = async (result: ImportResponse): Promise<void> => {
+    const groupsCreated = result.groupsCreated || 0
+    const groupsUpdated = result.groupsUpdated || 0
+    const productsCreated = result.productsCreated || 0
+    const productsUpdated = result.productsUpdated || 0
+    const errors = result.errors || []
+    
+    const totalChanges = groupsCreated + groupsUpdated + productsCreated + productsUpdated
+    
+    logger.info('Import completed with results', {
+      groupsCreated,
+      groupsUpdated,
+      productsCreated,
+      productsUpdated,
+      errorCount: errors.length,
+      totalChanges
+    })
 
+    if (errors.length > 0) {
+      const errorDetails = errors.slice(0, 3).map((error: ImportError) => 
+        `Row ${error.row}: ${error.message || 'Unknown error'}`
+      ).join('; ')
+      
+      if (totalChanges > 0) {
+        toast.success(
+          `Import partially successful! ` +
+          `Groups: ${groupsCreated} created, ${groupsUpdated} updated. ` +
+          `Products: ${productsCreated} created, ${productsUpdated} updated. ` +
+          `But had ${errors.length} error(s)`
+        )
+        if (errorDetails) {
+          // Log detailed errors but don't show in toast
+          logger.warn('Import completed with errors', { 
+            errorDetails,
+            totalErrors: errors.length 
+          })
+        }
+      } else {
+        toast.error("Import failed with errors")
+        logger.error('Import failed completely with errors', { errors })
+      }
+    } else if (totalChanges > 0) {
+      toast.success(
+        `Import successful! ` +
+        `Groups: ${groupsCreated} created, ${groupsUpdated} updated. ` +
+        `Products: ${productsCreated} created, ${productsUpdated} updated.`
+      )
+    } else {
+      toast.success("Import completed - no changes made")
+    }
+    
+    // Refresh data after successful import
+    try {
+      await fetchProducts()
+      logger.info('Data refreshed after import')
+    } catch (error) {
+      logger.error('Failed to refresh data after import', error)
+      // Don't show error toast here as import might still be successful
+    }
+  }
+
+  const handleImportFailure = (result: ImportResponse, status: number): void => {
+    logger.error('Import failed with HTTP error', { status, result })
+    
+    // Show generic error to user, details in logs
+    toast.error("Import failed")
+  }
+
+  const handleImportError = async (error: any): Promise<void> => {
+    logger.error('Import process failed', error)
+
+    // Handle specific error types but show generic message
+    if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
+      toast.error("Import timeout")
+      return
+    }
+
+    // Always show generic error to user
+    toast.error("Import failed")
+  }
+
+  const totalProducts = productGroups?.reduce(
+    (total, group) => total + (group.products?.length || 0),
+    0,
+  ) || 0
+
+  // Render loading skeleton (unchanged from your original)
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F1F5F9] p-6">
@@ -360,10 +510,12 @@ export default function ProductsPage() {
               <div>
                 <p className="text-sm font-medium text-[#64748B] mb-2">DATA STATUS</p>
                 <p className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
-                  <span className="w-2 h-2 bg-[#16A34A] rounded-full"></span>
-                  Synced & Ready
+                  <span className={`w-2 h-2 rounded-full ${fetchError ? 'bg-[#DC2626]' : 'bg-[#16A34A]'}`}></span>
+                  {fetchError ? 'Sync Failed' : 'Synced & Ready'}
                 </p>
-                <p className="text-sm text-[#64748B] mt-1">Auto-refresh enabled</p>
+                <p className="text-sm text-[#64748B] mt-1">
+                  {fetchError ? 'Click retry to reload' : 'Auto-refresh enabled'}
+                </p>
               </div>
               <div className="bg-[#F1F5F9] p-3 rounded-lg">
                 <Database className="h-6 w-6 text-[#334155]" />
@@ -414,11 +566,11 @@ export default function ProductsPage() {
                   Failed to Load Products
                 </h3>
                 <p className="text-[#64748B] mb-6">
-                  There was an error fetching your product data. Please check
-                  your connection and try again.
+                  {fetchError?.message || 'There was an error fetching your product data.'}
+                  {fetchError?.status && ` (Status: ${fetchError.status})`}
                 </p>
                 <button
-                  onClick={fetchProducts}
+                  onClick={() => fetchProducts()}
                   className="bg-[#DC2626] hover:bg-[#B91C1C] text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200"
                 >
                   Retry Loading
