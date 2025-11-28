@@ -2,10 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import toast from "react-hot-toast";
 
-// Chart.js Registration
+
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -31,6 +30,7 @@ import ForecastChart from "./ForecastChart";
 // Types
 import { SingleProduct, Forecast, ForecastSelection } from "@/lib/types";
 import { apiEndpoints } from "@/lib/apiEndpoints";
+import apiClient from "@/lib/axiosConfig";
 
 ChartJS.register(
   CategoryScale,
@@ -598,16 +598,15 @@ These projections help you plan your inventory purchases, staffing needs, and ca
     };
   };
 
-  // Data fetching functions
+  // Data fetching functions - UPDATED to use apiClient
   const fetchAllForecasts = async (page: number = 1): Promise<void> => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         apiEndpoints.forecast(product.groupId, product.id, undefined, {
           page: page,
           limit: forecastPagination.pageSize,
           '-date': true
-        }),
-        { withCredentials: true }
+        })
       );
       
       const forecasts = response.data.data || [];
@@ -646,7 +645,7 @@ These projections help you plan your inventory purchases, staffing needs, and ca
         });
       }
 
-      const response = await axios.get(url, { withCredentials: true });
+      const response = await apiClient.get(url);
       let forecastDataResponse;
 
       if (selection.type === 'specific') {
@@ -719,25 +718,23 @@ These projections help you plan your inventory purchases, staffing needs, and ca
     router.refresh();
   };
 
-  // Initial data fetch
+  // Initial data fetch - UPDATED to use apiClient
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
         const [salesRes, forecastRes] = await Promise.all([
-          axios.get(
+          apiClient.get(
             `${apiEndpoints.productSales(
               product.groupId,
               product.id,
               undefined
-            )}?summed=true`,
-            { withCredentials: true }
+            )}?summed=true`
           ),
-          axios.get(
+          apiClient.get(
             apiEndpoints.forecast(product.groupId, product.id, undefined, {
               latest: true,
               include: 'entries'
-            }),
-            { withCredentials: true }
+            })
           ),
         ]);
         
