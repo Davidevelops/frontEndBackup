@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import axios from 'axios';
+import apiClient from './axisoConfig';
 import { apiEndpoints } from './apiEndpoints';
 import toast from 'react-hot-toast';
 
@@ -35,9 +35,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
       
-      const response = await axios.get(apiEndpoints.session(), {
-        withCredentials: true,
-      });
+      // Use apiClient instead of axios directly
+      const response = await apiClient.get(apiEndpoints.session());
 
       if (response.data.data) {
         setUser(response.data.data);

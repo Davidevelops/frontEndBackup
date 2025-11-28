@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
-import { apiEndpoints } from "@/lib/apiEndpoints";
+import { login } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/authContext";
@@ -22,31 +21,23 @@ export default function LogIn() {
 		setLoading(true);
 
 		try {
-			const response = await axios.post(
-				apiEndpoints.login(),
-				{
-					username,
-					password,
-				},
-				{
-					withCredentials: true,
-				},
-			);
+			
+			const response = await login({ username, password });
 
-			console.log("Login success:", response.data);
+			console.log("Login success:", response);
 			toast.success('Login successful!');
 
-		
+			
 			await new Promise(resolve => setTimeout(resolve, 100));
 			
-		
+			
 			await checkSession();
 			
 		
 			window.location.href = "/dashboard";
 		} catch (err: any) {
 			console.error("Login error:", err);
-			const errorMessage = err.response?.data?.error || "Invalid username or password. Please try again.";
+			const errorMessage = err.response?.data?.error || err.message || "Invalid username or password. Please try again.";
 			setError(errorMessage);
 			toast.error(errorMessage);
 		} finally {
