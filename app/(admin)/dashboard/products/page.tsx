@@ -18,6 +18,7 @@ import {
 import { apiEndpoints } from "@/lib/apiEndpoints"
 import { exportProductsTemplate,importProducts, downloadBlob, ImportResult  } from "@/lib/data/routes/excel/excel"
 import toast from "react-hot-toast"
+import apiClient from "@/lib/axisoConfig"
 
 export default function ProductsPage() {
   const [productGroups, setProductGroups] = useState<ProductGroup[] | null>(
@@ -29,13 +30,23 @@ export default function ProductsPage() {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(apiEndpoints.productGroup())
-      const data = await response.json()
-      setProductGroups(data.data)
-    } catch (error) {
-      setProductGroups(null)
+      console.log("🔄 Fetching products from:", apiEndpoints.productGroup());
+      
+      // Use apiClient instead of fetch
+      const response = await apiClient.get(apiEndpoints.productGroup());
+      console.log("✅ Products data received:", response.data);
+      setProductGroups(response.data.data);
+    } catch (error: any) {
+      console.error("❌ Error fetching products:", {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        url: error.config?.url
+      });
+      setProductGroups(null);
+      toast.error("Failed to load products. Please check your connection.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -105,28 +116,19 @@ export default function ProductsPage() {
       const formData = new FormData();
       formData.append("file", file);
 
-      // Use fetch with proper multipart handling
-      const response = await fetch(`${apiEndpoints.excelProducts()}/import`, {
-        method: 'POST',
-        body: formData,
+      // Use apiClient for consistency
+      const response = await apiClient.post(`${apiEndpoints.excelProducts()}/import`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
       })
 
       console.log("Import response status:", response.status)
+      console.log("Import response data:", response.data)
 
-      const responseText = await response.text()
-      console.log("Raw response:", responseText)
+      const result = response.data;
 
-      let result
-      try {
-        result = JSON.parse(responseText)
-        console.log("Parsed response:", result)
-      } catch (parseError) {
-        console.error("Failed to parse response as JSON:", parseError)
-        toast.error("Invalid response from server - not JSON format")
-        return
-      }
-
-      if (response.ok) {
+      if (response.status === 200 || response.status === 201) {
         // Handle the actual backend response structure
         const groupsCreated = result.groupsCreated || 0
         const groupsUpdated = result.groupsUpdated || 0
@@ -180,7 +182,11 @@ export default function ProductsPage() {
     } catch (error: any) {
       console.error("Import error:", error)
       
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      if (error.response?.data?.error) {
+        toast.error(`Import failed: ${error.response.data.error}`)
+      } else if (error.response?.data?.message) {
+        toast.error(`Import failed: ${error.response.data.message}`)
+      } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
         toast.error("Network error - cannot connect to server")
       } else if (error.message) {
         toast.error(`Import failed: ${error.message}`)
