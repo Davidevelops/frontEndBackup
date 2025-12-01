@@ -20,7 +20,7 @@ import { exportProductsTemplate, importProducts, downloadBlob, ImportResult } fr
 import toast from "react-hot-toast"
 import apiClient from "@/lib/axiosConfig"
 
-// Error types for better error handling
+
 interface ApiError {
   message: string
   status?: number
@@ -354,12 +354,11 @@ export default function ProductsPage() {
     0,
   ) || 0
 
-  // Render loading skeleton (unchanged from your original)
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F1F5F9] p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header Skeleton */}
+
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 bg-[#E2E8F0] rounded-xl animate-pulse"></div>
@@ -377,7 +376,7 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          {/* Stats Cards Skeleton */}
+        
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             {[...Array(3)].map((_, i) => (
               <div
@@ -395,7 +394,7 @@ export default function ProductsPage() {
             ))}
           </div>
 
-          {/* Product Cards Skeleton */}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
               <div
@@ -425,7 +424,7 @@ export default function ProductsPage() {
   return (
     <div className="min-h-screen bg-[#F1F5F9] p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
+
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="flex items-center gap-4 mb-4 lg:mb-0">
             <div className="relative">
@@ -444,20 +443,19 @@ export default function ProductsPage() {
             </div>
           </div>
 
-          {/* Action Buttons */}
+      
           <div className="flex items-center gap-3">
-            {/* Export Button */}
             <button
               onClick={handleExportProducts}
               disabled={exporting}
-              className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2.5 rounded-lg transition-all duration-200 font-medium disabled:opacity-50"
+              className="text-xs flex items-center gap-2 bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-400 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium disabled:opacity-50"
             >
               <Download className={`h-4 w-4 ${exporting ? 'animate-spin' : ''}`} />
               {exporting ? "Exporting..." : "Export Excel"}
             </button>
 
-            {/* Import Button */}
-            <label className="flex items-center gap-2 bg-[#16A34A] hover:bg-[#15803D] text-white px-4 py-2.5 rounded-lg transition-all duration-200 font-medium cursor-pointer disabled:opacity-50">
+    
+            <label className="text-xs flex items-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 border border-green-400 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium cursor-pointer disabled:opacity-50">
               <Upload className={`h-4 w-4 ${importing ? 'animate-spin' : ''}`} />
               {importing ? "Importing..." : "Import Excel"}
               <input
@@ -473,7 +471,6 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Stats Overview */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
             <div className="flex items-center justify-between">
@@ -524,7 +521,6 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Quick Actions Panel */}
         <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 mb-8">
           <div className="flex items-center justify-between">
             <div>
@@ -554,7 +550,6 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Main Content */}
         <div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
           {productGroups === null ? (
             <div className="text-center py-20">
@@ -606,7 +601,7 @@ export default function ProductsPage() {
               </div>
             </div>
           ) : (
-            <div className="p-1">
+            <div className="p-4">
               <ProductList
                 productGroups={productGroups}
                 refreshProducts={fetchProducts}

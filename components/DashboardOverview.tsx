@@ -75,7 +75,6 @@ export default function DashboardOverview() {
     try {
       setLoading(true);
       
-      // Fetch all data including categories
       const [
         salesResponse,
         suppliersResponse,
@@ -111,7 +110,7 @@ export default function DashboardOverview() {
     deliveriesResponse: any,
     categoriesResponse: any
   ) => {
-    // Process sales data
+   
     let totalSalesCount = 0;
     
     if (salesResponse.status === 'fulfilled' && salesResponse.value) {
@@ -119,7 +118,6 @@ export default function DashboardOverview() {
       totalSalesCount = salesData.length;
     }
 
-    // Process product data
     let topProductsData: TopProduct[] = [];
     let totalProductsCount = 0;
     let totalProductGroupsCount = 0;
@@ -135,7 +133,7 @@ export default function DashboardOverview() {
         groupProducts.forEach((product: any) => {
           const stockQuantity = product.stockQuantity || 0;
           
-          // For top products - use a simple calculation
+       
           if (stockQuantity > 0) {
             const salesEstimate = Math.floor((100 - stockQuantity) * 0.8) || Math.floor(Math.random() * 50);
             topProductsData.push({
@@ -147,19 +145,19 @@ export default function DashboardOverview() {
         });
       });
       
-      // Sort by sales and take top 4
+    
       topProductsData = topProductsData
         .sort((a, b) => b.sales - a.sales)
         .slice(0, 4);
     }
 
-    // Process supplier data
+   
     let activeSuppliersCount = 0;
     if (suppliersResponse.status === 'fulfilled' && suppliersResponse.value) {
       activeSuppliersCount = suppliersResponse.value.length;
     }
 
-    // Process delivery data
+
     let pendingDeliveries = 0;
     let completedDeliveries = 0;
     let cancelledDeliveries = 0;
@@ -182,7 +180,6 @@ export default function DashboardOverview() {
       });
     }
 
-    // Process categories data
     let totalCategoriesCount = 0;
     if (categoriesResponse.status === 'fulfilled' && categoriesResponse.value) {
       const categoriesData = categoriesResponse.value;
@@ -231,7 +228,6 @@ export default function DashboardOverview() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="flex items-center gap-4 mb-4 lg:mb-0">
             <div className="bg-slate-800 p-3 rounded-2xl shadow-lg">
@@ -261,13 +257,13 @@ export default function DashboardOverview() {
           </div>
         </div>
 
-        {/* Key Metrics Grid */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <MetricCard
             icon={<Package className="h-6 w-6" />}
             title="Total Products"
             value={stats.totalProducts.toString()}
-            description="Across all groups"
+            description="Across all product groups"
             trend={`${stats.totalProductGroups} product groups`}
             color="text-blue-600"
             bgColor="bg-blue-50"
@@ -287,7 +283,7 @@ export default function DashboardOverview() {
 
           <MetricCard
             icon={<TrendingUp className="h-6 w-6" />}
-            title="Total Sales"
+            title="Completed Transactions"
             value={stats.totalSales.toString()}
             description="All-time transactions"
             trend="Growing steadily"
@@ -297,7 +293,7 @@ export default function DashboardOverview() {
           />
         </div>
 
-        {/* Second Row Metrics */}
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <MetricCard
             icon={<Folder className="h-6 w-6" />}
@@ -325,7 +321,7 @@ export default function DashboardOverview() {
             icon={<Truck className="h-6 w-6" />}
             title="Completed Deliveries"
             value={stats.completedDeliveries.toString()}
-            description="Successful shipments"
+            description="Successful Deliveries"
             trend="Delivery performance"
             color="text-green-600"
             bgColor="bg-green-50"

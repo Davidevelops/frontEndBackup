@@ -60,7 +60,7 @@ export default function AddProduct({ refreshProducts }: Props) {
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
-				<Button className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white py-3 rounded-lg transition-all duration-200 font-medium h-auto">
+				<Button className="text-xs flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-400 text-blue-800 py-2.5 rounded-lg transition-all duration-200 font-medium h-auto">
 					<PlusCircle className="h-4 w-4" />
 					Add Product Group
 				</Button>

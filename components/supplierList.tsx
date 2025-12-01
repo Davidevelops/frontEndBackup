@@ -64,7 +64,6 @@ interface supplierProp {
   refresh: () => Promise<void>;
 }
 
-// Pagination configuration
 const ITEMS_PER_PAGE = 10;
 
 export default function SupplierList({ supplier, refresh }: supplierProp) {
@@ -76,7 +75,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  // Pagination state
+
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
@@ -99,7 +98,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
     }
   }, [supplier]);
 
-  // Reset to first page when search term changes
+
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm]);
@@ -121,7 +120,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
       sup.name.toLowerCase().includes(searchTerm.toLowerCase())
     ) || [];
 
-  // Pagination calculations
+
   const totalItems = filteredSuppliers.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -144,7 +143,6 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
         success: (createdSupplier) => {
           setIsAddDialogOpen(false);
           setNewSupplier({ name: "", leadTime: 7 });
-          // Auto refresh after successful creation
           refresh();
           return `Supplier "${newSupplier.name}" created successfully!`;
         },
@@ -163,7 +161,6 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
     }
   };
 
-  // Pagination handlers
   const goToPage = (page: number) => {
     setCurrentPage(Math.max(1, Math.min(page, totalPages)));
   };
@@ -173,12 +170,12 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
   const goToNextPage = () => goToPage(currentPage + 1);
   const goToPrevPage = () => goToPage(currentPage - 1);
 
-  // FIX: Check if supplier is null OR empty array
+
   if (!supplier || supplier.length === 0) {
     return (
       <div className="min-h-screen bg-[#F1F5F9] p-6">
         <div className="max-w-7xl mx-auto">
-          {/* Header Section - Always show even when no suppliers */}
+
           <div className="bg-white rounded-xl p-8 border border-[#E2E8F0] mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
               <div className="flex items-center gap-4">
@@ -190,7 +187,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                 </div>
                 <div>
                   <h1 className="text-4xl font-bold text-[#0F172A]">
-                    Supplier Management
+                    Supplier Managements
                   </h1>
                   <div className="flex items-center gap-4 mt-3">
                     <p className="text-[#475569] flex items-center gap-2 bg-white px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
@@ -210,7 +207,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
               <div className="flex items-center gap-3">
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                   <DialogTrigger asChild>
-                    <button className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
+                    <button className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-400 px-6 py-3 rounded-lg font-semibold transition-all duration-200">
                       <Plus className="h-5 w-5" />
                       Add Supplier
                     </button>
@@ -362,7 +359,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
               <div className="flex items-center gap-3">
                 <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
                   <DialogTrigger asChild>
-                    <button className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200">
+                    <button className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-400 px-6 py-3 rounded-lg font-semibold transition-all duration-200">
                       <Plus className="h-5 w-5" />
                       Add Supplier
                     </button>
@@ -446,7 +443,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
             </div>
           </div>
 
-          {/* Stats Cards */}
+    
           {supplier && supplier.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
@@ -503,7 +500,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
             </div>
           )}
 
-          {/* Search Section */}
+
           <div className="bg-white rounded-xl p-6 border border-[#E2E8F0] mb-8">
             <div className="flex flex-col sm:flex-row gap-4 max-w-4xl mx-auto">
               <div className="flex-1 relative">
@@ -523,7 +520,6 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
             </div>
           </div>
 
-          {/* Supplier Table */}
           <div className="bg-white rounded-xl border border-[#E2E8F0] mb-8 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full">
@@ -531,25 +527,25 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                   <tr className="border-b border-[#E2E8F0] bg-[#F8FAFC]">
                     <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Truck className="h-4 w-4 text-[#1E293B]" />
+                    
                         Supplier
                       </div>
                     </th>
                     <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Clock className="h-4 w-4 text-[#334155]" />
+                     
                         Lead Time
                       </div>
                     </th>
                     <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Package className="h-4 w-4 text-[#334155]" />
+              
                         Products
                       </div>
                     </th>
                     <th className="text-center py-4 px-6 font-semibold text-[#334155]">
                       <div className="flex items-center justify-center gap-2">
-                        <Calendar className="h-4 w-4 text-[#64748B]" />
+               
                         Last Updated
                       </div>
                     </th>
@@ -578,7 +574,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
               </table>
             </div>
 
-            {/* Empty State for search results */}
+  
             {filteredSuppliers.length === 0 && searchTerm && (
               <div className="text-center py-12">
                 <div className="max-w-2xl mx-auto">
@@ -598,7 +594,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
             )}
           </div>
 
-          {/* Pagination Controls */}
+
           {totalPages > 1 && (
             <div className="bg-white rounded-xl p-6 border border-[#E2E8F0] mb-8">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -615,7 +611,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {/* First Page Button */}
+        
                   <button
                     onClick={goToFirstPage}
                     disabled={currentPage === 1}
@@ -624,7 +620,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                     <ChevronsLeft className="h-4 w-4 text-[#64748B]" />
                   </button>
 
-                  {/* Previous Page Button */}
+    
                   <button
                     onClick={goToPrevPage}
                     disabled={currentPage === 1}
@@ -633,7 +629,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                     <ChevronLeft className="h-4 w-4 text-[#64748B]" />
                   </button>
 
-                  {/* Page Numbers */}
+           
                   <div className="flex items-center gap-1">
                     {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                       let pageNum;
@@ -663,7 +659,6 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                     })}
                   </div>
 
-                  {/* Next Page Button */}
                   <button
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}
@@ -672,7 +667,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                     <ChevronRight className="h-4 w-4 text-[#64748B]" />
                   </button>
 
-                  {/* Last Page Button */}
+         
                   <button
                     onClick={goToLastPage}
                     disabled={currentPage === totalPages}
@@ -682,14 +677,14 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
                   </button>
                 </div>
 
-                {/* Items Per Page Selector */}
+           
                 <div className="flex items-center gap-2 text-sm">
                   <span className="text-[#64748B]">Show:</span>
                   <select
                     value={itemsPerPage}
                     onChange={(e) => {
                       setItemsPerPage(Number(e.target.value));
-                      setCurrentPage(1); // Reset to first page when changing items per page
+                      setCurrentPage(1);
                     }}
                     className="border border-[#CBD5E1] rounded-lg px-3 py-2 focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200"
                   >
@@ -704,7 +699,7 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
             </div>
           )}
 
-          {/* Supplier Details Modal */}
+         
           {selectedSupplier && (
             <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
               <div className="bg-white rounded-xl p-8 max-w-md w-full border border-[#E2E8F0] mx-auto">
@@ -949,15 +944,14 @@ function TableRow({
         </td>
         <td className="py-4 px-6">
           <div className="flex items-center justify-center gap-2">
-            {/* Full Details Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Link
                   href={`/dashboard/supplier/${supplier.id}`}
-                  className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
+                  className="flex items-center gap-2 bg-purple-100 hover:purple-200 text-purple-700 border border-purple-400 px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
                 >
                   <BarChart3 className="h-4 w-4" />
-                  Details
+                Add Associate Product
                 </Link>
               </TooltipTrigger>
               <TooltipContent className="bg-[#1E293B] text-white border-0">
@@ -974,7 +968,7 @@ function TableRow({
                 <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                   <DialogTrigger asChild>
                     <button 
-                      className="flex items-center gap-2 bg-[#F0FDF4] hover:bg-[#DCFCE7] text-[#166534] hover:text-[#15803D] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
+                      className="flex items-center gap-2 border border-green-400 bg-[#F0FDF4] hover:bg-[#DCFCE7] text-[#166534] hover:text-[#15803D] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
                     >
                       <Edit className="h-4 w-4" />
                       Edit
@@ -1060,7 +1054,6 @@ function TableRow({
               </TooltipContent>
             </Tooltip>
 
-            {/* Delete Button */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <AlertDialog
@@ -1069,7 +1062,7 @@ function TableRow({
                 >
                   <AlertDialogTrigger asChild>
                     <button 
-                      className="flex items-center gap-2 bg-[#FEF2F2] hover:bg-[#FECACA] text-[#DC2626] hover:text-[#B91C1C] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
+                      className="flex items-center gap-2 border border-red-400 bg-[#FEF2F2] hover:bg-[#FECACA] text-[#DC2626] hover:text-[#B91C1C] px-3 py-2 rounded-lg transition-all duration-200 text-sm font-medium"
                     >
                       <Trash2 className="h-4 w-4" />
                       Delete

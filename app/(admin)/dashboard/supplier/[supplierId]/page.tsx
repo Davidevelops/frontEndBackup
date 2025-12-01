@@ -499,9 +499,7 @@ export default function SupplierDetailPage() {
         </div>
 
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          {/* Main Content */}
           <div className="xl:col-span-3 space-y-6">
-            {/* Header Card */}
             <div className="bg-white rounded-xl p-6 border border-[#E2E8F0] shadow-sm">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">
@@ -510,7 +508,7 @@ export default function SupplierDetailPage() {
                   </div>
                   <div>
                     <h1 className="text-2xl font-bold text-[#0F172A]">
-                     Supplier: {supplier.name.toUpperCase()}
+                     Supplier Name: {supplier.name.toUpperCase()}
                     </h1>
                     <p className="text-[#475569] mt-1 flex items-center gap-2">
                       <Users className="h-4 w-4" />
@@ -525,7 +523,7 @@ export default function SupplierDetailPage() {
                     onOpenChange={setIsEditSupplierOpen}
                   >
                     <DialogTrigger asChild>
-                      <button className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-sm">
+                      <button className="flex items-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 border border-green-400 px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-sm">
                         <Edit className="h-4 w-4" />
                         Edit Supplier
                       </button>
@@ -605,7 +603,7 @@ export default function SupplierDetailPage() {
                     onOpenChange={setIsDeleteSupplierOpen}
                   >
                     <AlertDialogTrigger asChild>
-                      <button className="flex items-center gap-2 bg-[#DC2626] hover:bg-[#B91C1C] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-sm">
+                      <button className="flex items-center gap-2 bg-red-100 hover:bg-red-200 text-red-700 border border-red-400 px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-sm">
                         <Trash2 className="h-4 w-4" />
                         Delete Supplier
                       </button>
@@ -650,7 +648,6 @@ export default function SupplierDetailPage() {
               </div>
             </div>
 
-            {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-white rounded-xl p-6 border border-[#E2E8F0] shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
@@ -751,7 +748,6 @@ export default function SupplierDetailPage() {
               </div>
             </div>
 
-            {/* Associated Products Table */}
             <div className="bg-white rounded-xl border border-[#E2E8F0] shadow-sm">
               <div className="flex items-center justify-between p-6 border-b border-[#E2E8F0]">
                 <div className="flex items-center gap-3">
@@ -773,7 +769,7 @@ export default function SupplierDetailPage() {
                   onOpenChange={setIsAddProductOpen}
                 >
                   <DialogTrigger asChild>
-                    <button className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-sm">
+                    <button className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 border border-blue-400 text-blue-700 px-4 py-2 rounded-lg font-semibold transition-all duration-200 shadow-sm">
                       <Plus className="h-4 w-4" />
                       Add Product
                     </button>

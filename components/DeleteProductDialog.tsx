@@ -40,7 +40,7 @@ export function DeleteProductDialog({ product }: DeleteProductDialogProps) {
       onOpenChange={setIsDeleteDialogOpen}
     >
       <DialogTrigger asChild>
-        <button className="flex items-center gap-2 text-[#DC2626] border border-[#DC2626] hover:bg-[#FEF2F2] px-4 py-2 rounded-lg font-semibold transition-all duration-200">
+        <button className="flex items-center bg-red-100 gap-2 text-[#DC2626] hover:bg-red-200 px-2 py-2 rounded-lg font-semibold transition-all duration-200 text-xs">
           <Trash2 className="h-5 w-5" />
           Delete Product
         </button>

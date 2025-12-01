@@ -1,5 +1,4 @@
-import { ChartLine, Lightbulb, BarChart, TrendingUp, Zap, PackageCheck, TrendingUpIcon, Shield, AlertCircle, Target, TrendingDown } from "lucide-react";
-import { ForecastDialog } from "./ForecastDialog";
+import { AlertCircle, BarChart, ChartLine, Lightbulb, PackageCheck, Shield, Target, TrendingDown, TrendingUp, TrendingUpIcon, Zap } from "lucide-react";
 
 interface ForecastInsightsProps {
   product: any;
@@ -8,7 +7,60 @@ interface ForecastInsightsProps {
   forecastTrend: any;
   hasEnoughSalesData: boolean;
   onOpenForecastDialog: () => void;
+  productName: string;
 }
+
+// Helper function to get styling based on restock status
+const getRestockStyle = (status: string) => {
+  switch (status) {
+    case 'urgent':
+      return {
+        containerBg: 'bg-red-50',
+        containerBorder: 'border-red-300',
+        textColor: 'text-red-800',
+        iconColor: 'text-red-600',
+        innerBg: 'bg-red-100',
+        innerBorder: 'border-red-300',
+        accentBg: 'bg-red-200',
+        accentText: 'text-red-900',
+        badgeBg: 'bg-red-600',
+        badgeText: 'text-white',
+        stepBg: 'bg-red-100',
+        stepText: 'text-red-700'
+      };
+    case 'warning':
+      return {
+        containerBg: 'bg-amber-50',
+        containerBorder: 'border-amber-300',
+        textColor: 'text-amber-800',
+        iconColor: 'text-amber-600',
+        innerBg: 'bg-amber-100',
+        innerBorder: 'border-amber-300',
+        accentBg: 'bg-amber-200',
+        accentText: 'text-amber-900',
+        badgeBg: 'bg-amber-600',
+        badgeText: 'text-white',
+        stepBg: 'bg-amber-100',
+        stepText: 'text-amber-700'
+      };
+    case 'healthy':
+    default:
+      return {
+        containerBg: 'bg-green-50',
+        containerBorder: 'border-green-300',
+        textColor: 'text-green-800',
+        iconColor: 'text-green-600',
+        innerBg: 'bg-green-100',
+        innerBorder: 'border-green-300',
+        accentBg: 'bg-green-200',
+        accentText: 'text-green-900',
+        badgeBg: 'bg-green-600',
+        badgeText: 'text-white',
+        stepBg: 'bg-green-100',
+        stepText: 'text-green-700'
+      };
+  }
+};
 
 export function ForecastInsights({
   product,
@@ -16,220 +68,317 @@ export function ForecastInsights({
   forecastInsights,
   forecastTrend,
   hasEnoughSalesData,
-  onOpenForecastDialog
+  onOpenForecastDialog,
+  productName
 }: ForecastInsightsProps) {
+  const restockStyle = getRestockStyle(forecastInsights.restockStatus || 'healthy');
+  
   return (
-    <div className="bg-white rounded-xl p-6 border border-[#E2E8F0]">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="bg-[#6366F1] p-2 rounded-lg">
-          <Lightbulb className="h-5 w-5 text-white" />
-        </div>
-        <div>
-          <h3 className="text-xl font-bold text-[#0F172A]">
-            Forecast Insights & Recommendations
-          </h3>
-          <p className="text-sm text-[#64748B] mt-1">
-            Easy-to-understand analysis and guidance for your business decisions
-          </p>
+    <div className="bg-white rounded-2xl border border-gray-200">
+      <div className="border-b border-gray-200 px-8 py-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-3 rounded-xl">
+              <Lightbulb className="h-6 w-6 text-white" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Forecast insights based on the results for product: {productName.toUpperCase()} </h1>
+              <p className="text-gray-600">Step-by-step analysis and actionable recommendations</p>
+            </div>
+          </div>
         </div>
       </div>
 
       {forecastData.length === 0 ? (
-        <div className="text-center py-8">
-          <ChartLine className="h-12 w-12 text-[#CBD5E1] mx-auto mb-3" />
-          <p className="text-[#64748B] text-lg mb-2">No forecast data available yet</p>
-          <p className="text-[#64748B] text-sm mb-4 max-w-md mx-auto">
-            {hasEnoughSalesData 
-              ? "Generate a forecast to get personalized insights and recommendations for your product."
-              : `This product has only ${product.salesData?.length || 0} sales records. For more accurate forecasting, we recommend having at least 30 sales records. You can still generate a forecast, but the predictions may be less reliable.`
-            }
-          </p>
-          <button
-            onClick={onOpenForecastDialog}
-            className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-6 py-3 rounded-lg font-medium transition-all duration-200"
-          >
-            {hasEnoughSalesData ? "Generate Forecast" : "Generate Forecast Anyway"}
-          </button>
+        <div className="p-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="text-center">
+              <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-10 inline-block mb-6">
+                <ChartLine className="h-20 w-20 text-gray-400 mx-auto" />
+              </div>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">Ready to Generate Insights</h3>
+              <p className="text-gray-600 text-lg mb-8 max-w-xl mx-auto">
+                {hasEnoughSalesData 
+                  ? `Unlock detailed forecast analysis, trend insights, and inventory recommendations for ${productName}.`
+                  : `Start forecasting for ${productName} with ${product.salesData?.length || 0} available sales records.`
+                }
+              </p>
+              <button
+                onClick={onOpenForecastDialog}
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200"
+              >
+                {hasEnoughSalesData ? `Generate ${productName} Forecast` : `Generate Forecast`}
+              </button>
+              {!hasEnoughSalesData && (
+                <p className="text-gray-500 mt-6 text-sm">
+                  For optimal accuracy, we recommend having at least 30 sales records
+                </p>
+              )}
+            </div>
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Left Column - Key Insights */}
-          <div className="space-y-6">
-            {/* Projected Sales */}
-            <div className="bg-[#F8FAFC] rounded-lg p-5 border border-[#E2E8F0]">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart className="h-5 w-5 text-[#6366F1]" />
-                <h4 className="font-semibold text-[#0F172A] text-lg">Projected Sales</h4>
-              </div>
-              <div className="grid grid-cols-3 gap-3 mb-4">
-                <div className="text-center p-3 bg-white rounded-lg border border-[#E2E8F0]">
-                  <p className="text-sm text-[#64748B] mb-1">Daily</p>
-                  <p className="text-xl font-bold text-[#0F172A]">
-                    {forecastInsights.projectedSales.daily}
-                  </p>
-                  <p className="text-xs text-[#64748B]">units/day</p>
-                </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-[#E2E8F0]">
-                  <p className="text-sm text-[#64748B] mb-1">Weekly</p>
-                  <p className="text-xl font-bold text-[#0F172A]">
-                    {forecastInsights.projectedSales.weekly}
-                  </p>
-                  <p className="text-xs text-[#64748B]">units/week</p>
-                </div>
-                <div className="text-center p-3 bg-white rounded-lg border border-[#E2E8F0]">
-                  <p className="text-sm text-[#64748B] mb-1">Monthly</p>
-                  <p className="text-xl font-bold text-[#0F172A]">
-                    {forecastInsights.projectedSales.monthly}
-                  </p>
-                  <p className="text-xs text-[#64748B]">units/month</p>
-                </div>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                <p className="text-sm text-[#1E40AF] leading-relaxed">
-                  {forecastInsights.detailedExplanations.projectedSales.split('\n').map((line: string, index: number) => (
-                    <span key={index}>
-                      {line}
-                      {index < forecastInsights.detailedExplanations.projectedSales.split('\n').length - 1 && <br />}
-                    </span>
-                  ))}
-                </p>
-              </div>
+        <div className="p-8">
+        
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-indigo-100 text-indigo-700 font-bold rounded-full w-8 h-8 flex items-center justify-center">1</div>
+              <h2 className="text-xl font-bold text-gray-900">Current Performance Analysis</h2>
             </div>
-
-            {/* Trend Summary */}
-            <div className="bg-[#F8FAFC] rounded-lg p-5 border border-[#E2E8F0]">
-              <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="h-5 w-5 text-[#6366F1]" />
-                <h4 className="font-semibold text-[#0F172A] text-lg">Sales Trend Analysis</h4>
-              </div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className={`flex items-center gap-2 px-3 py-2 rounded-full text-sm font-medium ${
-                  forecastTrend.trend === 'up' 
-                    ? 'bg-green-50 text-green-700 border border-green-200'
-                    : forecastTrend.trend === 'down'
-                    ? 'bg-red-50 text-red-700 border border-red-200'
-                    : 'bg-gray-50 text-gray-700 border border-gray-200'
-                }`}>
-                  {forecastTrend.trend === 'up' && <TrendingUp className="h-4 w-4" />}
-                  {forecastTrend.trend === 'down' && <TrendingDown className="h-4 w-4" />}
-                  <span className="capitalize">
-                    {forecastTrend.trend} {Math.abs(forecastTrend.percentage)}%
-                  </span>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-gray-900 text-lg">Sales Volume Projections</h3>
+                  <BarChart className="h-6 w-6 text-blue-600" />
                 </div>
-                <span className="text-sm text-[#64748B]">
-                  {forecastTrend.strength} trend
-                </span>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                <p className="text-sm text-[#1E40AF] leading-relaxed">
-                  {forecastInsights.detailedExplanations.trend}
-                </p>
-              </div>
-            </div>
-
-            {/* Key Takeaways */}
-            <div className="bg-white rounded-xl p-5 border border-[#E2E8F0]">
-              <h4 className="font-semibold text-[#0F172A] text-lg mb-4 flex items-center gap-2">
-                <Zap className="h-5 w-5 text-amber-500" />
-                Quick Summary
-              </h4>
-              <div className="space-y-3">
-                {forecastInsights.keyTakeaways.map((takeaway: string, index: number) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                    <p className="text-sm text-[#475569] leading-relaxed">{takeaway}</p>
+                
+                <div className="grid grid-cols-3 gap-4 mb-6">
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <p className="text-2xl font-bold text-gray-900 text-center mb-1">{forecastInsights.projectedSales.daily}</p>
+                    <p className="text-sm text-gray-600 text-center">Daily Sold Product</p>
+                    <p className="text-xs text-gray-500 text-center mt-1">Average per day</p>
                   </div>
-                ))}
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <p className="text-2xl font-bold text-gray-900 text-center mb-1">{forecastInsights.projectedSales.weekly}</p>
+                    <p className="text-sm text-gray-600 text-center">Weekly Sold Product</p>
+                    <p className="text-xs text-gray-500 text-center mt-1">Average per week</p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-gray-200">
+                    <p className="text-2xl font-bold text-gray-900 text-center mb-1">{forecastInsights.projectedSales.monthly}</p>
+                    <p className="text-sm text-gray-600 text-center">Monthly Sold Product</p>
+                    <p className="text-xs text-gray-500 text-center mt-1">Average per month</p>
+                  </div>
+                </div>
+                
+                <div className="bg-white/80 rounded-lg p-4">
+                  <p className="text-sm text-gray-800">
+                    {forecastInsights.detailedExplanations.projectedSales}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-2 rounded-lg ${
+                    forecastTrend.trend === 'up' 
+                      ? 'bg-green-100 text-green-700'
+                      : forecastTrend.trend === 'down'
+                      ? 'bg-red-100 text-red-700'
+                      : 'bg-gray-100 text-gray-700'
+                  }`}>
+                    {forecastTrend.trend === 'up' && <TrendingUp className="h-5 w-5" />}
+                    {forecastTrend.trend === 'down' && <TrendingDown className="h-5 w-5" />}
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900">Trend Direction</h3>
+                    <p className="text-sm text-gray-600">Sales momentum</p>
+                  </div>
+                </div>
+                
+                <div className="text-center mb-4">
+                  <p className="text-3xl font-bold text-gray-900 mb-1">{Math.abs(forecastTrend.percentage)}%</p>
+                  <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${
+                    forecastTrend.trend === 'up' 
+                      ? 'bg-green-100 text-green-800'
+                      : forecastTrend.trend === 'down'
+                      ? 'bg-red-100 text-red-800'
+                      : 'bg-gray-100 text-gray-800'
+                  }`}>
+                    {forecastTrend.trend === 'up' ? 'Increasing' : 'Decreasing'} ({forecastTrend.strength})
+                  </div>
+                </div>
+                
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-700">
+                    {forecastInsights.detailedExplanations.trend}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Right Column - Actions & Details */}
-          <div className="space-y-6">
-            {/* Restock Recommendation */}
-            <div className="bg-[#F0FDF4] rounded-lg p-5 border border-green-200">
-              <div className="flex items-center gap-3 mb-3">
-                <PackageCheck className="h-6 w-6 text-green-600" />
-                <div>
-                  <h4 className="font-semibold text-[#0F172A] text-lg">Restock Planning</h4>
-                  <p className="text-sm text-[#64748B]">When to order more inventory</p>
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className={`${restockStyle.stepBg} ${restockStyle.stepText} font-bold rounded-full w-8 h-8 flex items-center justify-center`}>2</div>
+              <h2 className="text-xl font-bold text-gray-900">Strategic Timing Opportunities</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className={`rounded-xl p-6 border ${restockStyle.containerBg} ${restockStyle.containerBorder}`}>
+                <div className="flex items-center gap-3 mb-4">
+                  <PackageCheck className={`h-6 w-6 ${restockStyle.iconColor}`} />
+                  <div>
+                    <h3 className={`font-bold text-lg ${restockStyle.textColor}`}>
+                      Inventory Restock Date
+                    </h3>
+                    <p className={`text-sm ${restockStyle.textColor} opacity-90`}>
+                      {forecastInsights.restockStatus === 'urgent' ? 'Immediate action required' : 
+                       forecastInsights.restockStatus === 'warning' ? 'Plan ahead for optimal timing' : 
+                       'Healthy stock levels - monitor regularly'}
+                    </p>
+                  </div>
+                </div>
+                
+                <div className={`rounded-xl p-5 border mb-4 ${restockStyle.innerBg} ${restockStyle.innerBorder}`}>
+                  <div className="text-center">
+                    <div className={`inline-block px-4 py-2 rounded-full mb-3 ${restockStyle.badgeBg}`}>
+                      <span className={`text-sm font-semibold ${restockStyle.badgeText}`}>
+                        {forecastInsights.restockStatus === 'urgent' ? '🚨 URGENT ACTION NEEDED' : 
+                         forecastInsights.restockStatus === 'warning' ? '⚠️ PLAN RESTOCK SOON' : 
+                         '✅ HEALTHY STOCK LEVELS'}
+                      </span>
+                    </div>
+                    <p className={`text-2xl font-bold ${restockStyle.textColor} mb-2`}>
+                      {forecastInsights.restockDate}
+                    </p>
+                    <p className={`text-sm ${restockStyle.textColor} opacity-90`}>
+                      Recommended date for {productName} inventory
+                    </p>
+                  </div>
+                </div>
+                
+                <div className={`rounded-lg p-4 border ${restockStyle.innerBg} ${restockStyle.innerBorder}`}>
+                  <p className={`text-sm ${restockStyle.textColor} leading-relaxed`}>
+                    {forecastInsights.detailedExplanations.restock}
+                  </p>
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-4 border border-green-200 mb-3">
-                <p className="text-lg font-semibold text-[#166534] text-center">
-                  {forecastInsights.restockDate.includes('URGENT') ? '🚨 ' : ''}
-                  {forecastInsights.restockDate}
-                </p>
-              </div>
-              <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                <p className="text-sm text-[#166534] leading-relaxed">
-                  {forecastInsights.detailedExplanations.restock}
-                </p>
+              
+              <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200">
+                <div className="flex items-center gap-3 mb-4">
+                  <TrendingUpIcon className="h-6 w-6 text-amber-600" />
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-lg">Peak Sales Period</h3>
+                    <p className="text-gray-600">Best promotional timing</p>
+                  </div>
+                </div>
+                
+                <div className="bg-white rounded-xl p-5 border border-amber-300 mb-4">
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-gray-900 mb-2">{forecastInsights.peakSalesPeriod}</p>
+                    <p className="text-sm text-gray-600">Optimal day for {productName} promotions</p>
+                  </div>
+                </div>
+                
+                <div className="bg-white/80 rounded-lg p-4">
+                  <p className="text-sm text-gray-800">
+                    {forecastInsights.detailedExplanations.peakSales}
+                  </p>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Peak Sales Period */}
-            <div className="bg-[#F8FAFC] rounded-lg p-5 border border-[#E2E8F0]">
-              <div className="flex items-center gap-3 mb-3">
-                <TrendingUpIcon className="h-6 w-6 text-[#6366F1]" />
-                <div>
-                  <h4 className="font-semibold text-[#0F172A] text-lg">Peak Sales Day</h4>
-                  <p className="text-sm text-[#64748B]">Best day for promotions</p>
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-amber-100 text-amber-700 font-bold rounded-full w-8 h-8 flex items-center justify-center">3</div>
+              <h2 className="text-xl font-bold text-gray-900">Forecast Quality Assessment</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Shield className="h-6 w-6 text-blue-600" />
+                  <div>
+                    <h3 className="font-bold text-gray-900">Confidence Level</h3>
+                    <p className="text-gray-600">Forecast reliability assessment</p>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className={`inline-block px-4 py-2 rounded-full text-lg font-bold ${
+                    forecastInsights.confidenceLevel === 'High' 
+                      ? 'bg-green-100 text-green-800'
+                      : forecastInsights.confidenceLevel === 'Medium'
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {forecastInsights.confidenceLevel}
+                  </div>
+                </div>
+                
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-800">
+                    {forecastInsights.confidenceDescription}
+                  </p>
                 </div>
               </div>
-              <div className="bg-white rounded-lg p-4 border border-[#E2E8F0] mb-3">
-                <p className="text-lg font-semibold text-[#0F172A] text-center">
-                  {forecastInsights.peakSalesPeriod}
-                </p>
-              </div>
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-100">
-                <p className="text-sm text-[#1E40AF] leading-relaxed">
-                  {forecastInsights.detailedExplanations.peakSales}
-                </p>
+              
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <AlertCircle className="h-6 w-6 text-amber-600" />
+                  <div>
+                    <h3 className="font-bold text-gray-900">Risk Level</h3>
+                    <p className="text-gray-600">Potential business exposure</p>
+                  </div>
+                </div>
+                
+                <div className="mb-4">
+                  <div className={`inline-block px-4 py-2 rounded-full text-lg font-bold ${
+                    forecastInsights.riskLevel === 'Low' 
+                      ? 'bg-green-100 text-green-800'
+                      : forecastInsights.riskLevel === 'Medium'
+                      ? 'bg-amber-100 text-amber-800'
+                      : 'bg-red-100 text-red-800'
+                  }`}>
+                    {forecastInsights.riskLevel}
+                  </div>
+                </div>
+                
+                <div className="bg-amber-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-800">
+                    {forecastInsights.riskDescription}
+                  </p>
+                </div>
               </div>
             </div>
+          </div>
 
-            {/* Confidence & Risk */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white rounded-lg p-4 border border-[#E2E8F0] text-center">
-                <Shield className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <p className="text-sm text-[#64748B] mb-1">Confidence Level</p>
-                <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  forecastInsights.confidenceLevel === 'High' ? 'bg-green-50 text-green-700 border border-green-200' :
-                  forecastInsights.confidenceLevel === 'Medium' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                  'bg-red-50 text-red-700 border border-red-200'
-                }`}>
-                  {forecastInsights.confidenceLevel}
-                </div>
-                <p className="text-xs text-[#64748B] mt-2 text-left">
-                  {forecastInsights.confidenceDescription.split(': ')[1]}
-                </p>
-              </div>
-              <div className="bg-white rounded-lg p-4 border border-[#E2E8F0] text-center">
-                <AlertCircle className="h-8 w-8 text-amber-600 mx-auto mb-2" />
-                <p className="text-sm text-[#64748B] mb-1">Risk Level</p>
-                <div className={`px-2 py-1 rounded-full text-xs font-medium ${
-                  forecastInsights.riskLevel === 'Low' ? 'bg-green-50 text-green-700 border border-green-200' :
-                  forecastInsights.riskLevel === 'Medium' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
-                  'bg-red-50 text-red-700 border border-red-200'
-                }`}>
-                  {forecastInsights.riskLevel}
-                </div>
-                <p className="text-xs text-[#64748B] mt-2 text-left">
-                  {forecastInsights.riskDescription.split(': ')[1]}
-                </p>
-              </div>
+          <div>
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-purple-100 text-purple-700 font-bold rounded-full w-8 h-8 flex items-center justify-center">4</div>
+              <h2 className="text-xl font-bold text-gray-900">Actionable Insights & Recommendations</h2>
             </div>
-
-            {/* Action Recommendation */}
-            <div className="bg-white rounded-xl p-5 border border-[#E2E8F0]">
-              <h4 className="font-semibold text-[#0F172A] text-lg mb-3 flex items-center gap-2">
-                <Target className="h-5 w-5 text-blue-600" />
-                Recommended Action
-              </h4>
-              <p className="text-sm text-[#475569] leading-relaxed bg-blue-50 rounded-lg p-4 border border-blue-100">
-                {forecastInsights.recommendation}
-              </p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-gradient-to-r from-gray-50 to-white rounded-xl border border-gray-200 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Zap className="h-6 w-6 text-amber-500" />
+                  <h3 className="font-bold text-gray-900 text-lg">Key Insights Summary</h3>
+                </div>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {forecastInsights.keyTakeaways.map((takeaway: string, index: number) => (
+                    <div key={index} className="bg-white rounded-lg p-4 border border-gray-200">
+                      <div className="flex items-start gap-3">
+                        <div className="w-2 h-2 bg-indigo-500 rounded-full mt-2 flex-shrink-0"></div>
+                        <p className="text-sm text-gray-800">{takeaway}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-xl border border-indigo-200 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <Target className="h-6 w-6 text-indigo-600" />
+                  <h3 className="font-bold text-gray-900 text-lg">Priority Action</h3>
+                </div>
+                
+                <div className="bg-white rounded-xl p-5 border border-indigo-300 mb-4">
+                  <div className="text-center">
+                    <p className="text-xl font-bold text-gray-900">Recommended Action</p>
+                    <p className="text-sm text-gray-600 mt-1">For product: {productName.toUpperCase()}</p>
+                  </div>
+                </div>
+                
+                <div className="bg-white/80 rounded-lg p-4">
+                  <p className="text-sm text-gray-800 leading-relaxed">
+                    {forecastInsights.recommendation}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

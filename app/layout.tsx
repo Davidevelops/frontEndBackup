@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { Poppins } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
 import { AuthProvider } from "@/lib/authContext";
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
@@ -20,7 +20,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={`${poppins.variable}`}>
+      <body className={`${inter.variable} font-sans`}>
         <AuthProvider>
           <Toaster />
           {children}

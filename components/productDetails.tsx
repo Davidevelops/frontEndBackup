@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import toast from "react-hot-toast";
 
-
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -18,7 +17,6 @@ import {
   BarElement,
 } from 'chart.js';
 
-// Components
 import { ProductHeader } from "./ProductHeader";
 import { ForecastSelector } from "./ForecasstSelector";
 import { SalesDataAlert } from "./SalesDataAler";
@@ -27,10 +25,11 @@ import { SalesChart } from "./SalesChart";
 import { ForecastInsights } from "./ForecastInsights";
 import ForecastChart from "./ForecastChart";
 
-// Types
+
 import { SingleProduct, Forecast, ForecastSelection } from "@/lib/types";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 import apiClient from "@/lib/axiosConfig";
+import { ArrowLeft } from "lucide-react";
 
 ChartJS.register(
   CategoryScale,
@@ -44,7 +43,6 @@ ChartJS.register(
   BarElement
 );
 
-// Type Definitions
 interface Props {
   product: SingleProduct;
 }
@@ -121,9 +119,9 @@ interface ForecastInsightsData {
     peakSales: string;
     projectedSales: string;
   };
+  restockStatus: 'urgent' | 'warning' | 'healthy';
 }
 
-// Default forecast insights to prevent undefined errors
 const defaultForecastInsights: ForecastInsightsData = {
   averagePredictedSales: 0,
   totalPredictedSales: 0,
@@ -146,14 +144,13 @@ const defaultForecastInsights: ForecastInsightsData = {
     restock: "We'll calculate exactly when you need to order more stock based on your current inventory and predicted future sales.",
     peakSales: "We'll identify the days when you're likely to sell the most items, helping you plan promotions and ensure you have enough stock.",
     projectedSales: "We'll show you expected sales numbers for daily, weekly, and monthly periods to help with your inventory planning and business decisions."
-  }
+  },
+  restockStatus: 'healthy'
 };
 
-// Main Component
 export default function ProductDetails({ product }: Props) {
   const router = useRouter();
 
-  // State Management
   const [salesData, setSalesData] = useState<SalesData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -186,10 +183,8 @@ export default function ProductDetails({ product }: Props) {
     totalPages: 0,
   });
 
-  // Initialize with default values to prevent undefined errors
   const [forecastInsights, setForecastInsights] = useState<ForecastInsightsData>(defaultForecastInsights);
 
-  // Chart Configuration
   const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -249,7 +244,6 @@ export default function ProductDetails({ product }: Props) {
     },
   };
 
-  // Helper Functions
   const hasEnoughSalesData = (): boolean => salesData.length >= 30;
 
   const calculateForecastTrend = (): ForecastTrend => {
@@ -274,7 +268,6 @@ export default function ProductDetails({ product }: Props) {
 
   const forecastTrend = calculateForecastTrend();
 
-  // Chart Data Functions
   const getPaginatedData = () => {
     const allData = [
       ...salesData.map((s) => ({
@@ -400,7 +393,6 @@ export default function ProductDetails({ product }: Props) {
 
   const forecastChartData = prepareForecastChartData();
 
-  // Chart Pagination Handlers
   const goToNextPage = (): void => {
     if (paginatedChartData.hasNext) {
       setChartPagination(prev => ({
@@ -426,7 +418,6 @@ export default function ProductDetails({ product }: Props) {
     }));
   };
 
-  // Calculate forecast insights function - FIXED VERSION
   const calculateForecastInsights = (): ForecastInsightsData => {
     if (forecastData.length === 0) {
       return defaultForecastInsights;
@@ -437,13 +428,11 @@ export default function ProductDetails({ product }: Props) {
       ? predictedValues.reduce((sum, val) => sum + val, 0) / predictedValues.length 
       : 0;
     const totalPredicted = predictedValues.reduce((sum, val) => sum + val, 0);
-    
-    // Calculate projected sales for different time periods with fallbacks
+
     const dailySales = averagePredicted || 0;
     const weeklySales = dailySales * 7;
     const monthlySales = dailySales * 30;
     
-    // Find peak sales period with fallbacks
     let peakSalesPeriod = "No peak period identified";
     let peakData = forecastData[0];
     
@@ -455,19 +444,17 @@ export default function ProductDetails({ product }: Props) {
       peakSalesPeriod = `${peakDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} (${Math.round(peakData.yhat || 0)} units)`;
     }
 
-    // Calculate restock date based on current stock and predicted sales
-    const dailySalesRate = averagePredicted || 1; // Avoid division by zero
+    const dailySalesRate = averagePredicted || 1; 
     const daysUntilRestock = dailySalesRate > 0 ? Math.floor((product.stock || 0) / dailySalesRate) : 999;
     const restockDate = new Date(Date.now() + daysUntilRestock * 24 * 60 * 60 * 1000);
     const restockDateText = daysUntilRestock <= 7 ? 
       `within ${daysUntilRestock} days (${restockDate.toLocaleDateString()})` :
       `in ${daysUntilRestock} days (${restockDate.toLocaleDateString()})`;
 
-    // Calculate confidence level
     const variance = forecastData.length > 0 
       ? forecastData.reduce((sum, f) => {
           const range = (f.yhatUpper || 0) - (f.yhatLower || 0);
-          const yhatValue = f.yhat || 1; // Avoid division by zero
+          const yhatValue = f.yhat || 1; 
           return sum + (range / yhatValue);
         }, 0) / forecastData.length
       : 0;
@@ -480,7 +467,6 @@ export default function ProductDetails({ product }: Props) {
     let riskDescription = "";
     const keyTakeaways: string[] = [];
 
-    // Enhanced trend descriptions
     let trendExplanation = "";
     if (forecastTrend.trend === 'up') {
       trendDescription = `Sales are growing! We predict a ${Math.abs(forecastTrend.percentage)}% increase over the forecast period.`;
@@ -506,7 +492,6 @@ export default function ProductDetails({ product }: Props) {
       keyTakeaways.push("Stable sales pattern detected");
     }
 
-    // Confidence and risk assessment
     let confidenceExplanation = "";
     let riskExplanation = "";
     if (variance > 0.3) {
@@ -532,23 +517,26 @@ export default function ProductDetails({ product }: Props) {
       keyTakeaways.push("High confidence in forecast");
     }
 
-    // Stock-specific recommendations
     let restockExplanation = "";
+    let restockStatus: 'urgent' | 'warning' | 'healthy' = 'healthy';
+
     if (daysUntilRestock <= 7) {
       recommendation += ` URGENT: You need to restock soon! Current stock will last only ${daysUntilRestock} days.`;
       restockExplanation = `URGENT RESTOCK NEEDED: Based on current sales predictions, your inventory will run out in just ${daysUntilRestock} days. This means you need to place a new order IMMEDIATELY to avoid stockouts. Consider expedited shipping if possible, and review if you can temporarily increase your order quantity to build a larger safety buffer.`;
       keyTakeaways.push(`Restock needed within ${daysUntilRestock} days`);
+      restockStatus = 'urgent';
     } else if (daysUntilRestock <= 14) {
       recommendation += ` Plan to restock in the next week. Current stock will last ${daysUntilRestock} days.`;
       restockExplanation = `PLAN RESTOCK SOON: Your current inventory will last approximately ${daysUntilRestock} days. This gives you a comfortable window to place your next order within the next week. We recommend placing your order now to ensure continuity of supply and account for any potential delivery delays.`;
       keyTakeaways.push(`Plan restock in ${daysUntilRestock} days`);
+      restockStatus = 'warning';
     } else {
       recommendation += ` Stock levels are healthy. You have about ${daysUntilRestock} days of inventory.`;
       restockExplanation = `HEALTHY STOCK LEVELS: You have approximately ${daysUntilRestock} days of inventory based on current sales predictions. This is a comfortable stock position that allows for normal ordering cycles. You can maintain your current inventory management practices without immediate concerns about stock availability.`;
       keyTakeaways.push(`Healthy stock for ${daysUntilRestock} days`);
+      restockStatus = 'healthy';
     }
 
-    // Peak period insight
     const peakSalesExplanation = peakData ? 
       `PEAK SALES DAY IDENTIFIED: We predict your highest sales day will be on ${new Date(peakData.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })} with approximately ${Math.round(peakData.yhat || 0)} units expected to sell. This is ${Math.round(((peakData.yhat || 0) / dailySales - 1) * 100)}% higher than your average daily sales. This is the perfect time to: 1) Ensure you have extra stock available, 2) Consider running special promotions or marketing campaigns, 3) Schedule additional staff if needed, and 4) Monitor sales closely to capture maximum revenue.` :
       "No peak sales period identified in the forecast data.";
@@ -557,7 +545,6 @@ export default function ProductDetails({ product }: Props) {
       keyTakeaways.push(`Peak sales expected on ${new Date(peakData.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`);
     }
 
-    // Projected sales explanation
     const projectedSalesExplanation = `PROJECTED SALES OUTLOOK: Based on the forecast, here's what you can expect:
 • DAILY: Approximately ${Math.round(dailySales)} units per day
 • WEEKLY: Around ${Math.round(weeklySales)} units per week  
@@ -594,11 +581,11 @@ These projections help you plan your inventory purchases, staffing needs, and ca
         restock: restockExplanation,
         peakSales: peakSalesExplanation,
         projectedSales: projectedSalesExplanation
-      }
+      },
+      restockStatus
     };
   };
 
-  // Data fetching functions - UPDATED to use apiClient
   const fetchAllForecasts = async (page: number = 1): Promise<void> => {
     try {
       const response = await apiClient.get(
@@ -718,7 +705,6 @@ These projections help you plan your inventory purchases, staffing needs, and ca
     router.refresh();
   };
 
-  // Initial data fetch - UPDATED to use apiClient
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
@@ -760,10 +746,8 @@ These projections help you plan your inventory purchases, staffing needs, and ca
           }));
         setForecastData(formattedForecasts);
 
-        // Load all forecasts for the dropdown
         fetchAllForecasts();
 
-        // Calculate metrics
         const totalSales = rawSales.reduce((sum: number, s: any) => sum + s.quantity, 0);
         const last7 = rawSales.slice(-7);
         const prev7 = rawSales.slice(-14, -7);
@@ -793,7 +777,10 @@ These projections help you plan your inventory purchases, staffing needs, and ca
     fetchData();
   }, [product.id, product.groupId]);
 
-  // Update insights when forecast data changes
+  const handleBackToDashboard = () => {
+    router.push("/dashboard/products");
+  };
+
   useEffect(() => {
     const insights = calculateForecastInsights();
     setForecastInsights(insights);
@@ -801,32 +788,41 @@ These projections help you plan your inventory purchases, staffing needs, and ca
 
   return (
     <div className="min-h-screen bg-gray-50 p-6">
+        <button
+            onClick={handleBackToDashboard}
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 mb-3"
+            aria-label="Back to Dashboard"
+          >
+            <ArrowLeft className="h-5 w-5" /> Back to products
+          </button>
+          
       {product && (
         <div className="max-w-7xl mx-auto space-y-6">
-          {/* Header Section */}
           <ProductHeader 
             product={product}
             hasEnoughSalesData={hasEnoughSalesData()}
             onForecastGenerated={handleForecastGenerated}
           />
 
-          <SalesDataAlert salesDataLength={salesData.length} />
+          <SalesDataAlert 
+            salesDataLength={salesData.length}
+            productName={product.name}
+          />
 
-          {/* Simple Supplier Reminder */}
-          <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-6 p-8 bg-yellow-50 border border-yellow-200 rounded-lg">
             <div className="flex items-start">
               <div className="flex-shrink-0">
-                <svg className="w-5 h-5 text-blue-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5 text-yellow-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-blue-800">
-                  Supplier Recommendation
+                <h3 className="text-xl font-medium text-yellow-800">
+                 NOTE BEFORE GENERATING A FORECAST
                 </h3>
-                <div className="mt-1 text-sm text-blue-700">
+                <div className="mt-1 text-sm text-yellow-700">
                   <p>
-                    For accurate stock recommendations and reordering guidance, consider adding an associated supplier to this product.
+                    For accurate stock recommendations and reordering guidance for {product.name}, consider adding an associated supplier to this product.
                   </p>
                   <p className="mt-1 font-medium">
                     Go to Suppliers to manage product-supplier relationships.
@@ -837,6 +833,7 @@ These projections help you plan your inventory purchases, staffing needs, and ca
           </div>
 
           <ForecastSelector
+            productName={product.name}
             allForecasts={allForecasts}
             selectedForecast={selectedForecast}
             forecastPagination={forecastPagination}
@@ -852,7 +849,6 @@ These projections help you plan your inventory purchases, staffing needs, and ca
             forecastTrend={forecastTrend}
           />
 
-          {/* Sales Chart with all required props */}
           <SalesChart
             loading={loading}
             salesData={salesData}
@@ -864,10 +860,12 @@ These projections help you plan your inventory purchases, staffing needs, and ca
             onGoToPrevPage={goToPrevPage}
             onGoToNextPage={goToNextPage}
             onGoToPage={goToPage}
+            productName={product.name}
           />
 
           <ForecastInsights
             product={product}
+            productName={product.name}
             forecastData={forecastData}
             forecastInsights={forecastInsights}
             forecastTrend={forecastTrend}

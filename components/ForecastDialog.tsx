@@ -94,7 +94,7 @@ export function ForecastDialog({ product, hasEnoughSalesData, onForecastGenerate
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <button 
-          className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2 rounded-lg font-semibold transition-all duration-200"
+          className="flex items-center gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 hover:text-blue-800 px-2 py-2 rounded-lg font-semibold transition-all duration-200 text-xs"
           onClick={(e) => {
             e.preventDefault();
             handleOpenDialog();

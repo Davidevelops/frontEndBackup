@@ -32,7 +32,6 @@ import { Button } from "@/components/ui/button"
 import { exportSalesTemplate, importSales, downloadBlob } from "@/lib/data/routes/excel/excel"
 import toast from "react-hot-toast"
 
-// Error types for better error handling
 interface ApiError {
 	message: string
 	status?: number
@@ -57,7 +56,6 @@ interface ImportResponse {
 	message?: string
 }
 
-// Logging utility
 const logger = {
 	info: (message: string, data?: any) => {
 		console.log(`[INFO] ${message}`, data ? data : '')
@@ -90,7 +88,6 @@ export default function SalesPage() {
 		endDate: "",
 	})
 
-	// Enhanced error handler
 	const handleError = (error: any, context: string, userMessage: string = "An error occurred") => {
 		const errorDetails: ApiError = {
 			message: error.message || 'Unknown error occurred',
@@ -105,7 +102,7 @@ export default function SalesPage() {
 
 	const fetchSalesData = async (retryCount = 0): Promise<void> => {
 		const maxRetries = 3
-		const retryDelay = 1000 * Math.pow(2, retryCount) // Exponential backoff
+		const retryDelay = 1000 * Math.pow(2, retryCount)
 
 		try {
 			setLoading(true)
@@ -178,12 +175,10 @@ export default function SalesPage() {
 	}
 
 	const validateImportFile = (file: File): string | null => {
-		// File type validation
 		if (!file.name.endsWith('.xlsx')) {
 			return "Please select an Excel file with .xlsx format only"
 		}
 
-		// MIME type validation
 		const validTypes = [
 			'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
 			'application/vnd.ms-excel',
@@ -193,8 +188,6 @@ export default function SalesPage() {
 		if (!validTypes.includes(file.type) && !file.name.endsWith('.xlsx')) {
 			return "Invalid file type. Please select a valid .xlsx Excel file"
 		}
-
-		// File size validation (10MB limit)
 		const maxSize = 10 * 1024 * 1024
 		if (file.size > maxSize) {
 			return "File size too large. Please select a file smaller than 10MB."
@@ -214,7 +207,6 @@ export default function SalesPage() {
 			return
 		}
 
-		// Validate file
 		const validationError = validateImportFile(file)
 		if (validationError) {
 			toast.error(validationError)
@@ -237,7 +229,6 @@ export default function SalesPage() {
 		try {
 			const result = await importSales(file)
 
-			// Handle the result based on your backend response structure
 			const groupsCreated = result.groupsCreated || 0
 			const groupsUpdated = result.groupsUpdated || 0
 			const productsCreated = result.productsCreated || 0
@@ -263,7 +254,6 @@ export default function SalesPage() {
 						`Products: ${productsCreated} created, ${productsUpdated} updated. ` +
 						`But had ${errors.length} error(s)`
 					)
-					// Log detailed errors
 					logger.warn('Import completed with errors', { 
 						errors: errors.slice(0, 5),
 						totalErrors: errors.length 
@@ -282,7 +272,6 @@ export default function SalesPage() {
 				toast.success("Import completed - no changes made")
 			}
 			
-			// Auto-refresh after successful import
 			await fetchSalesData()
 
 		} catch (error: any) {
@@ -296,13 +285,11 @@ export default function SalesPage() {
 	const handleImportError = async (error: any): Promise<void> => {
 		logger.error('Import process failed', error)
 
-		// Handle specific error types but show generic message
 		if (error.code === 'ECONNABORTED' || error.message?.includes('timeout')) {
 			toast.error("Import timeout")
 			return
 		}
 
-		// Always show generic error to user
 		toast.error("Import failed")
 	}
 
@@ -438,20 +425,20 @@ export default function SalesPage() {
 						</div>
 					</div>
 
-					{/* Action Buttons */}
+				
 					<div className="flex items-center gap-3">
-						{/* Export Button */}
+		
 						<button
 							onClick={handleExportSales}
 							disabled={exporting}
-							className="flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2.5 rounded-lg transition-all duration-200 font-medium disabled:opacity-50"
+							className="flex items-center gap-2 bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-400  px-4 py-2.5 rounded-lg transition-all duration-200 font-medium disabled:opacity-50"
 						>
 							<Download className={`h-4 w-4 ${exporting ? 'animate-spin' : ''}`} />
 							{exporting ? "Exporting..." : "Export Excel"}
 						</button>
 
-						{/* Import Button */}
-						<label className="flex items-center gap-2 bg-[#16A34A] hover:bg-[#15803D] text-white px-4 py-2.5 rounded-lg transition-all duration-200 font-medium cursor-pointer disabled:opacity-50">
+					
+						<label className="flex items-center gap-2 bg-green-100 hover:bg-green-200 text-green-800 border border-green-400 px-4 py-2.5 rounded-lg transition-all duration-200 font-medium cursor-pointer disabled:opacity-50">
 							<Upload className={`h-4 w-4 ${importing ? 'animate-spin' : ''}`} />
 							{importing ? "Importing..." : "Import Excel"}
 							<input
@@ -465,7 +452,7 @@ export default function SalesPage() {
 					</div>
 				</div>
 
-				{/* Stats Overview */}
+		
 				{sales && sales.length > 0 && (
 					<div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
 						<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
@@ -530,7 +517,6 @@ export default function SalesPage() {
 					</div>
 				)}
 
-				{/* Quick Actions Panel */}
 				<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 mb-8">
 					<div className="flex items-center justify-between">
 						<div>
@@ -560,7 +546,6 @@ export default function SalesPage() {
 					</div>
 				</div>
 
-				{/* Filters Section */}
 				<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 mb-8">
 					<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
 						<div className="flex items-center gap-4">
@@ -680,7 +665,6 @@ export default function SalesPage() {
 					)}
 				</div>
 
-				{/* Main Content */}
 				<div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
 					{sales === null ? (
 						<div className="text-center py-20">
@@ -730,7 +714,6 @@ export default function SalesPage() {
 						</div>
 					) : (
 						<div className="p-6">
-							{/* Table Header */}
 							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
 								<div>
 									<h3 className="text-lg font-semibold text-[#0F172A]">
@@ -744,7 +727,6 @@ export default function SalesPage() {
 								</div>
 							</div>
 
-							{/* Sales Table */}
 							<div className="overflow-x-auto">
 								<table className="w-full">
 									<thead>
@@ -833,7 +815,6 @@ export default function SalesPage() {
 								</table>
 							</div>
 
-							{/* Pagination */}
 							{totalPages > 1 && (
 								<div className="flex items-center justify-between border-t border-[#E2E8F0] pt-6 mt-6">
 									<div className="text-sm text-[#64748B]">

@@ -87,7 +87,7 @@ export function EditProductDialog({ product }: EditProductDialogProps) {
 
   return (
     <AlertDialog open={isEditing} onOpenChange={setIsEditing}>
-      <AlertDialogTrigger className="flex items-center gap-2 border border-[#CBD5E1] text-[#334155] hover:bg-[#F8FAFC] px-4 py-2 rounded-lg font-semibold transition-all duration-200">
+      <AlertDialogTrigger className="flex items-center gap-2 text-green-800 bg-green-100 hover:bg-green-200 px-2 py-2 rounded-lg font-semibold transition-all duration-200 text-xs">
         <SquarePen className="h-5 w-5" />
         Edit Product
       </AlertDialogTrigger>
@@ -104,7 +104,6 @@ export function EditProductDialog({ product }: EditProductDialogProps) {
           </div>
 
           <div className="space-y-4">
-            {/* Product ID */}
             <div className="space-y-2">
               <label className="text-xs font-medium text-[#64748B] flex items-center justify-between">
                 <span>Product ID</span>
@@ -128,16 +127,16 @@ export function EditProductDialog({ product }: EditProductDialogProps) {
               </p>
             </div>
 
-            {/* Basic Fields */}
+
             <div className="space-y-3">
               <h3 className="text-sm font-medium text-[#334155] flex items-center gap-2">
                 <PackageCheck className="h-4 w-4 text-[#1E293B]" />
                 Basic Information
               </h3>
-
+              <label htmlFor="name" className="ms-1 text-sm font-semibold">Name:</label>
               <input
                 type="text"
-                value={formData.name}
+                value={formData.name.toUpperCase()}
                 onChange={(e) =>
                   handleInputChange("name", e.target.value)
                 }

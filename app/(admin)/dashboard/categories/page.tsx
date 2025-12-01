@@ -296,7 +296,7 @@ export default function CategoriesPage() {
 					<div className="flex items-center gap-3">
 						<button
 							onClick={() => setIsFormOpen(true)}
-							className="flex items-center gap-2 bg-slate-800 text-white px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-700 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30"
+							className="flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-400 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 hover:bg-slate-700 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30"
 						>
 							<Plus className="h-4 w-4" />
 							Add Category
@@ -440,7 +440,7 @@ export default function CategoriesPage() {
 								</p>
 								<button
 									onClick={() => setIsFormOpen(true)}
-									className="flex items-center gap-2 bg-slate-800 text-white px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:bg-slate-700 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30 mx-auto"
+									className="flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-400 px-6 py-3 rounded-xl font-medium transition-all duration-200 hover:bg-slate-700 shadow-lg shadow-slate-500/25 hover:shadow-xl hover:shadow-slate-500/30 mx-auto"
 								>
 									<Plus className="h-4 w-4" />
 									Create First Category

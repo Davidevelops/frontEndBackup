@@ -298,11 +298,11 @@ export default function StaffAccountCreation() {
 	const getRoleColor = (role: string) => {
 		switch (role) {
 			case "admin":
-				return "bg-purple-100 text-purple-800 border-purple-200";
+				return "bg-slate-100 text-slate-800 border-slate-200";
 			case "manager":
-				return "bg-indigo-100 text-indigo-800 border-indigo-200";
+				return "bg-slate-100 text-slate-800 border-slate-200";
 			default:
-				return "bg-blue-100 text-blue-800 border-blue-200";
+				return "bg-slate-100 text-slate-800 border-slate-200";
 		}
 	};
 
@@ -330,36 +330,23 @@ export default function StaffAccountCreation() {
 	).length;
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-purple-50/30 p-6">
+		<div className="min-h-screen bg-[#F1F5F9] p-6">
 			<div className="max-w-7xl mx-auto">
 				<div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
 					<div className="flex items-center gap-4 mb-4 lg:mb-0">
 						<div className="relative">
-							<div className="bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-600 p-3 rounded-2xl shadow-lg shadow-purple-500/20">
+							<div className="bg-[#1E293B] p-3 rounded-xl">
 								<Shield className="h-8 w-8 text-white" />
 							</div>
-							<div className="absolute -top-1 -right-1 w-5 h-5 bg-green-400 border-2 border-white rounded-full animate-pulse"></div>
+							<div className="absolute -top-1 -right-1 w-5 h-5 bg-[#16A34A] border-2 border-white rounded-full"></div>
 						</div>
 						<div>
-							<h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-purple-700 to-purple-800 bg-clip-text text-transparent">
+							<h1 className="text-3xl font-bold text-[#0F172A] mb-2">
 								Staff Account Management
 							</h1>
-							<div className="flex items-center gap-4 mt-3">
-								<p className="text-gray-600 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-100 shadow-xs">
-									<Users className="h-4 w-4 text-purple-500" />
-									<span className="font-semibold text-gray-800">
-										{totalStaff}
-									</span>{" "}
-									total staff
-								</p>
-								<p className="text-gray-600 flex items-center gap-2 bg-white/80 backdrop-blur-sm px-3 py-1.5 rounded-lg border border-gray-100 shadow-xs">
-									<CheckCircle2 className="h-4 w-4 text-green-500" />
-									<span className="font-semibold text-gray-800">
-										{activeAccounts}
-									</span>{" "}
-									active accounts
-								</p>
-							</div>
+							<p className="text-[#64748B] text-lg">
+								Manage staff accounts, roles, and permissions
+							</p>
 						</div>
 					</div>
 
@@ -367,7 +354,7 @@ export default function StaffAccountCreation() {
 						<button
 							onClick={handleRefresh}
 							disabled={refreshing}
-							className="flex items-center gap-2 bg-white/80 backdrop-blur-sm hover:bg-white border border-gray-200 text-gray-700 px-4 py-3 rounded-xl font-medium transition-all duration-200 hover:shadow-md hover:border-gray-300 disabled:opacity-50"
+							className="flex items-center gap-2 bg-white hover:bg-[#F8FAFC] border border-[#E2E8F0] text-[#334155] px-4 py-2.5 rounded-lg transition-all duration-200 font-medium disabled:opacity-50"
 						>
 							<RefreshCw
 								className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`}
@@ -378,86 +365,75 @@ export default function StaffAccountCreation() {
 				</div>
 
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-					<div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+					<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-purple-700 mb-1">
-									Total Staff Accounts
-								</p>
-								<p className="text-3xl font-bold text-gray-800">{totalStaff}</p>
+								<p className="text-sm font-medium text-[#64748B] mb-2">TOTAL STAFF</p>
+								<p className="text-3xl font-bold text-[#0F172A]">{totalStaff}</p>
 							</div>
-							<div className="bg-white p-3 rounded-xl shadow-xs">
-								<Users className="h-6 w-6 text-purple-600" />
+							<div className="bg-[#F1F5F9] p-3 rounded-lg">
+								<Users className="h-6 w-6 text-[#1E293B]" />
 							</div>
 						</div>
 					</div>
 
-					<div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+					<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-green-700 mb-1">
-									Active Accounts
-								</p>
-								<p className="text-3xl font-bold text-gray-800">
-									{activeAccounts}
-								</p>
+								<p className="text-sm font-medium text-[#64748B] mb-2">ACTIVE ACCOUNTS</p>
+								<p className="text-3xl font-bold text-[#0F172A]">{activeAccounts}</p>
 							</div>
-							<div className="bg-white p-3 rounded-xl shadow-xs">
-								<CheckCircle2 className="h-6 w-6 text-green-600" />
+							<div className="bg-[#F0FDF4] p-3 rounded-lg">
+								<CheckCircle2 className="h-6 w-6 text-[#16A34A]" />
 							</div>
 						</div>
 					</div>
 
-					<div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100 rounded-2xl p-6 shadow-xs hover:shadow-sm transition-shadow duration-200">
+					<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
 						<div className="flex items-center justify-between">
 							<div>
-								<p className="text-sm font-medium text-blue-700 mb-1">
-									System Access
-								</p>
-								<p className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-									<span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+								<p className="text-sm font-medium text-[#64748B] mb-2">SYSTEM ACCESS</p>
+								<p className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+									<span className="w-2 h-2 rounded-full bg-[#16A34A]"></span>
 									Admin Privileges
 								</p>
 							</div>
-							<div className="bg-white p-3 rounded-xl shadow-xs">
-								<Shield className="h-6 w-6 text-blue-600" />
+							<div className="bg-[#F1F5F9] p-3 rounded-lg">
+								<Shield className="h-6 w-6 text-[#334155]" />
 							</div>
 						</div>
 					</div>
 				</div>
 
 				<div className="mb-8">
-					<div className="bg-gradient-to-r from-purple-50/80 to-indigo-50/80 backdrop-blur-sm border border-purple-200/60 rounded-2xl p-6 mb-6 shadow-xs">
+					<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 mb-6">
 						<div className="flex items-center gap-4">
-							<div className="bg-white p-3 rounded-xl shadow-xs">
-								<UserPlus className="h-6 w-6 text-purple-600" />
+							<div className="bg-[#F1F5F9] p-3 rounded-xl">
+								<UserPlus className="h-6 w-6 text-[#1E293B]" />
 							</div>
 							<div className="flex-1">
-								<h3 className="font-semibold text-gray-800 text-lg">
+								<h3 className="font-semibold text-[#0F172A] text-lg">
 									Create New Staff Account
 								</h3>
-								<p className="text-gray-600 mt-1">
+								<p className="text-[#64748B] mt-1">
 									Add new staff members to the system with appropriate roles and
 									permissions. Password must be at least 8 characters long.
 								</p>
-							</div>
-							<div className="hidden md:block">
-								<div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
 							</div>
 						</div>
 					</div>
 
 					{success && (
-						<div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-2xl p-6 mb-6 shadow-xs">
+						<div className="bg-white border border-[#E2E8F0] rounded-xl p-6 mb-6">
 							<div className="flex items-center gap-4">
-								<div className="bg-white p-3 rounded-xl shadow-xs">
-									<CheckCircle2 className="h-6 w-6 text-green-600" />
+								<div className="bg-[#F0FDF4] p-3 rounded-xl">
+									<CheckCircle2 className="h-6 w-6 text-[#16A34A]" />
 								</div>
 								<div className="flex-1">
-									<h3 className="font-semibold text-gray-800 text-lg">
+									<h3 className="font-semibold text-[#0F172A] text-lg">
 										Operation Successful!
 									</h3>
-									<p className="text-gray-600 mt-1">
+									<p className="text-[#64748B] mt-1">
 										The operation was completed successfully.
 									</p>
 								</div>
@@ -466,33 +442,33 @@ export default function StaffAccountCreation() {
 					)}
 
 					{error && (
-						<div className="bg-gradient-to-br from-red-50 to-orange-50 border border-red-200 rounded-2xl p-6 mb-6 shadow-xs">
+						<div className="bg-white border border-[#FECACA] rounded-xl p-6 mb-6">
 							<div className="flex items-center gap-4">
-								<div className="bg-white p-3 rounded-xl shadow-xs">
-									<AlertCircle className="h-6 w-6 text-red-600" />
+								<div className="bg-[#FEF2F2] p-3 rounded-xl">
+									<AlertCircle className="h-6 w-6 text-[#DC2626]" />
 								</div>
 								<div className="flex-1">
-									<h3 className="font-semibold text-gray-800 text-lg">
+									<h3 className="font-semibold text-[#0F172A] text-lg">
 										Operation Failed
 									</h3>
-									<p className="text-gray-600 mt-1">{error}</p>
+									<p className="text-[#64748B] mt-1">{error}</p>
 								</div>
 							</div>
 						</div>
 					)}
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-						<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-gray-100/80 overflow-hidden hover:shadow-sm transition-shadow duration-200">
+						<div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden hover:shadow-sm transition-shadow duration-200">
 							<div className="p-6">
-								<h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-									<User className="h-5 w-5 text-purple-500" />
+								<h3 className="text-lg font-semibold text-[#0F172A] mb-4 flex items-center gap-2">
+									<User className="h-5 w-5 text-[#334155]" />
 									Account Details
 								</h3>
 								<form onSubmit={handleSubmit} className="space-y-6">
 									<div className="space-y-4">
 										<div className="space-y-2">
-											<label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-												<User className="h-4 w-4 text-purple-500" />
+											<label className="flex items-center gap-2 text-sm font-medium text-[#334155]">
+												<User className="h-4 w-4 text-[#334155]" />
 												Username
 											</label>
 											<input
@@ -501,16 +477,16 @@ export default function StaffAccountCreation() {
 												value={formData.username}
 												onChange={handleInputChange}
 												required
-												className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 outline-none"
+												className="w-full px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200 outline-none"
 												placeholder="Choose a username"
 											/>
 										</div>
 
 										<div className="space-y-2">
-											<label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-												<Key className="h-4 w-4 text-purple-500" />
+											<label className="flex items-center gap-2 text-sm font-medium text-[#334155]">
+												<Key className="h-4 w-4 text-[#334155]" />
 												Password
-												<span className="text-xs text-gray-500">
+												<span className="text-xs text-[#64748B]">
 													(min. 8 characters)
 												</span>
 											</label>
@@ -520,14 +496,14 @@ export default function StaffAccountCreation() {
 												value={formData.password}
 												onChange={handleInputChange}
 												required
-												className={`w-full px-4 py-3 bg-white/80 backdrop-blur-sm border rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 outline-none ${createPasswordError
-													? "border-red-300 focus:ring-red-500"
-													: "border-gray-200 focus:ring-purple-500"
+												className={`w-full px-4 py-3 bg-white border rounded-xl focus:ring-2 focus:border-transparent transition-all duration-200 outline-none ${createPasswordError
+													? "border-[#FCA5A5] focus:ring-[#DC2626]"
+													: "border-[#E2E8F0] focus:ring-[#1E293B]"
 													}`}
 												placeholder="Set a secure password"
 											/>
 											{createPasswordError && (
-												<p className="text-red-500 text-sm flex items-center gap-1">
+												<p className="text-[#DC2626] text-sm flex items-center gap-1">
 													<AlertCircle className="h-4 w-4" />
 													{createPasswordError}
 												</p>
@@ -535,8 +511,8 @@ export default function StaffAccountCreation() {
 										</div>
 
 										<div className="space-y-2">
-											<label className="flex items-center gap-2 text-sm font-medium text-gray-700">
-												<Shield className="h-4 w-4 text-purple-500" />
+											<label className="flex items-center gap-2 text-sm font-medium text-[#334155]">
+												<Shield className="h-4 w-4 text-[#334155]" />
 												Role
 											</label>
 											<select
@@ -544,7 +520,7 @@ export default function StaffAccountCreation() {
 												value={formData.role}
 												onChange={handleInputChange}
 												required
-												className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 outline-none"
+												className="w-full px-4 py-3 bg-white border border-[#E2E8F0] rounded-xl focus:ring-2 focus:ring-[#1E293B] focus:border-transparent transition-all duration-200 outline-none"
 											>
 												<option value="staff">Staff</option>
 												<option value="admin">Admin</option>
@@ -557,7 +533,7 @@ export default function StaffAccountCreation() {
 										<button
 											type="submit"
 											disabled={loading || !!createPasswordError}
-											className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
+											className="bg-[#1E293B] hover:bg-[#0F172A] text-white px-8 py-3 rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3"
 										>
 											{loading ? (
 												<RefreshCw className="h-5 w-5 animate-spin" />
@@ -571,17 +547,17 @@ export default function StaffAccountCreation() {
 							</div>
 						</div>
 
-						<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-gray-100/80 overflow-hidden hover:shadow-sm transition-shadow duration-200">
+						<div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden hover:shadow-sm transition-shadow duration-200">
 							<div className="p-6">
 								<div className="flex items-center justify-between mb-4">
-									<h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-										<Lock className="h-5 w-5 text-purple-500" />
+									<h3 className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+										<Lock className="h-5 w-5 text-[#334155]" />
 										Available Permissions
 									</h3>
 									<button
 										type="button"
 										onClick={handleSelectAll}
-										className="text-sm text-purple-600 hover:text-purple-700 font-medium"
+										className="text-sm text-[#1E293B] hover:text-[#0F172A] font-medium"
 									>
 										{selectedPermissions.length === availablePerms.length
 											? "Deselect All"
@@ -593,14 +569,14 @@ export default function StaffAccountCreation() {
 									<div className="space-y-3">
 										{[...Array(3)].map((_, i) => (
 											<div key={i} className="animate-pulse">
-												<div className="h-4 bg-gray-200 rounded mb-2"></div>
-												<div className="h-3 bg-gray-200 rounded w-3/4"></div>
+												<div className="h-4 bg-[#E2E8F0] rounded mb-2"></div>
+												<div className="h-3 bg-[#E2E8F0] rounded w-3/4"></div>
 											</div>
 										))}
 									</div>
 								) : availablePerms.length === 0 ? (
-									<div className="text-center py-8 text-gray-500">
-										<Unlock className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+									<div className="text-center py-8 text-[#64748B]">
+										<Unlock className="h-12 w-12 mx-auto mb-3 text-[#CBD5E1]" />
 										<p>No permissions available</p>
 									</div>
 								) : (
@@ -608,16 +584,16 @@ export default function StaffAccountCreation() {
 										{availablePerms.map((permission) => (
 											<label
 												key={permission.id}
-												className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:bg-purple-50/30 cursor-pointer transition-colors duration-150"
+												className="flex items-start gap-3 p-3 rounded-lg border border-[#E2E8F0] hover:bg-[#F8FAFC] cursor-pointer transition-colors duration-150"
 											>
 												<input
 													type="checkbox"
 													checked={selectedPermissions.includes(permission.id)}
 													onChange={() => handlePermissionToggle(permission.id)}
-													className="mt-0.5 text-purple-600 focus:ring-purple-500 rounded"
+													className="mt-0.5 text-[#1E293B] focus:ring-[#1E293B] rounded"
 												/>
 												<div className="flex-1 min-w-0">
-													<p className="font-medium text-gray-800 text-sm">
+													<p className="font-medium text-[#0F172A] text-sm">
 														{permission.name}
 													</p>
 												</div>
@@ -626,9 +602,9 @@ export default function StaffAccountCreation() {
 									</div>
 								)}
 
-								<div className="mt-4 pt-4 border-t border-gray-200">
-									<p className="text-sm text-gray-600">
-										<span className="font-semibold text-purple-800">
+								<div className="mt-4 pt-4 border-t border-[#E2E8F0]">
+									<p className="text-sm text-[#64748B]">
+										<span className="font-semibold text-[#0F172A]">
 											{selectedPermissions.length}
 										</span>{" "}
 										permissions selected for reference
@@ -639,28 +615,28 @@ export default function StaffAccountCreation() {
 					</div>
 				</div>
 
-				<div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-xs border border-gray-100/80 overflow-hidden hover:shadow-sm transition-shadow duration-200">
+				<div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden hover:shadow-sm transition-shadow duration-200">
 					<div className="p-6">
 						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-							<h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
-								<Users className="h-5 w-5 text-purple-500" />
+							<h3 className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+								<Users className="h-5 w-5 text-[#334155]" />
 								Staff Accounts ({filteredAccounts.length})
 							</h3>
 							<div className="flex items-center gap-3">
 								<div className="relative">
-									<Search className="h-4 w-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
+									<Search className="h-4 w-4 text-[#94A3B8] absolute left-3 top-1/2 transform -translate-y-1/2" />
 									<input
 										type="text"
 										placeholder="Search accounts..."
 										value={searchTerm}
 										onChange={(e) => setSearchTerm(e.target.value)}
-										className="pl-10 pr-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all duration-200 w-full sm:w-64"
+										className="pl-10 pr-4 py-2 border border-[#E2E8F0] rounded-xl focus:ring-2 focus:ring-[#1E293B] focus:border-transparent outline-none transition-all duration-200 w-full sm:w-64"
 									/>
 								</div>
 								<button
 									onClick={fetchAccounts}
 									disabled={refreshing}
-									className="p-2 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+									className="p-2 hover:bg-[#F8FAFC] rounded-lg transition-colors duration-200"
 									title="Refresh Accounts"
 								>
 									<RefreshCw
@@ -673,24 +649,24 @@ export default function StaffAccountCreation() {
 						{loadingAccounts ? (
 							<div className="space-y-4">
 								<div className="animate-pulse">
-									<div className="h-12 bg-gray-200 rounded mb-4"></div>
+									<div className="h-12 bg-[#E2E8F0] rounded mb-4"></div>
 									{[...Array(5)].map((_, i) => (
 										<div
 											key={i}
-											className="h-16 bg-gray-200 rounded mb-2"
+											className="h-16 bg-[#E2E8F0] rounded mb-2"
 										></div>
 									))}
 								</div>
 							</div>
 						) : filteredAccounts.length === 0 ? (
-							<div className="text-center py-12 text-gray-500">
-								<Users className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-								<p className="text-lg font-medium text-gray-600 mb-2">
+							<div className="text-center py-12 text-[#64748B]">
+								<Users className="h-16 w-16 mx-auto mb-4 text-[#CBD5E1]" />
+								<p className="text-lg font-medium text-[#475569] mb-2">
 									{searchTerm
 										? "No accounts match your search"
 										: "No staff accounts found"}
 								</p>
-								<p className="text-sm text-gray-500">
+								<p className="text-sm text-[#64748B]">
 									{searchTerm
 										? "Try adjusting your search terms"
 										: "Create your first staff account to get started"}
@@ -700,28 +676,28 @@ export default function StaffAccountCreation() {
 							<div className="overflow-x-auto">
 								<table className="w-full">
 									<thead>
-										<tr className="border-b border-gray-200">
-											<th className="text-left py-4 px-4 text-sm font-medium text-gray-700">
+										<tr className="border-b border-[#E2E8F0]">
+											<th className="text-left py-4 px-4 text-sm font-medium text-[#334155]">
 												Username
 											</th>
-											<th className="text-left py-4 px-4 text-sm font-medium text-gray-700">
+											<th className="text-left py-4 px-4 text-sm font-medium text-[#334155]">
 												Role
 											</th>
-											<th className="text-left py-4 px-4 text-sm font-medium text-gray-700">
+											<th className="text-left py-4 px-4 text-sm font-medium text-[#334155]">
 												Permissions
 											</th>
-											<th className="text-left py-4 px-4 text-sm font-medium text-gray-700">
+											<th className="text-left py-4 px-4 text-sm font-medium text-[#334155]">
 												Created
 											</th>
-											<th className="text-left py-4 px-4 text-sm font-medium text-gray-700">
+											<th className="text-left py-4 px-4 text-sm font-medium text-[#334155]">
 												Status
 											</th>
-											<th className="text-left py-4 px-4 text-sm font-medium text-gray-700">
+											<th className="text-left py-4 px-4 text-sm font-medium text-[#334155]">
 												Actions
 											</th>
 										</tr>
 									</thead>
-									<tbody className="divide-y divide-gray-100">
+									<tbody className="divide-y divide-[#F1F5F9]">
 										{filteredAccounts.map((account) => {
 											const uniquePermissions = getUniquePermissions(
 												account.permissions
@@ -729,18 +705,18 @@ export default function StaffAccountCreation() {
 											return (
 												<tr
 													key={account.id}
-													className="hover:bg-purple-50/30 transition-colors duration-150"
+													className="hover:bg-[#F8FAFC] transition-colors duration-150"
 												>
 													<td className="py-4 px-4">
 														<div className="flex items-center gap-3">
-															<div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+															<div className="w-10 h-10 bg-[#1E293B] rounded-full flex items-center justify-center">
 																<User className="h-5 w-5 text-white" />
 															</div>
 															<div>
-																<div className="font-medium text-gray-800">
+																<div className="font-medium text-[#0F172A]">
 																	{account.username}
 																</div>
-																<div className="text-xs text-gray-500 font-mono">
+																<div className="text-xs text-[#64748B] font-mono">
 																	{account.id.slice(0, 8)}...
 																</div>
 															</div>
@@ -764,7 +740,7 @@ export default function StaffAccountCreation() {
 																		.map((permission) => (
 																			<span
 																				key={permission.id}
-																				className="inline-block bg-purple-100 text-purple-700 text-xs px-2 py-1 rounded border border-purple-200"
+																				className="inline-block bg-[#F1F5F9] text-[#334155] text-xs px-2 py-1 rounded border border-[#E2E8F0]"
 																			>
 																				{permission.name
 																					.replace("MANAGE_", "")
@@ -772,28 +748,28 @@ export default function StaffAccountCreation() {
 																			</span>
 																		))}
 																	{uniquePermissions.length > 3 && (
-																		<span className="inline-block bg-gray-100 text-gray-500 text-xs px-2 py-1 rounded border border-gray-200">
+																		<span className="inline-block bg-[#F1F5F9] text-[#64748B] text-xs px-2 py-1 rounded border border-[#E2E8F0]">
 																			+{uniquePermissions.length - 3} more
 																		</span>
 																	)}
 																</div>
 															) : (
-																<span className="text-xs text-gray-400 italic">
+																<span className="text-xs text-[#94A3B8] italic">
 																	No permissions
 																</span>
 															)}
 														</div>
 													</td>
-													<td className="py-4 px-4 text-sm text-gray-600">
+													<td className="py-4 px-4 text-sm text-[#64748B]">
 														{formatDate(account.createdAt)}
 													</td>
 													<td className="py-4 px-4">
 														{account.deletedAt ? (
-															<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+															<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#FEF2F2] text-[#991B1B] border border-[#FECACA]">
 																Inactive
 															</span>
 														) : (
-															<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+															<span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-[#F0FDF4] text-[#166534] border border-[#BBF7D0]">
 																Active
 															</span>
 														)}
@@ -801,27 +777,27 @@ export default function StaffAccountCreation() {
 													<td className="py-4 px-4">
 														<div className="flex items-center gap-1">
 															<button
-																className="p-2 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+																className="p-2 hover:bg-[#F8FAFC] rounded-lg transition-colors duration-200"
 																title="Change Password"
 																onClick={() =>
 																	setChangingPasswordAccount(account)
 																}
 															>
-																<KeyRound className="h-4 w-4 text-purple-600" />
+																<KeyRound className="h-4 w-4 text-[#334155]" />
 															</button>
 															<button
-																className="p-2 hover:bg-purple-50 rounded-lg transition-colors duration-200"
+																className="p-2 hover:bg-[#F8FAFC] rounded-lg transition-colors duration-200"
 																title="Edit Account"
 																onClick={() => setEditingAccount(account)}
 															>
-																<UserPen className="h-4 w-4 text-purple-600" />
+																<UserPen className="h-4 w-4 text-[#334155]" />
 															</button>
 															<button
-																className="p-2 hover:bg-red-50 rounded-lg transition-colors duration-200"
+																className="p-2 hover:bg-[#FEF2F2] rounded-lg transition-colors duration-200"
 																title="Delete Account"
 																onClick={() => setDeletingAccount(account)}
 															>
-																<Trash2 className="h-4 w-4 text-red-500" />
+																<Trash2 className="h-4 w-4 text-[#DC2626]" />
 															</button>
 														</div>
 													</td>
@@ -842,8 +818,8 @@ export default function StaffAccountCreation() {
 					<DialogContent className="sm:max-w-md">
 						<DialogHeader>
 							<div className="flex items-center gap-3">
-								<div className="bg-purple-100 p-2 rounded-lg">
-									<UserPen className="h-6 w-6 text-purple-600" />
+								<div className="bg-[#F1F5F9] p-2 rounded-lg">
+									<UserPen className="h-6 w-6 text-[#1E293B]" />
 								</div>
 								<div>
 									<DialogTitle className="text-lg">Edit Account</DialogTitle>
@@ -868,7 +844,7 @@ export default function StaffAccountCreation() {
 										}))
 									}
 									placeholder="Enter username"
-									className="focus:ring-purple-500"
+									className="focus:ring-[#1E293B]"
 								/>
 							</div>
 							<div className="space-y-2">
@@ -884,7 +860,7 @@ export default function StaffAccountCreation() {
 											role: e.target.value,
 										}))
 									}
-									className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+									className="w-full px-3 py-2 border border-[#E2E8F0] rounded-lg focus:ring-2 focus:ring-[#1E293B] focus:border-transparent"
 								>
 									<option value="staff">Staff</option>
 									<option value="admin">Admin</option>
@@ -898,7 +874,7 @@ export default function StaffAccountCreation() {
 							</Button>
 							<Button
 								onClick={handleEditAccount}
-								className="bg-purple-600 hover:bg-purple-700"
+								className="bg-[#1E293B] hover:bg-[#0F172A]"
 							>
 								<Save className="h-4 w-4 mr-2" />
 								Save Changes
@@ -914,8 +890,8 @@ export default function StaffAccountCreation() {
 					<DialogContent className="sm:max-w-md">
 						<DialogHeader>
 							<div className="flex items-center gap-3">
-								<div className="bg-purple-100 p-2 rounded-lg">
-									<KeyRound className="h-6 w-6 text-purple-600" />
+								<div className="bg-[#F1F5F9] p-2 rounded-lg">
+									<KeyRound className="h-6 w-6 text-[#1E293B]" />
 								</div>
 								<div>
 									<DialogTitle className="text-lg">Change Password</DialogTitle>
@@ -942,7 +918,7 @@ export default function StaffAccountCreation() {
 										}))
 									}
 									placeholder="Enter new password"
-									className="focus:ring-purple-500"
+									className="focus:ring-[#1E293B]"
 								/>
 							</div>
 							<div className="space-y-2">
@@ -963,12 +939,12 @@ export default function StaffAccountCreation() {
 										}))
 									}
 									placeholder="Confirm new password"
-									className="focus:ring-purple-500"
+									className="focus:ring-[#1E293B]"
 								/>
 							</div>
 							{passwordError && (
-								<div className="bg-red-50 border border-red-200 rounded-lg p-3">
-									<p className="text-red-700 text-sm flex items-center gap-2">
+								<div className="bg-[#FEF2F2] border border-[#FECACA] rounded-lg p-3">
+									<p className="text-[#DC2626] text-sm flex items-center gap-2">
 										<AlertCircle className="h-4 w-4" />
 										{passwordError}
 									</p>
@@ -984,7 +960,7 @@ export default function StaffAccountCreation() {
 							</Button>
 							<Button
 								onClick={handleChangePassword}
-								className="bg-purple-600 hover:bg-purple-700"
+								className="bg-[#1E293B] hover:bg-[#0F172A]"
 							>
 								<KeyRound className="h-4 w-4 mr-2" />
 								Change Password
@@ -1000,8 +976,8 @@ export default function StaffAccountCreation() {
 					<AlertDialogContent>
 						<AlertDialogHeader>
 							<div className="flex items-center gap-3">
-								<div className="bg-red-100 p-2 rounded-lg">
-									<Trash2 className="h-6 w-6 text-red-600" />
+								<div className="bg-[#FEF2F2] p-2 rounded-lg">
+									<Trash2 className="h-6 w-6 text-[#DC2626]" />
 								</div>
 								<div>
 									<AlertDialogTitle>Delete Account</AlertDialogTitle>
@@ -1018,7 +994,7 @@ export default function StaffAccountCreation() {
 							<AlertDialogCancel>Cancel</AlertDialogCancel>
 							<AlertDialogAction
 								onClick={handleDeleteAccount}
-								className="bg-red-600 hover:bg-red-700 text-white"
+								className="bg-[#DC2626] hover:bg-[#B91C1C] text-white"
 							>
 								<Trash2 className="h-4 w-4 mr-2" />
 								Delete Account

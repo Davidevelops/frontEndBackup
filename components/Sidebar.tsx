@@ -86,7 +86,6 @@ export default function Sidebar() {
 			items: [
 				{ href: "/dashboard/products", label: "Products", icon: Blocks },
 				{ href: "/dashboard/categories", label: "Categories", icon: Folder },
-				{ href: "/dashboard/inventory", label: "Stock Levels", icon: Warehouse },
 			]
 		},
 		{
@@ -105,8 +104,7 @@ export default function Sidebar() {
 			icon: ShoppingCart,
 			type: "dropdown",
 			items: [
-				{ href: "/dashboard/sales", label: "Sales Data", icon: ShoppingCart },
-				{ href: "/dashboard/forecast", label: "Sales Forecast", icon: TrendingUp }, 
+				{ href: "/dashboard/sales", label: "Sales Data", icon: ShoppingCart }, 
 			]
 		},
 		{
@@ -118,13 +116,6 @@ export default function Sidebar() {
 				{ href: "/dashboard/accounts", label: "Accounts", icon: Users },
 				{ href: "/dashboard/settings", label: "Settings", icon: Settings },
 			]
-		},
-		{
-			id: "alerts",
-			label: "Alerts",
-			icon: TriangleAlert,
-			href: "/dashboard/alerts",
-			type: "single"
 		},
 	]
 
