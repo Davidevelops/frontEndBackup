@@ -385,12 +385,12 @@ export default function SalesTable({
             </div>
             <div>
               <h1 className="text-4xl font-bold text-[#1E293B]">
-                Sales Analytics
+               Transaction history of product: {productName}
               </h1>
-              <div className="text-[#475569] mt-2 flex items-center gap-2">
+              {/* <div className="text-[#475569] mt-2 flex items-center gap-2">
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 Detailed sales performance for {productName}
-              </div>
+              </div> */}
             </div>
           </div>
 
@@ -522,7 +522,6 @@ export default function SalesTable({
           </div>
         </div>
 
-        {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-3 mb-6">
           <div className="bg-white rounded-2xl p-5 border border-[#E2E8F0] hover:shadow-sm transition-all duration-300 group">
             <div className="flex items-center gap-3">
@@ -534,9 +533,9 @@ export default function SalesTable({
                   {totalSales}
                 </div>
                 <div className="text-sm font-medium text-[#475569]">
-                  Total Sales
+                  Total completed sold items
                 </div>
-                <div className="text-xs text-[#64748B] mt-1">Units sold</div>
+                <div className="text-xs text-[#64748B] mt-1">Items sold</div>
               </div>
             </div>
             <div className="mt-3 flex items-center gap-2 text-xs text-[#64748B] bg-[#F1F5F9] px-2 py-1 rounded-lg border border-[#E2E8F0]">
@@ -643,7 +642,7 @@ export default function SalesTable({
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-[#1E293B]">
-                    Sales History
+                    Transactions
                   </h2>
                   <p className="text-[#475569] text-sm">
                     Detailed transaction records for {productName}
@@ -670,8 +669,8 @@ export default function SalesTable({
                   </Select>
                 </div>
                 
-                <div className="flex items-center gap-2 bg-[#F1F5F9] text-[#475569] px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
-                  <div className="w-2 h-2 bg-[#64748B] rounded-full"></div>
+                <div className="flex items-center gap-2 bg-blue-100 border border-blue-400 text-blue-700 px-3 py-1.5 rounded-lg border border-[#E2E8F0]">
+                  <div className="w-2 h-2 bg-blue-700 rounded-full"></div>
                   <span className="text-sm font-medium">
                     {filteredSales.length} transactions
                   </span>
@@ -679,7 +678,6 @@ export default function SalesTable({
               </div>
             </div>
 
-            {/* Date Range Filter */}
             <div className="mt-4 flex flex-col sm:flex-row gap-4 items-start sm:items-end">
               <div className="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div className="space-y-2">
@@ -725,7 +723,6 @@ export default function SalesTable({
               </div>
             </div>
 
-            {/* Active Filters Display */}
             {hasActiveFilters && (
               <div className="mt-3 flex flex-wrap gap-2">
                 {statusFilter !== "all" && (

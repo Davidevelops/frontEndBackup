@@ -105,7 +105,7 @@ export function ForecastInsights({
               </p>
               <button
                 onClick={onOpenForecastDialog}
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-10 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                className="bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-400 px-10 py-4 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 {hasEnoughSalesData ? `Generate ${productName} Forecast` : `Generate Forecast`}
               </button>

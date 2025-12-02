@@ -143,6 +143,34 @@ excelProducts() {
 excelSales() {
   return `${this.backendUrl}/excel/sales`
 }
+
+categoryGroups(categoryId: string, groupId?: string) {
+  if (groupId) {
+    return `${this.backendUrl}/categories/${categoryId}/groups/${groupId}`;
+  } else {
+    return `${this.backendUrl}/categories/${categoryId}/groups`;
+  }
+}
+
+productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
+  let baseUrl = `${this.backendUrl}/groups`;
+  
+  if (groupId) {
+    baseUrl += `/${groupId}`;
+  }
+  
+  if (queryParams) {
+    const params = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, value.toString());
+      }
+    });
+    baseUrl += `?${params.toString()}`;
+  }
+  
+  return baseUrl;
+}
 }
 
 export const apiEndpoints = new ApiEndpoints()

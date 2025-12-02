@@ -280,7 +280,7 @@ export default function CreateDelivery({
     <>
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-400 px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-lg shadow-gray-500/25 hover:shadow-xl hover:shadow-gray-500/30"
+        className="flex items-center gap-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-400 px-6 py-3 rounded-xl font-semibold transition-all duration-200 shadow-gray-500/25 hover:shadow-xl hover:shadow-gray-500/30"
       >
         <Plus className="h-5 w-5" />
         New Delivery

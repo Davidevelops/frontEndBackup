@@ -234,7 +234,6 @@ export default function DeliveriesPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="flex items-center gap-4 mb-4 lg:mb-0">
             <div className="relative">
@@ -267,31 +266,22 @@ export default function DeliveriesPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleRefresh}
-              disabled={refreshing}
-              className="flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-4 py-2 rounded-xl font-medium transition-all duration-200 shadow-xs hover:shadow-sm"
-            >
-              <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-              {refreshing ? 'Refreshing...' : 'Refresh'}
-            </button>
             <CreateDelivery onDeliveryCreated={fetchDeliveries} />
           </div>
         </div>
 
-        <Alert className="mb-6 bg-blue-50 border-blue-200">
-          <Info className="h-4 w-4 text-blue-600" />
-          <AlertDescription className="text-blue-800">
-            <strong>Before you make a delivery</strong> Make sure this supplier has a associated product. You won't be able to create one if the supplier you chose doesn't have an associated product. If there is no associated product, <strong>Go to: supply chain &gt; suppliers &gt; choose the "details" button of the selected supplier and you will see a "add product button" to associated products.</strong>
+        <Alert className="mb-6 bg-yellow-100 border-yellow-400">
+          <AlertDescription className="text-yellow-800">
+            <strong className="text-xl">NOTE BEFORE MAKING A DELIVERY</strong> Make sure this supplier has a associated product. You won't be able to create one if the supplier you chose doesn't have an associated product. If there is no associated product, <strong>Go to: supply chain &gt; suppliers &gt; choose the "details" button of the selected supplier and you will see a "add product button" to associated products.</strong>
           </AlertDescription>
         </Alert>
 
-        {/* Enhanced Recommendations Panel */}
+     
         <div className="mb-8">
           <RecommendationsPanel />
         </div>
 
-        {/* Stats Cards */}
+
         {deliveries && deliveries.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div 
@@ -380,7 +370,7 @@ export default function DeliveriesPage() {
           </div>
         )}
 
-        {/* Filters Section */}
+
         {deliveries && deliveries.length > 0 && (
           <div className="bg-white border border-slate-200 rounded-2xl p-6 mb-8 shadow-xs">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-6">
@@ -509,7 +499,6 @@ export default function DeliveriesPage() {
           </div>
         )}
 
-        {/* Dashboard Info Panel */}
         {deliveries && deliveries.length > 0 && (
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 mb-8 shadow-xs">
             <div className="flex items-center gap-4">
@@ -547,7 +536,6 @@ export default function DeliveriesPage() {
           </div>
         )}
 
-        {/* Delivery List */}
         <div className="bg-white rounded-2xl shadow-xs border border-slate-200 overflow-hidden hover:shadow-sm transition-shadow duration-200">
           {deliveries === null ? (
             <div className="text-center py-20">

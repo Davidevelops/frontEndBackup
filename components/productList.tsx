@@ -70,6 +70,16 @@ interface Props {
 
 const ITEMS_PER_PAGE = 10
 
+// Helper function to filter out "base" variants
+const filterBaseVariants = (products: any[]) => {
+  return products.filter(product => product.name.toLowerCase() !== "base")
+}
+
+// Helper function to count non-base variants
+const countNonBaseVariants = (products: any[]) => {
+  return products.filter(product => product.name.toLowerCase() !== "base").length
+}
+
 export default function ProductList({ productGroups, refreshProducts }: Props) {
   const [productName, setProductName] = useState<string>("")
   const [error, setError] = useState<string>("")
@@ -164,6 +174,12 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
   }
 
   const handleAddVariant = async (groupId: string) => {
+    // Prevent creating a variant named "base"
+    if (variantData.name.trim().toLowerCase() === "base") {
+      setError('Variant name "base" is reserved and cannot be used')
+      return
+    }
+
     if (!variantData.name.trim()) {
       setError("Variant name is required")
       return
@@ -299,6 +315,8 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
 
   const isFormValid = () => {
     if (!variantData.name.trim()) return false
+    // Prevent validation from passing if name is "base"
+    if (variantData.name.trim().toLowerCase() === "base") return false
     if (addMode === "full") {
       const {
         classification,
@@ -397,7 +415,8 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
               <tbody className="divide-y divide-[#F1F5F9]">
                 {currentProductGroups.map((group, index) => {
                   const products = group.products || []
-                  const productCount = products.length
+                  const filteredProducts = filterBaseVariants(products)
+                  const productCount = countNonBaseVariants(products)
                   const lastUpdated = new Date(group.updatedAt).toLocaleDateString()
 
                   return (
@@ -406,9 +425,9 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                     } hover:bg-[#F1F5F9]`}>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <div className="bg-[#1E293B] p-2 rounded-lg">
+                          {/* <div className="bg-[#1E293B] p-2 rounded-lg">
                             <BarChart3 className="h-5 w-5 text-white" />
-                          </div>
+                          </div> */}
                           <div>
                             <div className="font-semibold text-[#0F172A] text-xs group-hover:text-[#1E293B] transition-colors">
                               {group.name.toUpperCase()}
@@ -428,9 +447,9 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                       </td>
                       <td className="py-4 px-6 min-w-[200px] max-w-[300px]">
                         <div className="max-w-full">
-                          {products.length > 0 ? (
+                          {filteredProducts.length > 0 ? (
                             <div className="flex flex-wrap gap-1">
-                              {products.slice(0, 5).map((product, index) => (
+                              {filteredProducts.slice(0, 5).map((product, index) => (
                                 <Link
                                   href={`/dashboard/product-view/${group.id}/${product.id}`}
                                   key={product.id}
@@ -443,10 +462,10 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                                   </div>
                                 </Link>
                               ))}
-                              {products.length > 5 && (
+                              {filteredProducts.length > 5 && (
                                 <div className="inline-flex items-center">
                                   <span className="text-xs text-[#64748B] bg-[#F1F5F9] px-2 py-1 rounded-full">
-                                    +{products.length - 5} more
+                                    +{filteredProducts.length - 5} more
                                   </span>
                                 </div>
                               )}
@@ -468,12 +487,12 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                       <td className="py-4 px-6">
                         <div className="flex items-center justify-center gap-2">
              
-                          {products.length > 0 ? (
-                            products.length === 1 ? (
+                          {filteredProducts.length > 0 ? (
+                            filteredProducts.length === 1 ? (
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Link
-                                    href={`/dashboard/product-view/${group.id}/${products[0].id}`}
+                                    href={`/dashboard/product-view/${group.id}/${filteredProducts[0].id}`}
                                     className="flex items-center gap-2 bg-purple-100 hover:bg-purple-200 text-purple-700 hover:text-purple-800 border border-purple-100 px-3 py-2 rounded-lg transition-all duration-200 text-xs font-medium"
                                   >
                                     <ChartNoAxesColumnIncreasing className="h-4 w-4" />
@@ -498,7 +517,7 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent className="bg-white border border-[#E2E8F0] max-h-60 overflow-y-auto">
                                   <DropdownMenuLabel>Select Variant</DropdownMenuLabel>
-                                  {products.map((product) => (
+                                  {filteredProducts.map((product) => (
                                     <DropdownMenuItem key={product.id} className="cursor-pointer">
                                       <Link
                                         href={`/dashboard/product-view/${group.id}/${product.id}`}
@@ -542,7 +561,7 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                                 onClick={() => openAddVariantDialog(group.id)}
                               >
                                 <Plus className="h-4 w-4" />
-                                Add 
+                                Add Variant
                               </button>
                             </TooltipTrigger>
                             <TooltipContent className="bg-[#1E293B] text-white border-0">
@@ -818,7 +837,7 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                     handleVariantFieldChange("name", e.target.value)
                   }
                   className="mt-1 border-[#CBD5E1] focus:ring-2 focus:ring-[#1E293B] focus:border-transparent focus:outline-none"
-                  placeholder="Enter variant name..."
+                  placeholder="Enter variant name (cannot be 'base')..."
                 />
               </div>
 

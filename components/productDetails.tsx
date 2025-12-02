@@ -25,8 +25,7 @@ import { SalesChart } from "./SalesChart";
 import { ForecastInsights } from "./ForecastInsights";
 import ForecastChart from "./ForecastChart";
 
-
-import { SingleProduct, Forecast, ForecastSelection } from "@/lib/types";
+import { SingleProduct, Forecast, ForecastSelection, ProductGroup } from "@/lib/types";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 import apiClient from "@/lib/axiosConfig";
 import { ArrowLeft } from "lucide-react";
@@ -153,6 +152,8 @@ export default function ProductDetails({ product }: Props) {
 
   const [salesData, setSalesData] = useState<SalesData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [groupName, setGroupName] = useState<string>("");
+  const [loadingGroupName, setLoadingGroupName] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -612,6 +613,23 @@ These projections help you plan your inventory purchases, staffing needs, and ca
     }
   };
 
+  const fetchGroupName = async (): Promise<void> => {
+    try {
+      setLoadingGroupName(true);
+      const response = await apiClient.get(apiEndpoints.productGroup(product.groupId));
+      if (response.data && response.data.data) {
+        setGroupName(response.data.data.name);
+      } else {
+        setGroupName("Unknown Group");
+      }
+    } catch (error) {
+      console.error("Error fetching group name:", error);
+      setGroupName("Error loading group name");
+    } finally {
+      setLoadingGroupName(false);
+    }
+  };
+
   const fetchForecastData = async (selection: ForecastSelection): Promise<void> => {
     try {
       let url: string;
@@ -708,6 +726,10 @@ These projections help you plan your inventory purchases, staffing needs, and ca
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
+        // Fetch group name first
+        await fetchGroupName();
+        
+        // Then fetch sales and forecast data
         const [salesRes, forecastRes] = await Promise.all([
           apiClient.get(
             `${apiEndpoints.productSales(
@@ -800,6 +822,7 @@ These projections help you plan your inventory purchases, staffing needs, and ca
         <div className="max-w-7xl mx-auto space-y-6">
           <ProductHeader 
             product={product}
+            groupName={groupName}
             hasEnoughSalesData={hasEnoughSalesData()}
             onForecastGenerated={handleForecastGenerated}
           />
