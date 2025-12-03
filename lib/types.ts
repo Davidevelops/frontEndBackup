@@ -1,4 +1,3 @@
-
 export interface VariantSetting {
 	classification: string
 	serviceLevel: number
@@ -65,6 +64,7 @@ export interface Supplier {
 	products: any[]
 }
 
+// ----- SALES -----
 export interface Sale {
 	id: string
 	accountId: string
@@ -81,6 +81,19 @@ export interface SalesResponse {
 	data: Sale[]
 }
 
+export type SaleStatus = "completed" | "pending" | "cancelled"
+
+export const isSaleStatus = (status: string): status is SaleStatus => {
+	return ["completed", "pending", "cancelled"].includes(status)
+}
+
+// ----- ACCOUNTS -----
+export type AccountRole = 'admin' | 'staff' | 'manager';
+
+export const isAccountRole = (role: string): role is AccountRole => {
+  return ['admin', 'staff', 'manager'].includes(role)
+}
+
 export interface AccountPermission {
 	id: string
 	name: string
@@ -89,28 +102,108 @@ export interface AccountPermission {
 export interface Account {
 	id: string
 	username: string
-	role: string
+	role: AccountRole // Changed from string to AccountRole
 	createdAt: string
 	updatedAt: string
 	deletedAt: string | null
 	permissions?: AccountPermission[]
+	isActive?: boolean // Derived from deletedAt
 }
 
 export interface CreateAccountRequest {
 	username: string
 	password: string
-	role: string
+	role: AccountRole // Changed from string to AccountRole
+	permissions?: string[] // Optional array of permission IDs
 }
 
+export interface UpdateAccountRequest {
+	username?: string
+	role?: AccountRole
+}
+
+export interface ChangePasswordRequest {
+	password: string
+	confirmPassword?: string // Optional for frontend validation
+}
+
+export interface AccountUpdateData {
+	username?: string
+	role?: AccountRole
+}
+
+export interface AccountWithPermissions extends Account {
+	permissions: AccountPermission[]
+}
+
+// ----- PERMISSIONS -----
 export interface Permission {
 	id: string
 	name: string
+	description?: string
+	module?: string
 }
 
 export interface AssignPermissionsRequest {
 	permissions: string[]
 }
 
+export interface GrantPermissionRequest {
+	permissionId: string
+}
+
+export interface BulkPermissionOperation {
+	accountId: string
+	permissionIds: string[]
+	action: 'grant' | 'revoke'
+}
+
+// ----- API RESPONSES -----
+export interface AccountsResponse {
+	data: Account[]
+	meta?: {
+		total: number
+		page: number
+		limit: number
+		totalPages: number
+	}
+}
+
+export interface PermissionsResponse {
+	data: Permission[]
+}
+
+export interface SingleAccountResponse {
+	data: Account
+}
+
+// ----- ACCOUNT FILTERS & STATS -----
+export interface AccountFilters {
+	role?: AccountRole | 'all'
+	isActive?: boolean
+	search?: string
+	page?: number
+	limit?: number
+}
+
+export type AccountStatus = 'active' | 'inactive' | 'archived'
+
+export const isAccountStatus = (status: string): status is AccountStatus => {
+	return ['active', 'inactive', 'archived'].includes(status)
+}
+
+export interface AccountStats {
+	total: number
+	active: number
+	inactive: number
+	byRole: {
+		admin: number
+		staff: number
+		manager: number
+	}
+}
+
+// ----- DELIVERIES -----
 export interface DeliveryProduct {
 	id: string
 	name: string
@@ -169,34 +262,13 @@ export interface UpdateDeliveryScheduleData {
 	scheduledArrivalDate: string
 }
 
-export interface Sale {
-	id: string
-	accountId: string
-	productId: string
-	quantity: number
-	status: string
-	date: string
-	createdAt: string
-	updatedAt: string
-	deletedAt: string | null
-}
-
-export interface SalesResponse {
-	data: Sale[]
-}
-
-export type SaleStatus = "completed" | "pending" | "cancelled"
-
-export const isSaleStatus = (status: string): status is SaleStatus => {
-	return ["completed", "pending", "cancelled"].includes(status)
-}
-
 export type DeliveryStatus = "pending" | "completed" | "cancelled"
 
 export const isDeliveryStatus = (status: string): status is DeliveryStatus => {
 	return ["pending", "completed", "cancelled"].includes(status)
 }
 
+// ----- CATEGORIES -----
 export interface Category {
 	id: string
 	accountId: string
@@ -211,60 +283,60 @@ export interface CategoriesResponse {
 	data: Category[]
 }
 
-
+// ----- FORECASTS -----
 export interface SalesData {
-  date: string;
-  productId: string;
-  quantity: number;
-  revenue: number;
+	date: string;
+	productId: string;
+	quantity: number;
+	revenue: number;
 }
 
 export interface ForecastRequest {
-  salesData: SalesData[];
-  periods: number;
-  confidenceLevel: number;
+	salesData: SalesData[];
+	periods: number;
+	confidenceLevel: number;
 }
 
 export interface ForecastResult {
-  date: string;
-  predictedSales: number;
-  lowerBound: number;
-  upperBound: number;
+	date: string;
+	predictedSales: number;
+	lowerBound: number;
+	upperBound: number;
 }
 
 export interface ForecastResponse {
-  data: {
-    id: string;
-    forecast: ForecastResult[];
-    accuracy: number;
-    generatedAt: string;
-    metadata: {
-      periods: number;
-      method: string;
-    };
-  };
+	data: {
+		id: string;
+		forecast: ForecastResult[];
+		accuracy: number;
+		generatedAt: string;
+		metadata: {
+			periods: number;
+			method: string;
+		};
+	};
 }
 
 export interface Forecast {
-  id: string;
-  createdAt: string;
-  updatedAt: string;
-  dataDepth: number;
-  forecastStartDate: string;
-  forecastEndDate: string;
-  entries?: ForecastEntry[];
+	id: string;
+	createdAt: string;
+	updatedAt: string;
+	dataDepth: number;
+	forecastStartDate: string;
+	forecastEndDate: string;
+	entries?: ForecastEntry[];
 }
 
 export interface ForecastEntry {
-  id: string;
-  date: string;
-  yhat: number;
-  yhatLower: number;
-  yhatUpper: number;
-  forecastId: string;
+	id: string;
+	date: string;
+	yhat: number;
+	yhatLower: number;
+	yhatUpper: number;
+	forecastId: string;
 }
 
 export interface ForecastSelection {
-  type: 'latest' | 'all' | 'specific';
-  forecastId?: string;
+	type: 'latest' | 'all' | 'specific';
+	forecastId?: string;
 }

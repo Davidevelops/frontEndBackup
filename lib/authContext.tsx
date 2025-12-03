@@ -35,18 +35,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(true);
       setError(null);
       
-      // Use apiClient instead of axios directly
+      console.log('🔄 Checking session...');
+      const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
+      console.log('🔑 Token in localStorage:', token ? 'Exists' : 'Not found');
+      
       const response = await apiClient.get(apiEndpoints.session());
-
+      
       if (response.data.data) {
         setUser(response.data.data);
+        console.log('👤 User set:', response.data.data.username);
       } else {
         setUser(null);
       }
     } catch (err: any) {
-      console.error('Session check failed:', err);
+      console.error('❌ Session check failed:', err.message);
       setUser(null);
-     
       if (err.response?.status !== 401) {
         setError('Failed to check authentication status');
         toast.error('Failed to verify session');
@@ -57,6 +60,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem('token');
+      console.log('✅ Token cleared on logout');
+    }
     setUser(null);
     toast.success('Logged out successfully');
     window.location.href = '/';
