@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import { login } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/authContext";
 import toast from "react-hot-toast";
-import { useRouter } from "next/navigation"; // Added import
+import { useRouter } from "next/navigation";
 
 export default function LogIn() {
 	const [username, setUsername] = useState("");
@@ -14,8 +14,16 @@ export default function LogIn() {
 	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
-	const { checkSession } = useAuth();
-	const router = useRouter(); // Added router hook
+	const { checkSession, user } = useAuth(); // Added user from useAuth
+	const router = useRouter();
+
+	// ADD THIS EFFECT: Redirect if already logged in
+	useEffect(() => {
+		if (user) {
+			console.log("User already logged in, redirecting to dashboard");
+			router.push("/dashboard");
+		}
+	}, [user, router]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -27,21 +35,30 @@ export default function LogIn() {
 			console.log("Login success:", response);
 			toast.success('Login successful!');
 			
-			// Removed the artificial delay
-			// await new Promise(resolve => setTimeout(resolve, 100));
-			
+			// Wait for checkSession to complete
 			await checkSession();
 			
-			// FIXED: Use Next.js router instead of window.location
-			router.push("/dashboard");
-			// Optional: Force a refresh to update all components
-			router.refresh();
+			// Give a small delay for state to update
+			await new Promise(resolve => setTimeout(resolve, 50));
+			
+			// Check if user is now authenticated
+			const token = localStorage.getItem('token');
+			if (token) {
+				console.log("Token confirmed, redirecting to dashboard");
+				router.push("/dashboard");
+				router.refresh();
+			} else {
+				throw new Error("Login failed - no token stored");
+			}
 			
 		} catch (err: any) {
 			console.error("Login error:", err);
 			const errorMessage = err.response?.data?.error || err.message || "Invalid username or password. Please try again.";
 			setError(errorMessage);
 			toast.error(errorMessage);
+			
+			// Clear form on error
+			setPassword("");
 		} finally {
 			setLoading(false);
 		}
@@ -50,6 +67,18 @@ export default function LogIn() {
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
 	};
+
+	// ADD: Show loading if auth is checking
+	if (loading) {
+		return (
+			<div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-[#F5F7FA] to-[#E8ECF1]">
+				<div className="text-center">
+					<div className="w-16 h-16 border-4 border-[#3A4A5A] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+					<p className="text-[#3A4A5A]">Loading authentication...</p>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-[#F5F7FA] to-[#E8ECF1]">
@@ -82,6 +111,7 @@ export default function LogIn() {
 									onChange={(e) => setUsername(e.target.value)}
 									required
 									disabled={loading}
+									autoComplete="username"
 								/>
 							</div>
 
@@ -98,12 +128,14 @@ export default function LogIn() {
 										onChange={(e) => setPassword(e.target.value)}
 										required
 										disabled={loading}
+										autoComplete="current-password"
 									/>
 									<button
 										type="button"
 										className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#7C8A96] hover:text-[#3A4A5A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2 rounded p-1"
 										onClick={togglePasswordVisibility}
 										disabled={loading}
+										aria-label={showPassword ? "Hide password" : "Show password"}
 									>
 										{showPassword ? (
 											<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,13 +151,20 @@ export default function LogIn() {
 								</div>
 							</div>
 
-							{/* Debug link - remove in production */}
-							<div className="mt-4 text-sm">
+							{/* Updated debug link */}
+							<div className="mt-4 text-sm flex gap-4">
 								<Link 
 									href="/test" 
 									className="text-[#62778C] hover:text-[#3A4A5A] transition-colors"
 								>
-									Test if routing works →
+									Test Routing →
+								</Link>
+								<span className="text-gray-300">|</span>
+								<Link 
+									href="/dashboard" 
+									className="text-[#62778C] hover:text-[#3A4A5A] transition-colors"
+								>
+									Try Dashboard →
 								</Link>
 							</div>
 						</div>
@@ -135,7 +174,7 @@ export default function LogIn() {
 								<p className="text-red-600 font-medium">Login Error:</p>
 								<p className="text-red-500 text-sm mt-1">{error}</p>
 								<p className="text-xs text-gray-500 mt-2">
-									If this persists, check browser console (F12) for details.
+									Check console (F12 → Console tab) for details.
 								</p>
 							</div>
 						)}
@@ -143,7 +182,7 @@ export default function LogIn() {
 						<button
 							type="submit"
 							disabled={loading}
-							className="rounded-lg bg-[#3A4A5A] hover:bg-[#31414F] disabled:bg-[#A7B3C0] w-full text-white py-3 font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2 flex items-center justify-center"
+							className="rounded-lg bg-[#3A4A5A] hover:bg-[#31414F] disabled:bg-[#A7B3C0] disabled:cursor-not-allowed w-full text-white py-3 font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2 flex items-center justify-center"
 						>
 							{loading ? (
 								<>
@@ -156,14 +195,31 @@ export default function LogIn() {
 							) : "Log in"}
 						</button>
 
-						{/* Debug info - remove in production */}
+						{/* Enhanced debug info */}
 						<div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
 							<p className="text-xs text-gray-600 mb-1">Debug Info:</p>
+							<p className="text-xs text-gray-500 mb-1">
+								Router: {router ? "✅ Ready" : "❌ Not ready"} | 
+								Auth: {user ? "✅ Logged in" : "❌ Not logged in"}
+							</p>
 							<p className="text-xs text-gray-500">
-								Router ready: {router ? "Yes" : "No"} | 
-								Path: {typeof window !== 'undefined' ? window.location.pathname : 'Loading...'}
+								Token: {typeof window !== 'undefined' ? (localStorage.getItem('token') ? "✅ Present" : "❌ Missing") : "Loading..."}
 							</p>
 						</div>
+
+						{/* Clear storage button for debugging */}
+						<button
+							type="button"
+							onClick={() => {
+								localStorage.clear();
+								document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+								toast.success('Storage cleared');
+								window.location.reload();
+							}}
+							className="mt-3 text-xs text-gray-500 hover:text-gray-700 underline"
+						>
+							Clear storage (debug)
+						</button>
 					</form>
 				</div>
 
@@ -173,7 +229,8 @@ export default function LogIn() {
 						alt="auth image"
 						fill
 						className="object-cover"
-						priority // Add priority for faster loading
+						priority
+						sizes="50vw"
 					/>
 				</div>
 			</div>

@@ -14,6 +14,25 @@ export interface Session {
   };
 }
 
+// NEW: Helper function to set token in both localStorage and cookies
+export const setAuthToken = (token: string) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('token', token);
+    // Also set as cookie for middleware access
+    document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
+    console.log('✅ Token set in localStorage and cookies');
+  }
+};
+
+// NEW: Helper to remove token
+export const removeAuthToken = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('token');
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    console.log('✅ Token removed from localStorage and cookies');
+  }
+};
+
 export const login = async (credentials: LoginCredentials) => {
   try {
     console.log('🔐 Login attempt to:', apiEndpoints.login());
@@ -36,8 +55,9 @@ export const login = async (credentials: LoginCredentials) => {
       response.data.data?.accessToken;
     
     if (token) {
-      localStorage.setItem('token', token);
-      console.log('✅ Token stored:', token.substring(0, 20) + '...');
+      // UPDATED: Use the new helper function
+      setAuthToken(token);
+      console.log('✅ Token stored in localStorage and cookies');
     } else {
       console.warn('⚠️ No token found in response');
       console.log('📊 Response structure:', Object.keys(response.data));
@@ -65,10 +85,8 @@ export const getSession = async (): Promise<Session | null> => {
 
 export const logout = async () => {
   try {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('token');
-      console.log('✅ Token cleared from localStorage');
-    }
+    // UPDATED: Use the new helper function
+    removeAuthToken();
     return { success: true };
   } catch (error: any) {
     throw error;

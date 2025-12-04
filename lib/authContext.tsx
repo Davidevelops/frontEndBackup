@@ -66,7 +66,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     setUser(null);
     toast.success('Logged out successfully');
-    window.location.href = '/';
+    // UPDATED: Changed redirect to lowercase 'login'
+    window.location.href = '/login';  // Changed from '/' or '/logIn'
   };
 
   useEffect(() => {

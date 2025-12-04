@@ -1,37 +1,56 @@
-
+// middleware.ts
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
-
   const path = request.nextUrl.pathname;
   
-
-  const isPublicPath = path === '/auth/login' || path === '/' || path.startsWith('/_next') || path.includes('.');
+  // Debug logging
+  console.log(`🔍 Middleware checking: ${path}`);
   
-
-  const token = request.cookies.get('token')?.value;
-  
-  console.log(`Middleware: ${path}, hasToken: ${!!token}, isPublic: ${isPublicPath}`);
-  
-
-  if (token && path === '/auth/login') {
-    return NextResponse.redirect(new URL('/dashboard', request.url));
-  }
-  
-
-  if (isPublicPath || token) {
+  // Skip middleware for static files and _next
+  if (
+    path.startsWith('/_next') ||
+    path.startsWith('/api') ||
+    path.includes('.') || // Static files
+    path === '/favicon.ico'
+  ) {
     return NextResponse.next();
   }
   
-
-  if (!token && !isPublicPath) {
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+  // Get token from cookies
+  const token = request.cookies.get('token')?.value;
+  console.log(`   Token exists: ${!!token}`);
+  
+  // Define public routes - UPDATED TO lowercase 'login'
+  const publicRoutes = [
+    '/',
+    '/login',      // Changed from '/logIn' to '/login'
+    '/test',
+  ];
+  
+  // Case-insensitive check
+  const isPublicRoute = publicRoutes.some(route => 
+    route.toLowerCase() === path.toLowerCase()
+  );
+  
+  console.log(`   Is public route: ${isPublicRoute}`);
+  
+  // If trying to access login while already logged in - UPDATED
+  if (token && (path.toLowerCase() === '/login')) {
+    console.log(`   Redirecting to dashboard (already logged in)`);
+    return NextResponse.redirect(new URL('/dashboard', request.url));
   }
   
-  return NextResponse.next();
+  // Allow access if it's a public route or user has token
+  if (isPublicRoute || token) {
+    return NextResponse.next();
+  }
+  
+  // Redirect to login if not authenticated - UPDATED
+  console.log(`   Redirecting to login (no auth)`);
+  return NextResponse.redirect(new URL('/login', request.url)); // Changed to lowercase
 }
-
 
 export const config = {
   matcher: [
