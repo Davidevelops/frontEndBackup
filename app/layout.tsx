@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import { AuthProvider } from "@/lib/authContext";
+
 
 const inter = Inter({
   variable: "--font-inter",
@@ -21,10 +21,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning> 
       <body className={`${inter.variable} font-sans`} suppressHydrationWarning> 
-        <AuthProvider>
+      
           <Toaster />
           {children}
-        </AuthProvider>
+     
       </body>
     </html>
   );

@@ -4,63 +4,143 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import toast from "react-hot-toast";
-import { useAuth } from "@/lib/authContext";
-import { login } from "@/lib/auth";
+import apiClient from "@/lib/axiosConfig";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { user, loading: authLoading } = useAuth();
+  const [isCheckingSession, setIsCheckingSession] = useState(true);
   const router = useRouter();
 
-  // Redirect if already logged in
+  // Check if user already has a valid session
   useEffect(() => {
-    if (user && !authLoading) {
-      console.log("✅ User already logged in, redirecting to dashboard");
-      router.push("/dashboard");
-    }
-  }, [user, authLoading, router]);
+    const checkSession = async () => {
+      try {
+        console.log("🔍 Checking existing session...");
+        // Check session endpoint - adjust if your endpoint is different
+        const response = await apiClient.get("/auth/session");
+        
+        if (response.data?.data) {
+          console.log("✅ Valid session found, redirecting to dashboard");
+          toast.success("Already logged in!");
+          router.push("/dashboard");
+        }
+      } catch (error: any) {
+        if (error.response?.status === 401) {
+          console.log("🔐 No valid session found");
+        } else {
+          console.error("❌ Error checking session:", error);
+        }
+      } finally {
+        setIsCheckingSession(false);
+      }
+    };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+    checkSession();
+  }, [router]);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
     try {
-      console.log("🔐 Attempting login...");
-      
-      // Use your existing auth.ts login function
-      await login({ username, password });
-      
-      console.log("✅ Login successful via auth.ts");
-      toast.success("Login successful!");
-      
-      // Give a small delay for auth context to update
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
-      // Force redirect to dashboard
-      window.location.href = "/dashboard";
-      
+      // Validate inputs
+      if (!username.trim() || !password.trim()) {
+        toast.error("Please enter both username and password");
+        setIsLoading(false);
+        return;
+      }
+
+      console.log("🔐 Attempting login to /auth/login...");
+
+      // Make API call to login endpoint
+      const response = await apiClient.post("/auth/login", {
+        username: username.trim(),
+        password: password.trim(),
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("✅ Login response:", response.data);
+
+      if (response.status === 200) {
+        console.log("✅ Login successful");
+        toast.success("Login successful!");
+
+        // Wait a moment for the session cookie to be set
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // Redirect to dashboard
+        router.push("/dashboard");
+        
+      } else {
+        throw new Error(`Unexpected response status: ${response.status}`);
+      }
+
     } catch (error: any) {
       console.error("❌ Login error:", error);
-      
-      let errorMessage = "Invalid username or password";
-      if (error.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error.message) {
-        errorMessage = error.message;
+
+      // Handle different error scenarios
+      let errorMessage = "Login failed. Please try again.";
+
+      if (error.response) {
+        // Server responded with error status
+        const status = error.response.status;
+        const data = error.response.data;
+        
+        if (status === 401) {
+          errorMessage = data?.error || "Invalid username or password";
+        } else if (status === 400) {
+          errorMessage = data?.message || "Invalid request format";
+        } else if (status === 404) {
+          errorMessage = "Login endpoint not found";
+        } else if (status >= 500) {
+          errorMessage = "Server error. Please try again later";
+        } else {
+          errorMessage = data?.message || data?.error || `Error ${status}`;
+        }
+      } else if (error.request) {
+        // Request was made but no response
+        errorMessage = "No response from server. Check your connection.";
+      } else {
+        // Something else happened
+        errorMessage = error.message || "An unexpected error occurred";
       }
-      
+
       toast.error(errorMessage);
-      setPassword(""); // Clear password on error
+      
+      // Clear password on error
+      setPassword("");
+      
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Show loading while auth is checking
-  if (authLoading) {
+  const handleClearStorage = () => {
+    if (typeof window !== "undefined") {
+      // Clear localStorage
+      localStorage.clear();
+      
+      // Clear session cookie (name from your backend: "session")
+      document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = "session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; domain=inventorypro.local";
+      
+      toast.success("Storage and cookies cleared successfully");
+      
+      // Force reload to clear any in-memory state
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+    }
+  };
+
+  // Show loading while checking session
+  if (isCheckingSession) {
     return (
       <div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-[#F5F7FA] to-[#E8ECF1]">
         <div className="text-center">
@@ -89,7 +169,7 @@ export default function LoginPage() {
             <p className="text-lg text-[#7C8A96]">Log in to continue managing your inventory.</p>
           </div>
 
-          <form onSubmit={handleSubmit} className="flex-1">
+          <form onSubmit={handleLogin} className="flex-1">
             <div className="inputs-container my-6">
               {/* Username Field */}
               <div className="input-group flex flex-col mb-6">
@@ -170,22 +250,30 @@ export default function LoginPage() {
             <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-gray-200">
               <p className="text-sm text-gray-600 mb-2">Debug Info:</p>
               <p className="text-xs text-gray-500 mb-1">
-                Auth State: {user ? `Logged in as ${user.username}` : "Not logged in"}
+                API Endpoint: {process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login
+              </p>
+              <p className="text-xs text-gray-500 mb-1">
+                Auth Type: Session-based (cookie)
               </p>
               <p className="text-xs text-gray-500">
-                Using: {process.env.NEXT_PUBLIC_API_URL || 'default backend'}
+                Cookies: {document.cookie ? "Present" : "None"}
               </p>
               <button
                 type="button"
-                onClick={() => {
-                  localStorage.clear();
-                  document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-                  toast.success("Storage cleared");
-                  window.location.reload();
-                }}
+                onClick={handleClearStorage}
                 className="mt-2 text-xs text-red-500 hover:text-red-700 underline"
               >
-                Clear Storage & Reload
+                Clear Storage & Cookies
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  console.log("Current cookies:", document.cookie);
+                  toast.success("Cookies logged to console");
+                }}
+                className="mt-2 ml-4 text-xs text-blue-500 hover:text-blue-700 underline"
+              >
+                Log Cookies
               </button>
             </div>
           </form>

@@ -26,10 +26,10 @@ export function middleware(request: NextRequest) {
   console.log(`🔑 Token in cookies: ${token ? 'Yes' : 'No'}`);
   
   // If no token, redirect to login
-  if (!token) {
-    console.log(`↪ No token found, redirecting to login`);
-    return NextResponse.redirect(new URL('/login', request.url));
-  }
+  // if (!token) {
+  //   console.log(`↪ No token found, redirecting to login`);
+  //   return NextResponse.redirect(new URL('/login', request.url));
+  // }
   
   console.log(`✅ Token found, allowing access to: ${path}`);
   return NextResponse.next();
