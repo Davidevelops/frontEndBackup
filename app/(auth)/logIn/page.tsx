@@ -6,6 +6,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useAuth } from "@/lib/authContext";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation"; // Added import
 
 export default function LogIn() {
 	const [username, setUsername] = useState("");
@@ -14,6 +15,7 @@ export default function LogIn() {
 	const [error, setError] = useState<string | null>(null);
 	const [loading, setLoading] = useState(false);
 	const { checkSession } = useAuth();
+	const router = useRouter(); // Added router hook
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -25,11 +27,16 @@ export default function LogIn() {
 			console.log("Login success:", response);
 			toast.success('Login successful!');
 			
-			await new Promise(resolve => setTimeout(resolve, 100));
+			// Removed the artificial delay
+			// await new Promise(resolve => setTimeout(resolve, 100));
 			
 			await checkSession();
 			
-			window.location.href = "/dashboard";
+			// FIXED: Use Next.js router instead of window.location
+			router.push("/dashboard");
+			// Optional: Force a refresh to update all components
+			router.refresh();
+			
 		} catch (err: any) {
 			console.error("Login error:", err);
 			const errorMessage = err.response?.data?.error || err.message || "Invalid username or password. Please try again.";
@@ -74,6 +81,7 @@ export default function LogIn() {
 									value={username}
 									onChange={(e) => setUsername(e.target.value)}
 									required
+									disabled={loading}
 								/>
 							</div>
 
@@ -89,11 +97,13 @@ export default function LogIn() {
 										value={password}
 										onChange={(e) => setPassword(e.target.value)}
 										required
+										disabled={loading}
 									/>
 									<button
 										type="button"
 										className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#7C8A96] hover:text-[#3A4A5A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2 rounded p-1"
 										onClick={togglePasswordVisibility}
+										disabled={loading}
 									>
 										{showPassword ? (
 											<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -108,33 +118,62 @@ export default function LogIn() {
 									</button>
 								</div>
 							</div>
-{/* 
-							<Link href="/" className="text-[12px] text-[#62778C] hover:text-[#3A4A5A] transition-colors">
-								Forgot password?
-							</Link> */}
+
+							{/* Debug link - remove in production */}
+							<div className="mt-4 text-sm">
+								<Link 
+									href="/test" 
+									className="text-[#62778C] hover:text-[#3A4A5A] transition-colors"
+								>
+									Test if routing works →
+								</Link>
+							</div>
 						</div>
 
 						{error && (
-							<p className="text-red-500 text-sm my-2 bg-red-50 p-2 rounded-lg border border-red-200">⚠️ {error}</p>
+							<div className="my-4 p-3 bg-red-50 border border-red-200 rounded-lg">
+								<p className="text-red-600 font-medium">Login Error:</p>
+								<p className="text-red-500 text-sm mt-1">{error}</p>
+								<p className="text-xs text-gray-500 mt-2">
+									If this persists, check browser console (F12) for details.
+								</p>
+							</div>
 						)}
 
 						<button
 							type="submit"
 							disabled={loading}
-							className="rounded-lg bg-[#3A4A5A] hover:bg-[#31414F] disabled:bg-[#A7B3C0] w-full text-white py-3 font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2"
+							className="rounded-lg bg-[#3A4A5A] hover:bg-[#31414F] disabled:bg-[#A7B3C0] w-full text-white py-3 font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2 flex items-center justify-center"
 						>
-							{loading ? "Logging in..." : "Log in"}
+							{loading ? (
+								<>
+									<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+										<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+										<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+									</svg>
+									Logging in...
+								</>
+							) : "Log in"}
 						</button>
+
+						{/* Debug info - remove in production */}
+						<div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
+							<p className="text-xs text-gray-600 mb-1">Debug Info:</p>
+							<p className="text-xs text-gray-500">
+								Router ready: {router ? "Yes" : "No"} | 
+								Path: {typeof window !== 'undefined' ? window.location.pathname : 'Loading...'}
+							</p>
+						</div>
 					</form>
 				</div>
 
-			
 				<div className="image-container w-[50%] min-h-[600px] max-h-[1200px] relative">
 					<Image
 						src={"/assets/authImage.jpg"}
 						alt="auth image"
 						fill
-						className="object-cover" 
+						className="object-cover"
+						priority // Add priority for faster loading
 					/>
 				</div>
 			</div>
