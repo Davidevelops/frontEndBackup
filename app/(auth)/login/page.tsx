@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react";
 import { login } from "@/lib/auth";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,22 +13,23 @@ export default function LogIn() {
 	const [password, setPassword] = useState("");
 	const [showPassword, setShowPassword] = useState(false);
 	const [error, setError] = useState<string | null>(null);
-	const [loading, setLoading] = useState(false);
-	const { checkSession, user } = useAuth(); // Added user from useAuth
+	const [isLoggingIn, setIsLoggingIn] = useState(false); // Renamed to avoid conflict
+	const { checkSession, user, loading: authLoading } = useAuth(); // Renamed auth loading
 	const router = useRouter();
 
-	// ADD THIS EFFECT: Redirect if already logged in
+	// FIXED: Add a condition to prevent redirect loops
 	useEffect(() => {
-		if (user) {
+		// Only redirect if auth check is complete and user exists
+		if (!authLoading && user) {
 			console.log("User already logged in, redirecting to dashboard");
 			router.push("/dashboard");
 		}
-	}, [user, router]);
+	}, [user, authLoading, router]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		setError(null);
-		setLoading(true);
+		setIsLoggingIn(true); // Use renamed state
 
 		try {
 			const response = await login({ username, password });
@@ -38,18 +39,9 @@ export default function LogIn() {
 			// Wait for checkSession to complete
 			await checkSession();
 			
-			// Give a small delay for state to update
-			await new Promise(resolve => setTimeout(resolve, 50));
-			
-			// Check if user is now authenticated
-			const token = localStorage.getItem('token');
-			if (token) {
-				console.log("Token confirmed, redirecting to dashboard");
-				router.push("/dashboard");
-				router.refresh();
-			} else {
-				throw new Error("Login failed - no token stored");
-			}
+			// Direct redirect after successful login
+			router.push("/dashboard");
+			router.refresh();
 			
 		} catch (err: any) {
 			console.error("Login error:", err);
@@ -60,7 +52,7 @@ export default function LogIn() {
 			// Clear form on error
 			setPassword("");
 		} finally {
-			setLoading(false);
+			setIsLoggingIn(false); // Use renamed state
 		}
 	};
 
@@ -68,20 +60,20 @@ export default function LogIn() {
 		setShowPassword(!showPassword);
 	};
 
-	// ADD: Show loading if auth is checking
-	if (loading) {
+	// FIXED: Show auth loading state, not login loading state
+	if (authLoading) {
 		return (
 			<div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-[#F5F7FA] to-[#E8ECF1]">
 				<div className="text-center">
 					<div className="w-16 h-16 border-4 border-[#3A4A5A] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-					<p className="text-[#3A4A5A]">Loading authentication...</p>
+					<p className="text-[#3A4A5A]">Checking authentication...</p>
 				</div>
 			</div>
 		);
 	}
 
 	return (
-		<div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-[#F5F7FA] to-[#E8ECF1]">
+		<div className="w-screen h-screen flex justify-center items-center bg-gradient-to-br from-[#F5F7FA] to-[#E8ECF1]" suppressHydrationWarning>
 			<div className="form-container flex p-0 min-w-[900px] max-w-[1500px] rounded-3xl shadow-2xl overflow-hidden bg-white border border-[#D5DDE5]">
 				<div className="w-[50%] p-12 flex flex-col justify-center">
 					<div className="mb-10">
@@ -110,7 +102,7 @@ export default function LogIn() {
 									value={username}
 									onChange={(e) => setUsername(e.target.value)}
 									required
-									disabled={loading}
+									disabled={isLoggingIn}
 									autoComplete="username"
 								/>
 							</div>
@@ -127,14 +119,14 @@ export default function LogIn() {
 										value={password}
 										onChange={(e) => setPassword(e.target.value)}
 										required
-										disabled={loading}
+										disabled={isLoggingIn}
 										autoComplete="current-password"
 									/>
 									<button
 										type="button"
 										className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[#7C8A96] hover:text-[#3A4A5A] transition-colors focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2 rounded p-1"
 										onClick={togglePasswordVisibility}
-										disabled={loading}
+										disabled={isLoggingIn}
 										aria-label={showPassword ? "Hide password" : "Show password"}
 									>
 										{showPassword ? (
@@ -150,23 +142,6 @@ export default function LogIn() {
 									</button>
 								</div>
 							</div>
-
-							{/* Updated debug link */}
-							<div className="mt-4 text-sm flex gap-4">
-								<Link 
-									href="/test" 
-									className="text-[#62778C] hover:text-[#3A4A5A] transition-colors"
-								>
-									Test Routing →
-								</Link>
-								<span className="text-gray-300">|</span>
-								<Link 
-									href="/dashboard" 
-									className="text-[#62778C] hover:text-[#3A4A5A] transition-colors"
-								>
-									Try Dashboard →
-								</Link>
-							</div>
 						</div>
 
 						{error && (
@@ -181,10 +156,10 @@ export default function LogIn() {
 
 						<button
 							type="submit"
-							disabled={loading}
+							disabled={isLoggingIn}
 							className="rounded-lg bg-[#3A4A5A] hover:bg-[#31414F] disabled:bg-[#A7B3C0] disabled:cursor-not-allowed w-full text-white py-3 font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-[#3A4A5A] focus:ring-offset-2 flex items-center justify-center"
 						>
-							{loading ? (
+							{isLoggingIn ? (
 								<>
 									<svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
 										<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -195,31 +170,7 @@ export default function LogIn() {
 							) : "Log in"}
 						</button>
 
-						{/* Enhanced debug info */}
-						<div className="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
-							<p className="text-xs text-gray-600 mb-1">Debug Info:</p>
-							<p className="text-xs text-gray-500 mb-1">
-								Router: {router ? "✅ Ready" : "❌ Not ready"} | 
-								Auth: {user ? "✅ Logged in" : "❌ Not logged in"}
-							</p>
-							<p className="text-xs text-gray-500">
-								Token: {typeof window !== 'undefined' ? (localStorage.getItem('token') ? "✅ Present" : "❌ Missing") : "Loading..."}
-							</p>
-						</div>
-
-						{/* Clear storage button for debugging */}
-						<button
-							type="button"
-							onClick={() => {
-								localStorage.clear();
-								document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-								toast.success('Storage cleared');
-								window.location.reload();
-							}}
-							className="mt-3 text-xs text-gray-500 hover:text-gray-700 underline"
-						>
-							Clear storage (debug)
-						</button>
+						{/* REMOVED debug info section causing hydration errors */}
 					</form>
 				</div>
 

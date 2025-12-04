@@ -5,7 +5,11 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   trailingSlash: false,
-  reactStrictMode: true,
+  reactStrictMode: false, // Disable during debugging
+  // Add these to help with hydration errors
+  compiler: {
+    removeConsole: false, // Keep console logs
+  },
 };
 
 export default nextConfig;

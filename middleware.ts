@@ -5,9 +5,6 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const path = request.nextUrl.pathname;
   
-  // Debug logging
-  console.log(`🔍 Middleware checking: ${path}`);
-  
   // Skip middleware for static files and _next
   if (
     path.startsWith('/_next') ||
@@ -20,12 +17,11 @@ export function middleware(request: NextRequest) {
   
   // Get token from cookies
   const token = request.cookies.get('token')?.value;
-  console.log(`   Token exists: ${!!token}`);
   
-  // Define public routes - UPDATED TO lowercase 'login'
+  // Define public routes
   const publicRoutes = [
     '/',
-    '/login',      // Changed from '/logIn' to '/login'
+    '/login',
     '/test',
   ];
   
@@ -34,22 +30,23 @@ export function middleware(request: NextRequest) {
     route.toLowerCase() === path.toLowerCase()
   );
   
-  console.log(`   Is public route: ${isPublicRoute}`);
-  
-  // If trying to access login while already logged in - UPDATED
-  if (token && (path.toLowerCase() === '/login')) {
-    console.log(`   Redirecting to dashboard (already logged in)`);
+  // If trying to access login while already logged in
+  if (token && path.toLowerCase() === '/login') {
+    console.log(`🔄 Middleware: Redirecting authenticated user from ${path} to /dashboard`);
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
   
   // Allow access if it's a public route or user has token
   if (isPublicRoute || token) {
-    return NextResponse.next();
+    // Add cache-control headers to prevent loops
+    const response = NextResponse.next();
+    response.headers.set('Cache-Control', 'no-store, must-revalidate');
+    return response;
   }
   
-  // Redirect to login if not authenticated - UPDATED
-  console.log(`   Redirecting to login (no auth)`);
-  return NextResponse.redirect(new URL('/login', request.url)); // Changed to lowercase
+  // Redirect to login if not authenticated
+  console.log(`🔄 Middleware: Redirecting unauthenticated user from ${path} to /login`);
+  return NextResponse.redirect(new URL('/login', request.url));
 }
 
 export const config = {

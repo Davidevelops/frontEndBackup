@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import apiClient from './axiosConfig';
 import { apiEndpoints } from './apiEndpoints';
 import toast from 'react-hot-toast';
@@ -29,8 +29,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasChecked, setHasChecked] = useState(false); // NEW: Prevent infinite checks
 
-  const checkSession = async () => {
+  const checkSession = useCallback(async () => {
+    // Prevent multiple simultaneous checks
+    if (loading && hasChecked) return;
+    
     try {
       setLoading(true);
       setError(null);
@@ -38,6 +42,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('🔄 Checking session...');
       const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
       console.log('🔑 Token in localStorage:', token ? 'Exists' : 'Not found');
+      
+      if (!token) {
+        setUser(null);
+        setHasChecked(true);
+        return;
+      }
       
       const response = await apiClient.get(apiEndpoints.session());
       
@@ -47,9 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         setUser(null);
       }
+      setHasChecked(true);
     } catch (err: any) {
       console.error('❌ Session check failed:', err.message);
       setUser(null);
+      setHasChecked(true);
       if (err.response?.status !== 401) {
         setError('Failed to check authentication status');
         toast.error('Failed to verify session');
@@ -57,7 +69,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading, hasChecked]);
 
   const logout = () => {
     if (typeof window !== 'undefined') {
@@ -65,14 +77,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log('✅ Token cleared on logout');
     }
     setUser(null);
+    setHasChecked(false); // Reset check flag
     toast.success('Logged out successfully');
-    // UPDATED: Changed redirect to lowercase 'login'
-    window.location.href = '/login';  // Changed from '/' or '/logIn'
+    window.location.href = '/login';
   };
 
   useEffect(() => {
-    checkSession();
-  }, []);
+    // Only check once on mount
+    if (!hasChecked) {
+      checkSession();
+    }
+  }, [checkSession, hasChecked]);
 
   return (
     <AuthContext.Provider value={{ user, loading, error, checkSession, logout }}>
