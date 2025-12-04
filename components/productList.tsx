@@ -902,7 +902,7 @@ export default function ProductList({ productGroups, refreshProducts }: Props) {
                   </div>
                   <div>
                     <Label className="text-[#475569] text-sm">
-                      Safety Stock Method *
+                      Safety Stock Methods
                     </Label>
                     <Input
                       value={
