@@ -5,10 +5,20 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   trailingSlash: false,
-  reactStrictMode: false, // Disable during debugging
-  // Add these to help with hydration errors
-  compiler: {
-    removeConsole: false, // Keep console logs
+  reactStrictMode: false,
+  // Add this for cookie security
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, must-revalidate',
+          },
+        ],
+      },
+    ];
   },
 };
 

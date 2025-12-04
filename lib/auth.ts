@@ -14,21 +14,27 @@ export interface Session {
   };
 }
 
-// NEW: Helper function to set token in both localStorage and cookies
+// FIXED: Helper function to set token in both localStorage and cookies
 export const setAuthToken = (token: string) => {
   if (typeof window !== 'undefined') {
+    // Set in localStorage
     localStorage.setItem('token', token);
-    // Also set as cookie for middleware access
-    document.cookie = `token=${token}; path=/; max-age=86400; SameSite=Lax`;
-    console.log('✅ Token set in localStorage and cookies');
+    
+    // FIXED: Set cookie properly for middleware access
+    // Use document.cookie API with proper attributes
+    const cookieValue = `token=${token}; path=/; max-age=${60 * 60 * 24 * 7}; SameSite=Lax`;
+    document.cookie = cookieValue;
+    
+    console.log('✅ Token set in localStorage and cookies:', token.substring(0, 20) + '...');
   }
 };
 
-// NEW: Helper to remove token
+// FIXED: Helper to remove token
 export const removeAuthToken = () => {
   if (typeof window !== 'undefined') {
     localStorage.removeItem('token');
-    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+    // Clear cookie properly
+    document.cookie = 'token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax';
     console.log('✅ Token removed from localStorage and cookies');
   }
 };
@@ -55,12 +61,13 @@ export const login = async (credentials: LoginCredentials) => {
       response.data.data?.accessToken;
     
     if (token) {
-      // UPDATED: Use the new helper function
+      // Set token in both localStorage and cookies
       setAuthToken(token);
-      console.log('✅ Token stored in localStorage and cookies');
+      console.log('✅ Login successful, token stored');
     } else {
       console.warn('⚠️ No token found in response');
       console.log('📊 Response structure:', Object.keys(response.data));
+      throw new Error('No authentication token received');
     }
     
     return response.data;
@@ -85,7 +92,6 @@ export const getSession = async (): Promise<Session | null> => {
 
 export const logout = async () => {
   try {
-    // UPDATED: Use the new helper function
     removeAuthToken();
     return { success: true };
   } catch (error: any) {

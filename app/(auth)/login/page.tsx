@@ -26,35 +26,48 @@ export default function LogIn() {
 		}
 	}, [user, authLoading, router]);
 
-	const handleSubmit = async (e: React.FormEvent) => {
-		e.preventDefault();
-		setError(null);
-		setIsLoggingIn(true); // Use renamed state
+// In your login page handleSubmit function:
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setError(null);
+  setIsLoggingIn(true);
 
-		try {
-			const response = await login({ username, password });
-			console.log("Login success:", response);
-			toast.success('Login successful!');
-			
-			// Wait for checkSession to complete
-			await checkSession();
-			
-			// Direct redirect after successful login
-			router.push("/dashboard");
-			router.refresh();
-			
-		} catch (err: any) {
-			console.error("Login error:", err);
-			const errorMessage = err.response?.data?.error || err.message || "Invalid username or password. Please try again.";
-			setError(errorMessage);
-			toast.error(errorMessage);
-			
-			// Clear form on error
-			setPassword("");
-		} finally {
-			setIsLoggingIn(false); // Use renamed state
-		}
-	};
+  try {
+    const response = await login({ username, password });
+    console.log("Login success:", response);
+    toast.success('Login successful!');
+    
+    // Wait for checkSession to complete
+    await checkSession();
+    
+    // DEBUG: Check if cookie was set
+    console.log("Checking cookies after login...");
+    const cookies = document.cookie.split(';');
+    const tokenCookie = cookies.find(c => c.trim().startsWith('token='));
+    console.log("Token cookie exists:", !!tokenCookie);
+    if (tokenCookie) {
+      console.log("Token cookie value:", tokenCookie.substring(0, 30) + '...');
+    }
+    
+    // Give a small moment for cookie to propagate
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Direct redirect after successful login
+    router.push("/dashboard");
+    router.refresh();
+    
+  } catch (err: any) {
+    console.error("Login error:", err);
+    const errorMessage = err.response?.data?.error || err.message || "Invalid username or password. Please try again.";
+    setError(errorMessage);
+    toast.error(errorMessage);
+    
+    // Clear form on error
+    setPassword("");
+  } finally {
+    setIsLoggingIn(false);
+  }
+};
 
 	const togglePasswordVisibility = () => {
 		setShowPassword(!showPassword);
