@@ -47,6 +47,7 @@ export interface ProductGroup {
 	productCategoryId: string | null
 	updatedAt: string
 	products: SingleProduct[]
+	setting?: VariantSetting // Add this line
 }
 
 export interface Product {
@@ -340,3 +341,40 @@ export interface ForecastSelection {
 	type: 'latest' | 'all' | 'specific';
 	forecastId?: string;
 }
+
+// ----- PRODUCT GROUP DTOs -----
+export interface CreateProductGroupDto {
+  name: string;
+  setting?: {
+    classification: string;
+    serviceLevel: number;
+    fillRate: number;
+    safetyStockCalculationMethod: string;
+  };
+}
+
+export interface UpdateProductGroupDto {
+  name: string;
+  setting?: {
+    classification: string;
+    serviceLevel: number;
+    fillRate: number;
+    safetyStockCalculationMethod: string;
+  };
+}
+
+export interface ApiResponse<T> {
+  data?: T;
+  products?: T;
+  groups?: T;
+  success?: boolean;
+  message?: string;
+  [key: string]: any;
+}
+
+// ----- CONSTANTS -----
+export const CLASSIFICATION_OPTIONS = ['fast', 'slow'] as const;
+export type ClassificationType = typeof CLASSIFICATION_OPTIONS[number];
+
+export const SAFETY_STOCK_METHODS = ['dynamic', 'static'] as const;
+export type SafetyStockMethod = typeof SAFETY_STOCK_METHODS[number];

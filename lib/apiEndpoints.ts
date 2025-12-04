@@ -38,14 +38,25 @@ export class ApiEndpoints {
 	}
 
 	session() {
-	return `${this.backendUrl}/auth/session`;
-}
+		return `${this.backendUrl}/auth/session`;
+	}
+	
 	productGroup(groupId?: string) {
 		if (groupId) {
 			return `${this.backendUrl}/groups/${groupId}`
 		} else {
 			return `${this.backendUrl}/groups`
 		}
+	}
+
+	// Add this method for archiving product groups
+	productGroupArchive(groupId: string) {
+		return `${this.backendUrl}/groups/${groupId}`;
+	}
+
+	// Add this method for unarchiving product groups
+	productGroupUnarchive(groupId: string) {
+		return `${this.backendUrl}/groups/${groupId}/unarchive`;
 	}
 
 	product(groupId: string, productId?: string) {
@@ -81,24 +92,24 @@ export class ApiEndpoints {
 	}
 
 	forecast(groupId: string, productId: string, forecastId?: string, queryParams?: Record<string, string | number | boolean>) {
-  let baseUrl = `${this.backendUrl}/groups/${groupId}/products/${productId}/forecasts`;
-  
-  if (forecastId) {
-    baseUrl += `/${forecastId}`;
-  }
-  
-  if (queryParams) {
-    const params = new URLSearchParams();
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
-    });
-    baseUrl += `?${params.toString()}`;
-  }
-  
-  return baseUrl;
-}
+		let baseUrl = `${this.backendUrl}/groups/${groupId}/products/${productId}/forecasts`;
+		
+		if (forecastId) {
+			baseUrl += `/${forecastId}`;
+		}
+		
+		if (queryParams) {
+			const params = new URLSearchParams();
+			Object.entries(queryParams).forEach(([key, value]) => {
+				if (value !== undefined && value !== null) {
+					params.append(key, value.toString());
+				}
+			});
+			baseUrl += `?${params.toString()}`;
+		}
+		
+		return baseUrl;
+	}
 
 	delivery(deliveryId?: string) {
 		if (deliveryId) {
@@ -132,45 +143,45 @@ export class ApiEndpoints {
 		}
 	}
 
-recommendations() {
-  return `${this.backendUrl}/recommendations`;
+	recommendations() {
+		return `${this.backendUrl}/recommendations`;
+	}
+
+	excelProducts() {
+		return `${this.backendUrl}/excel/products`
+	}
+
+	excelSales() {
+		return `${this.backendUrl}/excel/sales`
+	}
+
+	categoryGroups(categoryId: string, groupId?: string) {
+		if (groupId) {
+			return `${this.backendUrl}/categories/${categoryId}/groups/${groupId}`;
+		} else {
+			return `${this.backendUrl}/categories/${categoryId}/groups`;
+		}
+	}
+
+	productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
+		let baseUrl = `${this.backendUrl}/groups`;
+		
+		if (groupId) {
+			baseUrl += `/${groupId}`;
+		}
+		
+		if (queryParams) {
+			const params = new URLSearchParams();
+			Object.entries(queryParams).forEach(([key, value]) => {
+				if (value !== undefined && value !== null) {
+					params.append(key, value.toString());
+				}
+			});
+			baseUrl += `?${params.toString()}`;
+		}
+		
+		return baseUrl;
+	}
 }
 
-excelProducts() {
-  return `${this.backendUrl}/excel/products`
-}
-
-excelSales() {
-  return `${this.backendUrl}/excel/sales`
-}
-
-categoryGroups(categoryId: string, groupId?: string) {
-  if (groupId) {
-    return `${this.backendUrl}/categories/${categoryId}/groups/${groupId}`;
-  } else {
-    return `${this.backendUrl}/categories/${categoryId}/groups`;
-  }
-}
-
-productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
-  let baseUrl = `${this.backendUrl}/groups`;
-  
-  if (groupId) {
-    baseUrl += `/${groupId}`;
-  }
-  
-  if (queryParams) {
-    const params = new URLSearchParams();
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
-    });
-    baseUrl += `?${params.toString()}`;
-  }
-  
-  return baseUrl;
-}
-}
-
-export const apiEndpoints = new ApiEndpoints()
+export const apiEndpoints = new ApiEndpoints();
