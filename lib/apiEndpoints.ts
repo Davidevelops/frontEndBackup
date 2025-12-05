@@ -9,6 +9,7 @@ export class ApiEndpoints {
 		this.backendUrl = url
 	}
 
+	// Account endpoints
 	account(accountId?: string) {
 		if (accountId) {
 			return `${this.backendUrl}/accounts/${accountId}`
@@ -33,32 +34,52 @@ export class ApiEndpoints {
 		return `${this.backendUrl}/accounts/${accountId}/password`
 	}
 
+	// Authentication endpoints
 	login() {
 		return `${this.backendUrl}/auth/login`
 	}
 
 	session() {
-		return `${this.backendUrl}/auth/session`;
+		return `${this.backendUrl}/auth/session`
 	}
 	
-	productGroup(groupId?: string) {
+	// Product Group endpoints (with query parameter support)
+	productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
+		let baseUrl = `${this.backendUrl}/groups`;
+		
 		if (groupId) {
-			return `${this.backendUrl}/groups/${groupId}`
-		} else {
-			return `${this.backendUrl}/groups`
+			baseUrl += `/${groupId}`;
 		}
+		
+		if (queryParams) {
+			const params = new URLSearchParams();
+			Object.entries(queryParams).forEach(([key, value]) => {
+				if (value !== undefined && value !== null) {
+					params.append(key, value.toString());
+				}
+			});
+			baseUrl += `?${params.toString()}`;
+		}
+		
+		return baseUrl;
 	}
 
-	// Add this method for archiving product groups
+	// Product Group update endpoint (PUT/PATCH)
+	productGroupUpdate(groupId: string) {
+		return `${this.backendUrl}/groups/${groupId}`;
+	}
+
+	// Product Group archive endpoint (DELETE)
 	productGroupArchive(groupId: string) {
 		return `${this.backendUrl}/groups/${groupId}`;
 	}
 
-	// Add this method for unarchiving product groups
+	// Product Group unarchive endpoint (PATCH)
 	productGroupUnarchive(groupId: string) {
 		return `${this.backendUrl}/groups/${groupId}/unarchive`;
 	}
 
+	// Product endpoints
 	product(groupId: string, productId?: string) {
 		if (productId) {
 			return `${this.backendUrl}/groups/${groupId}/products/${productId}`
@@ -67,6 +88,7 @@ export class ApiEndpoints {
 		}
 	}
 
+	// Product sales endpoints
 	productSales(groupId: string, productId: string, saleId?: string) {
 		if (saleId) {
 			return `${this.backendUrl}/groups/${groupId}/products/${productId}/sales/${saleId}`
@@ -75,6 +97,7 @@ export class ApiEndpoints {
 		}
 	}
 
+	// Sales endpoints
 	sales(saleId?: string) {
 		if (saleId) {
 			return `${this.backendUrl}/sales/${saleId}`
@@ -83,6 +106,7 @@ export class ApiEndpoints {
 		}
 	}
 
+	// Categories endpoints
 	categories(categoryId?: string) {
 		if (categoryId) {
 			return `${this.backendUrl}/categories/${categoryId}`
@@ -91,6 +115,7 @@ export class ApiEndpoints {
 		}
 	}
 
+	// Forecast endpoints
 	forecast(groupId: string, productId: string, forecastId?: string, queryParams?: Record<string, string | number | boolean>) {
 		let baseUrl = `${this.backendUrl}/groups/${groupId}/products/${productId}/forecasts`;
 		
@@ -111,6 +136,7 @@ export class ApiEndpoints {
 		return baseUrl;
 	}
 
+	// Delivery endpoints
 	delivery(deliveryId?: string) {
 		if (deliveryId) {
 			return `${this.backendUrl}/deliveries/${deliveryId}`
@@ -127,6 +153,7 @@ export class ApiEndpoints {
 		}
 	}
 
+	// Supplier endpoints
 	supplier(supplierId?: string) {
 		if (supplierId) {
 			return `${this.backendUrl}/suppliers/${supplierId}`
@@ -143,10 +170,12 @@ export class ApiEndpoints {
 		}
 	}
 
+	// Recommendations endpoint
 	recommendations() {
 		return `${this.backendUrl}/recommendations`;
 	}
 
+	// Excel export endpoints
 	excelProducts() {
 		return `${this.backendUrl}/excel/products`
 	}
@@ -155,32 +184,13 @@ export class ApiEndpoints {
 		return `${this.backendUrl}/excel/sales`
 	}
 
+	// Category groups endpoints
 	categoryGroups(categoryId: string, groupId?: string) {
 		if (groupId) {
 			return `${this.backendUrl}/categories/${categoryId}/groups/${groupId}`;
 		} else {
 			return `${this.backendUrl}/categories/${categoryId}/groups`;
 		}
-	}
-
-	productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
-		let baseUrl = `${this.backendUrl}/groups`;
-		
-		if (groupId) {
-			baseUrl += `/${groupId}`;
-		}
-		
-		if (queryParams) {
-			const params = new URLSearchParams();
-			Object.entries(queryParams).forEach(([key, value]) => {
-				if (value !== undefined && value !== null) {
-					params.append(key, value.toString());
-				}
-			});
-			baseUrl += `?${params.toString()}`;
-		}
-		
-		return baseUrl;
 	}
 }
 

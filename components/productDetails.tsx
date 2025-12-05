@@ -616,7 +616,7 @@ These projections help you plan your inventory purchases, staffing needs, and ca
   const fetchGroupName = async (): Promise<void> => {
     try {
       setLoadingGroupName(true);
-      const response = await apiClient.get(apiEndpoints.productGroup(product.groupId));
+      const response = await apiClient.get(apiEndpoints.productGroups(product.groupId));
       if (response.data && response.data.data) {
         setGroupName(response.data.data.name);
       } else {

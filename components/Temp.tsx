@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { ProductGroup, CreateProductGroupDto, UpdateProductGroupDto, ClassificationType } from '@/lib/types';
+import { ProductGroup, CreateProductGroupDto, UpdateProductGroupDto, ClassificationType, SingleProduct, SafetyStockMethod } from '@/lib/types';
 import { productGroupsApi } from '@/lib/data/routes/temp/service';
+import { exportProductsTemplate, importProducts, ImportResult, downloadBlob } from '@/lib/data/routes/excel/excel';
 import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 import {
   Card,
   CardContent,
@@ -32,16 +34,11 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   AlertDialog,
@@ -61,64 +58,109 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
-  MoreHorizontal,
   Plus,
   RefreshCw,
   Edit,
   Archive,
   Undo2,
   Loader2,
+  BarChart3,
+  Box,
+  Layers,
+  Database,
+  Calendar,
+  TrendingUp,
+  Package,
+  GitBranch,
+  Filter,
+  Eye,
+  MoreVertical,
   Settings,
+  Download,
+  Upload,
 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 
 const ProductGroupsPage: React.FC = () => {
-  // State
+  const router = useRouter();
+  
+ 
   const [productGroups, setProductGroups] = useState<ProductGroup[]>([]);
+  const [productsByGroup, setProductsByGroup] = useState<Record<string, SingleProduct[]>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // Dialog states
+ 
+  const [importing, setImporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  
+
   const [openCreateDialog, setOpenCreateDialog] = useState(false);
   const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [openAddVariantDialog, setOpenAddVariantDialog] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [unarchiveDialogOpen, setUnarchiveDialogOpen] = useState(false);
   
-  // Form states
+ 
   const [newGroupName, setNewGroupName] = useState('');
   const [editGroupName, setEditGroupName] = useState('');
   
-  // Advanced settings states
+
+  const [selectedGroupForVariant, setSelectedGroupForVariant] = useState<ProductGroup | null>(null);
+  const [variantName, setVariantName] = useState('');
+  const [variantType, setVariantType] = useState<'partial' | 'full'>('partial');
+  const [variantClassification, setVariantClassification] = useState<ClassificationType>('fast');
+  const [variantServiceLevel, setVariantServiceLevel] = useState<number>(90);
+  const [variantFillRate, setVariantFillRate] = useState<number>(90);
+  const [variantSafetyStockMethod, setVariantSafetyStockMethod] = useState<SafetyStockMethod>('dynamic');
+  const [addingVariant, setAddingVariant] = useState(false);
+  
+
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [classification, setClassification] = useState<ClassificationType>('fast');
   const [serviceLevel, setServiceLevel] = useState<number>(90);
   const [fillRate, setFillRate] = useState<number>(90);
   const [safetyStockMethod, setSafetyStockMethod] = useState<string>('dynamic');
   
-  // Edit settings states
+
   const [showEditAdvancedSettings, setShowEditAdvancedSettings] = useState(false);
   const [editClassification, setEditClassification] = useState<ClassificationType>('fast');
   const [editServiceLevel, setEditServiceLevel] = useState<number>(90);
   const [editFillRate, setEditFillRate] = useState<number>(90);
   const [editSafetyStockMethod, setEditSafetyStockMethod] = useState<string>('dynamic');
   
-  // Selected group for operations
+
   const [selectedGroup, setSelectedGroup] = useState<ProductGroup | null>(null);
   
-  // Loading states for actions
+
   const [creating, setCreating] = useState(false);
   const [updating, setUpdating] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const [unarchiving, setUnarchiving] = useState(false);
 
-  // Fetch product groups
+
+  const [stats, setStats] = useState({
+    totalGroups: 0,
+    totalProducts: 0,
+    fastMoving: 0,
+    slowMoving: 0,
+    archivedGroups: 0,
+  });
+
+
   const fetchProductGroups = async () => {
     try {
       setLoading(true);
       setError(null);
       const groups = await productGroupsApi.getAll();
       setProductGroups(groups);
+      
+
+      await fetchProductsForGroups(groups);
+      
+
+      calculateStats(groups);
     } catch (err: any) {
       console.error('Failed to fetch product groups:', err);
       setError(err.message || 'Failed to load product groups');
@@ -129,12 +171,254 @@ const ProductGroupsPage: React.FC = () => {
     }
   };
 
-  // Initial fetch
+
+  const calculateStats = (groups: ProductGroup[]) => {
+    let totalProducts = 0;
+    let fastMoving = 0;
+    let slowMoving = 0;
+    let archivedGroups = 0;
+
+    groups.forEach(group => {
+      const products = productsByGroup[group.id] || [];
+      totalProducts += products.length;
+      
+      if (group.deletedAt) {
+        archivedGroups++;
+      }
+      
+      if (group.setting?.classification === 'fast') {
+        fastMoving++;
+      } else if (group.setting?.classification === 'slow') {
+        slowMoving++;
+      }
+    });
+
+    setStats({
+      totalGroups: groups.length,
+      totalProducts,
+      fastMoving,
+      slowMoving,
+      archivedGroups,
+    });
+  };
+
+
+  const fetchProductsForGroups = async (groups: ProductGroup[]) => {
+    try {
+      const productsMap: Record<string, SingleProduct[]> = {};
+      
+
+      const productPromises = groups.map(async (group) => {
+        try {
+          const products = await productGroupsApi.getProductsByGroup(group.id);
+          productsMap[group.id] = products;
+          return { groupId: group.id, success: true };
+        } catch (error) {
+          console.error(`Failed to fetch products for group ${group.id}:`, error);
+          productsMap[group.id] = [];
+          return { groupId: group.id, success: false };
+        }
+      });
+      
+      await Promise.all(productPromises);
+      setProductsByGroup(productsMap);
+      
+    } catch (error) {
+      console.error('Error fetching products for groups:', error);
+    }
+  };
+
+
+  const fetchProductsForGroup = async (groupId: string) => {
+    try {
+      const products = await productGroupsApi.getProductsByGroup(groupId);
+      setProductsByGroup(prev => ({
+        ...prev,
+        [groupId]: products
+      }));
+      return products;
+    } catch (error) {
+      console.error(`Error fetching products for group ${groupId}:`, error);
+      setProductsByGroup(prev => ({
+        ...prev,
+        [groupId]: []
+      }));
+      return [];
+    }
+  };
+
+
   useEffect(() => {
     fetchProductGroups();
   }, []);
 
-  // Create product group
+
+  useEffect(() => {
+    if (productGroups.length > 0) {
+      calculateStats(productGroups);
+    }
+  }, [productsByGroup]);
+
+
+  const handleExportProducts = async (): Promise<void> => {
+    setExporting(true);
+    try {
+      console.log('Starting products export...');
+      
+      // Call the correct API function
+      const blob = await exportProductsTemplate({ includeArchived: false });
+      
+      if (!blob) {
+        throw new Error('Export returned empty file');
+      }
+      
+      // Use the downloadBlob utility function
+      const filename = `products_${new Date().toISOString().split('T')[0]}.xlsx`;
+      downloadBlob(blob, filename);
+      
+      toast.success("Products exported successfully!");
+      console.log('Export completed successfully');
+
+    } catch (error: any) {
+      console.error('Export failed:', error);
+      toast.error(error.message || 'Failed to export products');
+    } finally {
+      setExporting(false);
+    }
+  };
+
+
+  const validateImportFile = (file: File): string | null => {
+
+    if (!file.name.endsWith('.xlsx')) {
+      return "Only Excel files with .xlsx format are supported";
+    }
+
+
+    const maxSize = 10 * 1024 * 1024;
+    if (file.size > maxSize) {
+      return "File size must be less than 10MB";
+    }
+
+    if (file.size === 0) {
+      return "File is empty";
+    }
+
+    return null;
+  };
+
+
+  const handleImportProducts = async (event: React.ChangeEvent<HTMLInputElement>): Promise<void> => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      console.warn('No file selected for import');
+      return;
+    }
+
+
+    const validationError = validateImportFile(file);
+    if (validationError) {
+      toast.error(validationError);
+      console.warn('File validation failed:', { 
+        fileName: file.name, 
+        fileSize: file.size 
+      });
+      return;
+    }
+
+    setImporting(true);
+    
+    console.log('Starting products import:', {
+      name: file.name,
+      size: file.size
+    });
+
+    try {
+      const result = await importProducts(file);
+      
+   
+      await handleImportResult(result);
+
+    } catch (error: any) {
+      console.error('Import process failed:', error);
+      toast.error(error.message || "Import failed");
+    } finally {
+      setImporting(false);
+  
+      if (event.target) {
+        event.target.value = '';
+      }
+    }
+  };
+
+
+  const handleImportResult = async (result: ImportResult): Promise<void> => {
+    const groupsCreated = result.groupsCreated || 0;
+    const groupsUpdated = result.groupsUpdated || 0;
+    const productsCreated = result.productsCreated || 0;
+    const productsUpdated = result.productsUpdated || 0;
+    const errors = result.errors || [];
+    
+    const totalChanges = groupsCreated + groupsUpdated + productsCreated + productsUpdated;
+    
+    console.log('Import results:', {
+      groupsCreated,
+      groupsUpdated,
+      productsCreated,
+      productsUpdated,
+      errorCount: errors.length,
+      totalChanges
+    });
+
+    if (errors.length > 0) {
+
+      const errorMessages = errors.slice(0, 3).map((error: any) => 
+        error.row ? `Row ${error.row}: ${error.message}` : error.message
+      );
+      
+      if (totalChanges > 0) {
+        
+        toast.success(
+          `Import partially successful! ` +
+          `Groups: ${groupsCreated} created, ${groupsUpdated} updated. ` +
+          `Products: ${productsCreated} created, ${productsUpdated} updated. ` +
+          `${errors.length} error(s) found.`
+        );
+        
+     
+        if (errorMessages.length > 0) {
+          console.warn('Import completed with errors:', errorMessages);
+        }
+      } else {
+      
+        toast.error("Import failed with errors");
+        console.error('Import failed completely with errors:', errors);
+      }
+    } else if (totalChanges > 0) {
+     
+      toast.success(
+        `Import successful! ` +
+        `Groups: ${groupsCreated} created, ${groupsUpdated} updated. ` +
+        `Products: ${productsCreated} created, ${productsUpdated} updated.`
+      );
+    } else {
+     
+      toast.success("Import completed - no changes made");
+    }
+    
+    
+    if (totalChanges > 0 || errors.length === 0) {
+      try {
+        await fetchProductGroups();
+        console.log('Data refreshed after import');
+      } catch (error) {
+        console.error('Failed to refresh data after import:', error);
+ 
+      }
+    }
+  };
+
+
   const handleCreate = async () => {
     if (!newGroupName.trim()) {
       toast.error('Group name is required');
@@ -148,7 +432,7 @@ const ProductGroupsPage: React.FC = () => {
         name: newGroupName.trim(),
       };
 
-      // Add advanced settings if enabled
+
       if (showAdvancedSettings) {
         createData.setting = {
           classification,
@@ -162,10 +446,10 @@ const ProductGroupsPage: React.FC = () => {
       
       await productGroupsApi.create(createData);
       
-      // Always refresh to get the complete data from server
+   
       await fetchProductGroups();
       
-      // Reset form
+    
       setNewGroupName('');
       setShowAdvancedSettings(false);
       setClassification('fast');
@@ -173,7 +457,7 @@ const ProductGroupsPage: React.FC = () => {
       setFillRate(90);
       setSafetyStockMethod('dynamic');
       
-      // Close dialog
+    
       setOpenCreateDialog(false);
       
       toast.success('Product group created successfully');
@@ -185,7 +469,7 @@ const ProductGroupsPage: React.FC = () => {
     }
   };
 
-  // Update product group
+
   const handleUpdate = async () => {
     if (!selectedGroup) return;
     
@@ -201,7 +485,7 @@ const ProductGroupsPage: React.FC = () => {
         name: editGroupName.trim(),
       };
 
-      // Add advanced settings if enabled
+
       if (showEditAdvancedSettings) {
         updateData.setting = {
           classification: editClassification,
@@ -213,14 +497,14 @@ const ProductGroupsPage: React.FC = () => {
 
       const updatedGroup = await productGroupsApi.update(selectedGroup.id, updateData);
       
-      // Update local state
+
       setProductGroups(prev =>
         prev.map(group =>
           group.id === selectedGroup.id ? updatedGroup : group
         )
       );
       
-      // Reset and close dialog
+ 
       setSelectedGroup(null);
       setEditGroupName('');
       setShowEditAdvancedSettings(false);
@@ -239,7 +523,76 @@ const ProductGroupsPage: React.FC = () => {
     }
   };
 
-  // Archive product group
+
+  const handleAddVariant = async () => {
+    if (!selectedGroupForVariant) return;
+    
+    if (!variantName.trim()) {
+      toast.error('Variant name is required');
+      return;
+    }
+
+    setAddingVariant(true);
+
+    try {
+      const variantData: any = {
+        name: variantName.trim(),
+      };
+
+
+      if (variantType === 'full') {
+        variantData.setting = {
+          classification: variantClassification,
+          serviceLevel: variantServiceLevel,
+          fillRate: variantFillRate,
+          safetyStockCalculationMethod: variantSafetyStockMethod,
+        };
+      }
+
+      console.log('Adding variant with data:', variantData);
+      
+
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/groups/${selectedGroupForVariant.id}/products`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: JSON.stringify(variantData),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to add variant: ${response.statusText}`);
+      }
+
+   
+      await fetchProductsForGroup(selectedGroupForVariant.id);
+      
+   
+      setVariantName('');
+      setVariantType('partial');
+      setVariantClassification('fast');
+      setVariantServiceLevel(90);
+      setVariantFillRate(90);
+      setVariantSafetyStockMethod('dynamic');
+      
+   
+      setOpenAddVariantDialog(false);
+      setSelectedGroupForVariant(null);
+      
+      toast.success('Variant added successfully');
+    } catch (err: any) {
+      console.error('Failed to add variant:', err);
+      toast.error(err.message || 'Failed to add variant');
+    } finally {
+      setAddingVariant(false);
+    }
+  };
+
+
   const handleArchive = async () => {
     if (!selectedGroup) return;
 
@@ -248,12 +601,19 @@ const ProductGroupsPage: React.FC = () => {
     try {
       await productGroupsApi.archive(selectedGroup.id);
       
-      // Update local state (remove archived group)
+
       setProductGroups(prev =>
         prev.filter(group => group.id !== selectedGroup.id)
       );
       
-      // Close dialog
+
+      setProductsByGroup(prev => {
+        const newMap = { ...prev };
+        delete newMap[selectedGroup.id];
+        return newMap;
+      });
+      
+  
       setSelectedGroup(null);
       setArchiveDialogOpen(false);
       
@@ -266,7 +626,7 @@ const ProductGroupsPage: React.FC = () => {
     }
   };
 
-  // Unarchive product group
+
   const handleUnarchive = async () => {
     if (!selectedGroup) return;
 
@@ -275,10 +635,13 @@ const ProductGroupsPage: React.FC = () => {
     try {
       const unarchivedGroup = await productGroupsApi.unarchive(selectedGroup.id);
       
-      // Update local state (add unarchived group back)
+  
       setProductGroups(prev => [...prev, unarchivedGroup]);
       
-      // Close dialog
+
+      await fetchProductsForGroup(selectedGroup.id);
+      
+ 
       setSelectedGroup(null);
       setUnarchiveDialogOpen(false);
       
@@ -291,12 +654,12 @@ const ProductGroupsPage: React.FC = () => {
     }
   };
 
-  // Open edit dialog
+
   const openEditDialogHandler = (group: ProductGroup) => {
     setSelectedGroup(group);
     setEditGroupName(group.name);
     
-    // Load existing settings if they exist
+
     if (group.setting) {
       setShowEditAdvancedSettings(true);
       setEditClassification((group.setting.classification as ClassificationType) || 'fast');
@@ -310,19 +673,29 @@ const ProductGroupsPage: React.FC = () => {
     setOpenEditDialog(true);
   };
 
-  // Open archive dialog
+
+  const openAddVariantDialogHandler = (group: ProductGroup) => {
+    setSelectedGroupForVariant(group);
+    setOpenAddVariantDialog(true);
+  };
+
+
   const openArchiveDialogHandler = (group: ProductGroup) => {
     setSelectedGroup(group);
     setArchiveDialogOpen(true);
   };
 
-  // Open unarchive dialog
+
   const openUnarchiveDialogHandler = (group: ProductGroup) => {
     setSelectedGroup(group);
     setUnarchiveDialogOpen(true);
   };
 
-  // Format date
+  const navigateToProductView = (groupId: string, productId: string) => {
+    router.push(`/dashboard/product-view/${groupId}/${productId}`);
+  };
+
+
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -331,39 +704,43 @@ const ProductGroupsPage: React.FC = () => {
     });
   };
 
-  // Calculate total products in group
+
   const getTotalProducts = (group: ProductGroup) => {
+    const products = productsByGroup[group.id];
+    if (products) {
+      return products.length;
+    }
     return group.products?.length || 0;
   };
 
-  // Get classification badge
-  const getClassificationBadge = (group: ProductGroup) => {
-    if (!group.setting?.classification) return null;
+ 
+  const getProductNames = (groupId: string): string => {
+    const products = productsByGroup[groupId];
     
-    return (
-      <Badge 
-        variant="outline" 
-        className={
-          group.setting.classification === 'fast' 
-            ? "bg-blue-50 text-blue-700 border-blue-200" 
-            : "bg-amber-50 text-amber-700 border-amber-200"
-        }
-      >
-        {group.setting.classification}
-      </Badge>
-    );
+    if (!products || products.length === 0) {
+      return 'No products';
+    }
+    
+
+    const maxDisplay = 2;
+    if (products.length <= maxDisplay) {
+      return products.map(p => p.name).join(', ');
+    } else {
+      const firstTwo = products.slice(0, maxDisplay).map(p => p.name).join(', ');
+      return `${firstTwo}`;
+    }
   };
 
-  // Loading state
+
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
         <div className="flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <Skeleton className="h-10 w-48" />
             <Skeleton className="h-10 w-40" />
           </div>
-          <Card>
+          <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50">
             <CardHeader>
               <Skeleton className="h-6 w-32" />
             </CardHeader>
@@ -381,28 +758,58 @@ const ProductGroupsPage: React.FC = () => {
   }
 
   return (
-    <div className="container mx-auto p-6">
-      {/* Header */}
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6">
+ 
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Product Groups</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-800">Product Groups</h1>
+          <p className="text-gray-600">
             Manage your product groups and categories
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+      
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchProductGroups}
-            disabled={loading}
+            onClick={handleExportProducts}
+            disabled={exporting}
+            className="bg-white/80 backdrop-blur-sm border-gray-300 hover:bg-white flex items-center gap-2"
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
-            Refresh
+            <Download className={`h-4 w-4 ${exporting ? 'animate-spin' : ''}`} />
+            {exporting ? "Exporting..." : "Export Excel"}
           </Button>
+
+    
+   
+<label className="cursor-pointer">
+  <input
+    type="file"
+    accept=".xlsx"
+    onChange={handleImportProducts}
+    disabled={importing}
+    className="hidden"
+    id="excel-import"
+  />
+  <div>
+    <Button
+      variant="outline"
+      size="sm"
+      disabled={importing}
+      className="bg-white/80 backdrop-blur-sm border-gray-300 hover:bg-white flex items-center gap-2 cursor-pointer"
+      onClick={() => document.getElementById('excel-import')?.click()}
+    >
+      <Upload className={`h-4 w-4 ${importing ? 'animate-spin' : ''}`} />
+      {importing ? "Importing..." : "Import Excel"}
+    </Button>
+  </div>
+</label>
+
+
           <Button
             size="sm"
             onClick={() => setOpenCreateDialog(true)}
+            className="bg-gray-800 hover:bg-gray-900 text-white"
           >
             <Plus className="mr-2 h-4 w-4" />
             New Group
@@ -410,14 +817,119 @@ const ProductGroupsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Error message */}
+ 
+      <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50 mb-6">
+        <CardContent className="p-6">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                Bulk Operations
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Use Excel files for bulk import/export operations. 
+                <span className="text-red-600 font-medium ml-1">
+                  Only .xlsx format supported.
+                </span>
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm font-medium text-gray-800">
+                  {stats.totalGroups} categories
+                </p>
+                <p className="text-sm text-gray-600">
+                  {stats.totalProducts} total products
+                </p>
+              </div>
+              <div className="w-12 h-12 bg-gray-100/50 rounded-lg flex items-center justify-center">
+                <Database className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+ 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Groups</p>
+                <h3 className="text-2xl font-bold text-gray-800">{stats.totalGroups}</h3>
+              </div>
+              <div className="p-3 bg-gray-100/50 rounded-full">
+                <Database className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Total Products</p>
+                <h3 className="text-2xl font-bold text-gray-800">{stats.totalProducts}</h3>
+              </div>
+              <div className="p-3 bg-gray-100/50 rounded-full">
+                <Package className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Fast Moving</p>
+                <h3 className="text-2xl font-bold text-green-600">{stats.fastMoving}</h3>
+              </div>
+              <div className="p-3 bg-green-100/30 rounded-full">
+                <TrendingUp className="h-6 w-6 text-green-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Slow Moving</p>
+                <h3 className="text-2xl font-bold text-amber-600">{stats.slowMoving}</h3>
+              </div>
+              <div className="p-3 bg-amber-100/30 rounded-full">
+                <Filter className="h-6 w-6 text-amber-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-600">Archived</p>
+                <h3 className="text-2xl font-bold text-gray-600">{stats.archivedGroups}</h3>
+              </div>
+              <div className="p-3 bg-gray-100/50 rounded-full">
+                <Archive className="h-6 w-6 text-gray-600" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+
       {error && (
-        <div className="bg-destructive/15 text-destructive px-4 py-3 rounded-md mb-6">
+        <div className="bg-red-50/80 backdrop-blur-sm text-red-700 px-4 py-3 rounded-md mb-6 border border-red-200/50">
           <p className="text-sm">{error}</p>
           <Button
             variant="outline"
             size="sm"
-            className="mt-2"
+            className="mt-2 bg-white/80 border-red-200 hover:bg-white"
             onClick={fetchProductGroups}
           >
             Retry
@@ -425,137 +937,234 @@ const ProductGroupsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Product Groups Table */}
-      <Card>
+
+      <Card className="bg-white/80 backdrop-blur-sm border-gray-200/50">
         <CardHeader>
-          <CardTitle>All Product Groups</CardTitle>
+          <CardTitle className="text-gray-800">All Product Groups</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Products</TableHead>
-                <TableHead>Classification</TableHead>
-                <TableHead>Created</TableHead>
-                <TableHead>Updated</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+              <TableRow className="border-gray-200/50">
+                <TableHead className="text-gray-700">Name</TableHead>
+                <TableHead className="text-gray-700">Product/Variant Count</TableHead>
+                <TableHead className="text-gray-700">Products</TableHead>
+                <TableHead className="text-gray-700">Created</TableHead>
+                <TableHead className="text-gray-700 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {productGroups.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={7} className="text-center py-8">
+                  <TableCell colSpan={5} className="text-center py-8">
                     <div className="text-center">
-                      <p className="text-muted-foreground">
+                      <p className="text-gray-600">
                         {loading ? 'Loading...' : 'No product groups found'}
                       </p>
-                      <Button
-                        variant="outline"
-                        className="mt-2"
-                        onClick={() => setOpenCreateDialog(true)}
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        Create your first group
-                      </Button>
+                      <div className="flex flex-col gap-2 mt-3">
+                        <Button
+                          variant="outline"
+                          className="bg-white/80 border-gray-300 hover:bg-white"
+                          onClick={() => setOpenCreateDialog(true)}
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Create your first group
+                        </Button>
+                       <label className="cursor-pointer">
+  <input
+    type="file"
+    accept=".xlsx"
+    onChange={handleImportProducts}
+    className="hidden"
+    id="excel-import-empty"
+  />
+  <Button
+    variant="outline"
+    className="w-full bg-white/80 border-gray-300 hover:bg-white cursor-pointer"
+    onClick={() => document.getElementById('excel-import-empty')?.click()}
+  >
+    <Upload className="mr-2 h-4 w-4" />
+    Import from Excel (.xlsx)
+  </Button>
+</label>
+                      </div>
                     </div>
                   </TableCell>
                 </TableRow>
               ) : (
-                productGroups.map((group) => (
-                  <TableRow key={group.id} className="hover:bg-muted/50">
-                    <TableCell className="font-medium">
-                      <div>
-                        <p className="font-semibold">{group.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          ID: {group.id?.slice(0, 8) || 'N/A'}...
-                        </p>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {getTotalProducts(group)} product{getTotalProducts(group) !== 1 ? 's' : ''}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      {getClassificationBadge(group) || (
-                        <span className="text-muted-foreground text-sm">Not set</span>
-                      )}
-                    </TableCell>
-                    <TableCell>{group.createdAt ? formatDate(group.createdAt) : 'N/A'}</TableCell>
-                    <TableCell>{group.updatedAt ? formatDate(group.updatedAt) : 'N/A'}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={group.deletedAt ? "secondary" : "default"}
-                        className={
-                          group.deletedAt
-                            ? "bg-gray-100 text-gray-800 hover:bg-gray-200"
-                            : "bg-green-50 text-green-700 hover:bg-green-100"
-                        }
-                      >
-                        {group.deletedAt ? 'Archived' : 'Active'}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <TooltipProvider>
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            {group.deletedAt ? (
-                              <DropdownMenuItem
-                                onClick={() => openUnarchiveDialogHandler(group)}
-                                className="cursor-pointer"
-                              >
-                                <Undo2 className="mr-2 h-4 w-4" />
-                                Unarchive
-                              </DropdownMenuItem>
-                            ) : (
-                              <>
-                                <DropdownMenuItem
-                                  onClick={() => openEditDialogHandler(group)}
-                                  className="cursor-pointer"
-                                >
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() => openArchiveDialogHandler(group)}
-                                  className="cursor-pointer text-destructive focus:text-destructive"
-                                >
-                                  <Archive className="mr-2 h-4 w-4" />
-                                  Archive
-                                </DropdownMenuItem>
-                              </>
+                productGroups.map((group) => {
+                  const products = productsByGroup[group.id] || [];
+                  const totalProducts = products.length;
+                  const productNames = getProductNames(group.id);
+                  
+                  return (
+                    <TableRow key={group.id} className="hover:bg-gray-50/50 border-gray-200/50">
+                      <TableCell className="font-medium">
+                        <div>
+                          <p className="font-semibold text-gray-800">{group.name}</p>
+                          <p className="text-xs text-gray-500">
+                            ID: {group.id?.slice(0, 8) || 'N/A'}...
+                          </p>
+                        </div>
+                      </TableCell>
+                      
+                  
+                      <TableCell>
+                        <Badge variant="outline" className="min-w-[60px] justify-center bg-white/80 border-gray-300">
+                          <Package className="h-3 w-3 mr-1" />
+                          {totalProducts} item{totalProducts !== 1 ? 's' : ''}
+                        </Badge>
+                      </TableCell>
+                      
+                 
+                      <TableCell>
+                        {products.length > 0 ? (
+                          <div className="flex flex-col gap-1">
+                            <p className="text-sm text-gray-700">{productNames}</p>
+                            {products.length > 2 && (
+                              <p className="text-xs text-gray-500">
+                                <GitBranch className="inline h-3 w-3 mr-1" />
+                                +{products.length - 2} more
+                              </p>
                             )}
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TooltipProvider>
-                    </TableCell>
-                  </TableRow>
-                ))
+                          </div>
+                        ) : (
+                          <p className="text-sm text-gray-500 italic">
+                            <Box className="inline h-3 w-3 mr-1" />
+                            No products yet
+                          </p>
+                        )}
+                      </TableCell>
+                      
+                  
+                      <TableCell>
+                        <div className="flex items-center text-gray-700">
+                          <Calendar className="h-3 w-3 mr-1" />
+                          {group.createdAt ? formatDate(group.createdAt) : 'N/A'}
+                        </div>
+                      </TableCell>
+                      
+                    
+                      <TableCell>
+                        <div className="flex flex-wrap items-center justify-end gap-2">
+                          {/* Add Variant Button */}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openAddVariantDialogHandler(group)}
+                            className="bg-white/80 border-gray-300 hover:bg-white"
+                          >
+                            <Plus className="h-3 w-3 mr-1" />
+                            Add Variant
+                          </Button>
+                          
+                    
+                          {products.length === 1 ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => navigateToProductView(group.id, products[0].id)}
+                              className="bg-white/80 border-gray-300 hover:bg-white"
+                            >
+                              <BarChart3 className="h-3 w-3 mr-1" />
+                              Forecast
+                            </Button>
+                          ) : products.length > 1 ? (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  className="bg-white/80 border-gray-300 hover:bg-white"
+                                >
+                                  <BarChart3 className="h-3 w-3 mr-1" />
+                                  Forecast
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="bg-white/90 backdrop-blur-sm border-gray-200/50">
+                                {products.map((product) => (
+                                  <DropdownMenuItem
+                                    key={product.id}
+                                    onClick={() => navigateToProductView(group.id, product.id)}
+                                    className="cursor-pointer hover:bg-gray-100/50"
+                                  >
+                                    <Eye className="h-3 w-3 mr-2" />
+                                    {product.name}
+                                  </DropdownMenuItem>
+                                ))}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="bg-white/80 border-gray-300"
+                            >
+                              <BarChart3 className="h-3 w-3 mr-1" />
+                              Forecast
+                            </Button>
+                          )}
+                          
+               
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => openEditDialogHandler(group)}
+                            className="bg-white/80 border-gray-300 hover:bg-white"
+                          >
+                            <Edit className="h-3 w-3 mr-1" />
+                            Edit
+                          </Button>
+                    
+                          {group.deletedAt ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openUnarchiveDialogHandler(group)}
+                              className="bg-white/80 border-gray-300 hover:bg-green-50 hover:text-green-700 hover:border-green-300"
+                            >
+                              <Undo2 className="h-3 w-3 mr-1" />
+                              Unarchive
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => openArchiveDialogHandler(group)}
+                              className="bg-white/80 border-gray-300 hover:bg-red-50 hover:text-red-700 hover:border-red-300"
+                            >
+                              <Archive className="h-3 w-3 mr-1" />
+                              Archive
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>
 
-          {/* Total groups count */}
+     
           {productGroups.length > 0 && (
-            <div className="flex items-center justify-between mt-4">
-              <div className="text-sm text-muted-foreground">
-                Total: {productGroups.length} group{productGroups.length !== 1 ? 's' : ''}
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200/50">
+              <div className="text-sm text-gray-600">
+                Total: {stats.totalGroups} group{stats.totalGroups !== 1 ? 's' : ''}
+              </div>
+              <div className="text-sm text-gray-600">
+                <Package className="inline h-3 w-3 mr-1" />
+                Total products/variants: {stats.totalProducts}
               </div>
             </div>
           )}
         </CardContent>
       </Card>
 
-      {/* Create Dialog */}
+   
       <Dialog open={openCreateDialog} onOpenChange={setOpenCreateDialog}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] bg-white/95 backdrop-blur-sm border-gray-200/50">
           <DialogHeader>
             <DialogTitle>Create New Product Group</DialogTitle>
             <DialogDescription>
@@ -577,10 +1186,11 @@ const ProductGroupsPage: React.FC = () => {
                   }
                 }}
                 autoFocus
+                className="bg-white/80 border-gray-300"
               />
             </div>
 
-            {/* Advanced Settings Toggle */}
+          
             <div className="flex items-center justify-between pt-2">
               <div className="flex items-center space-x-2">
                 <Settings className="h-4 w-4" />
@@ -593,17 +1203,17 @@ const ProductGroupsPage: React.FC = () => {
               />
             </div>
 
-            {/* Advanced Settings Form */}
+        
             {showAdvancedSettings && (
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+              <div className="space-y-4 p-4 border rounded-lg bg-gray-50/50 border-gray-200/50">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="classification">Classification *</Label>
                     <Select value={classification} onValueChange={(value: ClassificationType) => setClassification(value)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white/80 border-gray-300">
                         <SelectValue placeholder="Select classification" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
                         <SelectItem value="fast">Fast</SelectItem>
                         <SelectItem value="slow">Slow</SelectItem>
                       </SelectContent>
@@ -613,10 +1223,10 @@ const ProductGroupsPage: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="safety-stock-method">Safety Stock Method</Label>
                     <Select value={safetyStockMethod} onValueChange={setSafetyStockMethod}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white/80 border-gray-300">
                         <SelectValue placeholder="Select method" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
                         <SelectItem value="dynamic">Dynamic</SelectItem>
                         <SelectItem value="static">Static</SelectItem>
                       </SelectContent>
@@ -634,6 +1244,7 @@ const ProductGroupsPage: React.FC = () => {
                       max="100"
                       value={serviceLevel}
                       onChange={(e) => setServiceLevel(Number(e.target.value))}
+                      className="bg-white/80 border-gray-300"
                     />
                   </div>
                   
@@ -646,6 +1257,7 @@ const ProductGroupsPage: React.FC = () => {
                       max="100"
                       value={fillRate}
                       onChange={(e) => setFillRate(Number(e.target.value))}
+                      className="bg-white/80 border-gray-300"
                     />
                   </div>
                 </div>
@@ -660,10 +1272,11 @@ const ProductGroupsPage: React.FC = () => {
                   setNewGroupName('');
                   setShowAdvancedSettings(false);
                 }}
+                className="bg-white/80 border-gray-300 hover:bg-white"
               >
                 Cancel
               </Button>
-              <Button onClick={handleCreate} disabled={creating}>
+              <Button onClick={handleCreate} disabled={creating} className="bg-gray-800 hover:bg-gray-900 text-white">
                 {creating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Create
               </Button>
@@ -672,9 +1285,9 @@ const ProductGroupsPage: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Edit Dialog */}
+  
       <Dialog open={openEditDialog} onOpenChange={setOpenEditDialog}>
-        <DialogContent className="sm:max-w-[525px]">
+        <DialogContent className="sm:max-w-[525px] bg-white/95 backdrop-blur-sm border-gray-200/50">
           <DialogHeader>
             <DialogTitle>Edit Product Group</DialogTitle>
             <DialogDescription>
@@ -696,10 +1309,11 @@ const ProductGroupsPage: React.FC = () => {
                   }
                 }}
                 autoFocus
+                className="bg-white/80 border-gray-300"
               />
             </div>
 
-            {/* Advanced Settings Toggle for Edit */}
+  
             <div className="flex items-center justify-between pt-2">
               <div className="flex items-center space-x-2">
                 <Settings className="h-4 w-4" />
@@ -712,17 +1326,17 @@ const ProductGroupsPage: React.FC = () => {
               />
             </div>
 
-            {/* Advanced Settings Form for Edit */}
+           
             {showEditAdvancedSettings && (
-              <div className="space-y-4 p-4 border rounded-lg bg-muted/30">
+              <div className="space-y-4 p-4 border rounded-lg bg-gray-50/50 border-gray-200/50">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="edit-classification">Classification *</Label>
                     <Select value={editClassification} onValueChange={(value: ClassificationType) => setEditClassification(value)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white/80 border-gray-300">
                         <SelectValue placeholder="Select classification" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
                         <SelectItem value="fast">Fast</SelectItem>
                         <SelectItem value="slow">Slow</SelectItem>
                       </SelectContent>
@@ -732,10 +1346,10 @@ const ProductGroupsPage: React.FC = () => {
                   <div className="space-y-2">
                     <Label htmlFor="edit-safety-stock-method">Safety Stock Method</Label>
                     <Select value={editSafetyStockMethod} onValueChange={setEditSafetyStockMethod}>
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-white/80 border-gray-300">
                         <SelectValue placeholder="Select method" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
                         <SelectItem value="dynamic">Dynamic</SelectItem>
                         <SelectItem value="static">Static</SelectItem>
                       </SelectContent>
@@ -753,6 +1367,7 @@ const ProductGroupsPage: React.FC = () => {
                       max="100"
                       value={editServiceLevel}
                       onChange={(e) => setEditServiceLevel(Number(e.target.value))}
+                      className="bg-white/80 border-gray-300"
                     />
                   </div>
                   
@@ -765,6 +1380,7 @@ const ProductGroupsPage: React.FC = () => {
                       max="100"
                       value={editFillRate}
                       onChange={(e) => setEditFillRate(Number(e.target.value))}
+                      className="bg-white/80 border-gray-300"
                     />
                   </div>
                 </div>
@@ -780,10 +1396,11 @@ const ProductGroupsPage: React.FC = () => {
                   setSelectedGroup(null);
                   setShowEditAdvancedSettings(false);
                 }}
+                className="bg-white/80 border-gray-300 hover:bg-white"
               >
                 Cancel
               </Button>
-              <Button onClick={handleUpdate} disabled={updating}>
+              <Button onClick={handleUpdate} disabled={updating} className="bg-gray-800 hover:bg-gray-900 text-white">
                 {updating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Update
               </Button>
@@ -792,25 +1409,172 @@ const ProductGroupsPage: React.FC = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Archive Confirmation Dialog */}
+    
+      <Dialog open={openAddVariantDialog} onOpenChange={setOpenAddVariantDialog}>
+        <DialogContent className="sm:max-w-[525px] bg-white/95 backdrop-blur-sm border-gray-200/50">
+          <DialogHeader>
+            <DialogTitle>
+              Add Variant to {selectedGroupForVariant?.name}
+            </DialogTitle>
+            <DialogDescription>
+              {variantType === 'partial' 
+                ? 'Enter variant name. No additional settings required for partial variant.'
+                : 'Enter variant details with settings for full configuration.'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+          
+            <div className="space-y-2">
+              <Label>Variant Type</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={variantType === 'partial' ? 'default' : 'outline'}
+                  onClick={() => setVariantType('partial')}
+                  className={variantType === 'partial' 
+                    ? 'bg-gray-800 text-white hover:bg-gray-900' 
+                    : 'bg-white/80 border-gray-300 hover:bg-white'}
+                >
+                  Partial
+                </Button>
+                <Button
+                  type="button"
+                  variant={variantType === 'full' ? 'default' : 'outline'}
+                  onClick={() => setVariantType('full')}
+                  className={variantType === 'full' 
+                    ? 'bg-gray-800 text-white hover:bg-gray-900' 
+                    : 'bg-white/80 border-gray-300 hover:bg-white'}
+                >
+                  Full
+                </Button>
+              </div>
+            </div>
+
+          
+            <div className="space-y-2">
+              <Label htmlFor="variant-name">Variant Name *</Label>
+              <Input
+                id="variant-name"
+                placeholder="Enter variant name"
+                value={variantName}
+                onChange={(e) => setVariantName(e.target.value)}
+                className="bg-white/80 border-gray-300"
+                autoFocus
+              />
+            </div>
+
+            
+            {variantType === 'full' && (
+              <div className="space-y-4 p-4 border rounded-lg bg-gray-50/50 border-gray-200/50">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="variant-classification">Classification *</Label>
+                    <Select 
+                      value={variantClassification} 
+                      onValueChange={(value: ClassificationType) => setVariantClassification(value)}
+                    >
+                      <SelectTrigger className="bg-white/80 border-gray-300">
+                        <SelectValue placeholder="Select classification" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
+                        <SelectItem value="fast">Fast</SelectItem>
+                        <SelectItem value="slow">Slow</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="variant-safety-stock-method">Safety Stock Method</Label>
+                    <Select 
+                      value={variantSafetyStockMethod} 
+                      onValueChange={(value: SafetyStockMethod) => setVariantSafetyStockMethod(value)}
+                    >
+                      <SelectTrigger className="bg-white/80 border-gray-300">
+                        <SelectValue placeholder="Select method" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
+                        <SelectItem value="dynamic">Dynamic</SelectItem>
+                        <SelectItem value="static">Static</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="variant-service-level">Service Level (%)</Label>
+                    <Input
+                      id="variant-service-level"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={variantServiceLevel}
+                      onChange={(e) => setVariantServiceLevel(Number(e.target.value))}
+                      className="bg-white/80 border-gray-300"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="variant-fill-rate">Fill Rate (%)</Label>
+                    <Input
+                      id="variant-fill-rate"
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={variantFillRate}
+                      onChange={(e) => setVariantFillRate(Number(e.target.value))}
+                      className="bg-white/80 border-gray-300"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setOpenAddVariantDialog(false);
+                  setVariantName('');
+                  setVariantType('partial');
+                  setVariantClassification('fast');
+                  setVariantServiceLevel(90);
+                  setVariantFillRate(90);
+                  setVariantSafetyStockMethod('dynamic');
+                  setSelectedGroupForVariant(null);
+                }}
+                className="bg-white/80 border-gray-300 hover:bg-white"
+              >
+                Cancel
+              </Button>
+              <Button onClick={handleAddVariant} disabled={addingVariant} className="bg-gray-800 hover:bg-gray-900 text-white">
+                {addingVariant && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Add Variant
+              </Button>
+            </DialogFooter>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      
       <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
           <AlertDialogHeader>
             <AlertDialogTitle>Archive Product Group</AlertDialogTitle>
             <AlertDialogDescription>
               Are you sure you want to archive the product group "
               <strong>{selectedGroup?.name}</strong>"?
               <br />
-              <span className="text-sm text-muted-foreground">
+              <span className="text-sm text-gray-600">
                 This action can be undone by unarchiving the group.
               </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel className="bg-white/80 border-gray-300 hover:bg-white">Cancel</AlertDialogCancel>
             <AlertDialogAction
               onClick={handleArchive}
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              className="bg-red-600 text-white hover:bg-red-700"
               disabled={archiving}
             >
               {archiving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -820,9 +1584,9 @@ const ProductGroupsPage: React.FC = () => {
         </AlertDialogContent>
       </AlertDialog>
 
-      {/* Unarchive Confirmation Dialog */}
+     
       <AlertDialog open={unarchiveDialogOpen} onOpenChange={setUnarchiveDialogOpen}>
-        <AlertDialogContent>
+        <AlertDialogContent className="bg-white/95 backdrop-blur-sm border-gray-200/50">
           <AlertDialogHeader>
             <AlertDialogTitle>Unarchive Product Group</AlertDialogTitle>
             <AlertDialogDescription>
@@ -831,8 +1595,8 @@ const ProductGroupsPage: React.FC = () => {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleUnarchive} disabled={unarchiving}>
+            <AlertDialogCancel className="bg-white/80 border-gray-300 hover:bg-white">Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleUnarchive} disabled={unarchiving} className="bg-gray-800 hover:bg-gray-900 text-white">
               {unarchiving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Unarchive
             </AlertDialogAction>
