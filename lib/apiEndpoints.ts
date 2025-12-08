@@ -43,26 +43,26 @@ export class ApiEndpoints {
 		return `${this.backendUrl}/auth/session`
 	}
 	
-	// Product Group endpoints (with query parameter support)
-	productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
-		let baseUrl = `${this.backendUrl}/groups`;
-		
-		if (groupId) {
-			baseUrl += `/${groupId}`;
-		}
-		
-		if (queryParams) {
-			const params = new URLSearchParams();
-			Object.entries(queryParams).forEach(([key, value]) => {
-				if (value !== undefined && value !== null) {
-					params.append(key, value.toString());
-				}
-			});
-			baseUrl += `?${params.toString()}`;
-		}
-		
-		return baseUrl;
-	}
+	
+productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
+  let baseUrl = `${this.backendUrl}/groups`;
+  
+  if (groupId) {
+    baseUrl += `/${groupId}`;
+  }
+  
+  if (queryParams) {
+    const params = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, value.toString());
+      }
+    });
+    baseUrl += `?${params.toString()}`;
+  }
+  
+  return baseUrl;
+}
 
 	// Product Group update endpoint (PUT/PATCH)
 	productGroupUpdate(groupId: string) {
@@ -107,13 +107,25 @@ export class ApiEndpoints {
 	}
 
 	// Categories endpoints
-	categories(categoryId?: string) {
-		if (categoryId) {
-			return `${this.backendUrl}/categories/${categoryId}`
-		} else {
-			return `${this.backendUrl}/categories`
-		}
-	}
+	categories(categoryId?: string, queryParams?: Record<string, string | number | boolean>) {
+  let baseUrl = `${this.backendUrl}/categories`;
+  
+  if (categoryId) {
+    baseUrl += `/${categoryId}`;
+  }
+  
+  if (queryParams) {
+    const params = new URLSearchParams();
+    Object.entries(queryParams).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, value.toString());
+      }
+    });
+    baseUrl += `?${params.toString()}`;
+  }
+  
+  return baseUrl;
+}
 
 	// Forecast endpoints
 	forecast(groupId: string, productId: string, forecastId?: string, queryParams?: Record<string, string | number | boolean>) {

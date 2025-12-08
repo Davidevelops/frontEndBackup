@@ -1,6 +1,11 @@
-
 import React, { useState } from 'react';
 import { AccountDisplay } from './AccountManagement';
+import {
+  X,
+  Loader2,
+  Lock,
+  Key,
+} from 'lucide-react';
 
 interface ChangePasswordModalProps {
   isOpen: boolean;
@@ -64,65 +69,83 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg w-full max-w-md">
+      <div className="bg-white border border-[#E2E8F0] rounded-lg w-full max-w-md">
         <div className="p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold">Change Password</h2>
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center gap-3">
+              <div className="bg-yellow-100 p-2 rounded-lg">
+                <Lock className="h-5 w-5 text-yellow-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-[#0F172A]">Change Password</h2>
+                <p className="text-sm text-[#64748B]">Set a new password for user</p>
+              </div>
+            </div>
             <button 
               onClick={handleClose} 
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-[#64748B] hover:text-[#0F172A] transition-colors p-1 hover:bg-[#F8FAFC] rounded"
+              disabled={loading}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-5 h-5" />
             </button>
           </div>
 
-          <p className="text-gray-600 mb-6">
-            Changing password for: <strong>{account.username}</strong>
-          </p>
+          <div className="mb-6 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              Changing password for: <strong className="font-semibold">{account.username}</strong>
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-6">
             {error && (
               <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md">
-                {error}
+                <div className="font-medium">Error</div>
+                <div className="text-sm">{error}</div>
               </div>
             )}
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                New Password *
-              </label>
-              <input
-                type="password"
-                required
-                value={formData.newPassword}
-                onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Enter new password"
-              />
-              <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-[#0F172A] mb-2">
+                  New Password *
+                </label>
+                <div className="relative">
+                  <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+                  <input
+                    type="password"
+                    required
+                    value={formData.newPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    className="w-full pl-10 pr-3 py-2 border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    placeholder="Enter new password"
+                  />
+                </div>
+                <p className="text-xs text-[#64748B] mt-2">Minimum 6 characters</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-[#0F172A] mb-2">
+                  Confirm New Password *
+                </label>
+                <div className="relative">
+                  <Key className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-[#64748B]" />
+                  <input
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="w-full pl-10 pr-3 py-2 border border-[#E2E8F0] rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent"
+                    placeholder="Confirm new password"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Confirm New Password *
-              </label>
-              <input
-                type="password"
-                required
-                value={formData.confirmPassword}
-                onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                placeholder="Confirm new password"
-              />
-            </div>
-
-            <div className="flex justify-end space-x-3 pt-4 border-t">
+            <div className="flex justify-end space-x-3 pt-6 border-t border-[#E2E8F0]">
               <button
                 type="button"
                 onClick={handleClose}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+                className="px-4 py-2.5 border border-[#E2E8F0] text-[#64748B] rounded-lg hover:bg-[#F8FAFC] transition-colors text-sm font-medium disabled:opacity-50"
                 disabled={loading}
               >
                 Cancel
@@ -130,17 +153,19 @@ const ChangePasswordModal: React.FC<ChangePasswordModalProps> = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2.5 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 {loading ? (
-                  <span className="flex items-center">
-                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     Changing...
-                  </span>
-                ) : 'Change Password'}
+                  </>
+                ) : (
+                  <>
+                    <Lock className="h-4 w-4" />
+                    Change Password
+                  </>
+                )}
               </button>
             </div>
           </form>

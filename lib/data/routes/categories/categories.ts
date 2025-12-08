@@ -2,14 +2,41 @@ import apiClient from "@/lib/axiosConfig";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 import { Category } from "@/lib/types";
 
-export const getCategories = async (): Promise<Category[] | null> => {
+// categories.ts
+export const getCategories = async (includeGroups: boolean = false): Promise<Category[] | null> => {
   try {
-    console.log("🔄 Fetching categories from:", apiEndpoints.categories());
-    const res = await apiClient.get(apiEndpoints.categories());
+    const queryParams: Record<string, string | number | boolean> = {};
+    
+    // Fix: Use 'include' parameter instead of 'groups'
+    if (includeGroups) {
+      queryParams.include = 'groups';
+    }
+    
+    console.log("🔄 Fetching categories with params:", queryParams);
+    const res = await apiClient.get(apiEndpoints.categories(undefined, queryParams));
     console.log("✅ Categories response:", res.data);
     return res.data.data;
   } catch (error) {
     console.error("❌ Error fetching categories:", error);
+    return null;
+  }
+};
+
+export const getCategory = async (categoryId: string, includeGroups: boolean = false): Promise<Category | null> => {
+  try {
+    const queryParams: Record<string, string | number | boolean> = {};
+    
+    // Fix: Use 'include' parameter instead of 'groups'
+    if (includeGroups) {
+      queryParams.include = 'groups';
+    }
+    
+    console.log("🔄 Fetching single category:", { categoryId, includeGroups });
+    const res = await apiClient.get(apiEndpoints.categories(categoryId, queryParams));
+    console.log("✅ Category response:", res.data);
+    return res.data.data || res.data;
+  } catch (error) {
+    console.error("❌ Error fetching category:", error);
     return null;
   }
 };
@@ -102,4 +129,4 @@ export const deleteCategory = async (categoryId: string): Promise<boolean> => {
     });
     return false;
   }
-};
+};  

@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -18,6 +17,15 @@ import EditAccountModal from './EditAccountModal';
 import ChangePasswordModal from './ChangePasswordModal';
 import ArchiveAccountModal from './ArchiveAccountModal';
 import PermissionManager from './AccountPermissionManager';
+import {
+  UserPlus,
+  Shield,
+  Lock,
+  User,
+  RefreshCw,
+  AlertCircle,
+  Package,
+} from 'lucide-react';
 
 export type AccountRole = 'admin' | 'staff' | 'manager';
 
@@ -31,7 +39,7 @@ const AccountManager: React.FC = () => {
   const [accounts, setAccounts] = useState<AccountDisplay[]>([]);
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [fetchError, setFetchError] = useState<any>(null);
   const [selectedAccount, setSelectedAccount] = useState<AccountDisplay | null>(null);
   const [refreshingAccount, setRefreshingAccount] = useState<string | null>(null);
   
@@ -63,9 +71,9 @@ const AccountManager: React.FC = () => {
         const displayAccounts = accountsData.map(toAccountDisplay);
         setAccounts(displayAccounts);
       }
-      setError(null);
+      setFetchError(null);
     } catch (err) {
-      setError('Failed to fetch accounts');
+      setFetchError(err);
       console.error(err);
     }
   };
@@ -88,7 +96,7 @@ const AccountManager: React.FC = () => {
       setLoading(true);
       await Promise.all([fetchAccounts(), fetchPermissions()]);
     } catch (err) {
-      setError('Failed to fetch data');
+      setFetchError(err);
       console.error(err);
     } finally {
       setLoading(false);
@@ -219,71 +227,237 @@ const AccountManager: React.FC = () => {
     setIsPermissionModalOpen(true);
   };
 
-  if (loading) return <div className="p-6">Loading accounts...</div>;
-  if (error) return <div className="p-6 text-red-600">Error: {error}</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#F1F5F9] p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 bg-[#E2E8F0] rounded-xl animate-pulse"></div>
+              <div className="space-y-3">
+                <div className="h-9 w-56 bg-[#E2E8F0] rounded-lg animate-pulse"></div>
+                <div className="flex gap-4">
+                  <div className="h-5 w-32 bg-[#E2E8F0] rounded animate-pulse"></div>
+                  <div className="h-5 w-28 bg-[#E2E8F0] rounded animate-pulse"></div>
+                </div>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <div className="h-12 w-36 bg-[#E2E8F0] rounded-lg animate-pulse"></div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-xl border border-[#E2E8F0] p-6">
+            <div className="space-y-3">
+              {[...Array(5)].map((_, i) => (
+                <div key={i} className="h-12 w-full bg-[#E2E8F0] rounded-lg animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Account Management</h1>
-        <button
-          onClick={() => setIsCreateModalOpen(true)}
-          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          Create New Account
-        </button>
+    <div className="min-h-screen p-6">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
+          <div className="flex items-center gap-4 mb-4 lg:mb-0">
+            <div className="relative">
+              <div className="bg-[#1E293B] p-3 rounded-xl">
+                <Shield className="h-8 w-8 text-white" />
+              </div>
+              <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#16A34A] border-2 border-white rounded-full"></div>
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-[#0F172A] mb-2">
+                Account Management
+              </h1>
+              <p className="text-[#64748B] text-lg">
+                Manage user accounts and permissions
+              </p>
+            </div>
+          </div>
+
+          {/* Action Button */}
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="text-xs flex items-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2.5 rounded-lg transition-all duration-200 font-medium"
+            >
+              <UserPlus className="h-4 w-4" />
+              Create Account
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-[#64748B] mb-2">TOTAL ACCOUNTS</p>
+                <p className="text-3xl font-bold text-[#0F172A]">
+                  {accounts.length}
+                </p>
+                <p className="text-sm text-[#64748B] mt-1">User accounts</p>
+              </div>
+              <div className="bg-[#F1F5F9] p-3 rounded-lg">
+                <User className="h-6 w-6 text-[#1E293B]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-[#64748B] mb-2">ACTIVE ACCOUNTS</p>
+                <p className="text-3xl font-bold text-[#16A34A]">
+                  {accounts.filter(a => a.isActive).length}
+                </p>
+                <p className="text-sm text-[#64748B] mt-1">Currently active</p>
+              </div>
+              <div className="bg-[#F0FDF4] p-3 rounded-lg">
+                <Shield className="h-6 w-6 text-[#16A34A]" />
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white border border-[#E2E8F0] rounded-xl p-6 hover:shadow-sm transition-shadow duration-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-[#64748B] mb-2">DATA STATUS</p>
+                <p className="text-lg font-semibold text-[#0F172A] flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${fetchError ? 'bg-[#DC2626]' : 'bg-[#16A34A]'}`}></span>
+                  {fetchError ? 'Sync Failed' : 'Synced & Ready'}
+                </p>
+                <p className="text-sm text-[#64748B] mt-1">
+                  {fetchError ? 'Click retry to reload' : 'Auto-refresh enabled'}
+                </p>
+              </div>
+              <div className="bg-[#F1F5F9] p-3 rounded-lg">
+                <Lock className="h-6 w-6 text-[#334155]" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content Table */}
+        <div className="bg-white rounded-xl border border-[#E2E8F0] overflow-hidden">
+          {fetchError ? (
+            <div className="text-center py-20">
+              <div className="bg-[#FEF2F2] border border-[#FECACA] rounded-xl p-8 max-w-md mx-auto">
+                <div className="bg-white p-4 rounded-xl w-16 h-16 mx-auto mb-4">
+                  <AlertCircle className="h-8 w-8 text-[#DC2626] mx-auto" />
+                </div>
+                <h3 className="text-xl font-bold text-[#0F172A] mb-3">
+                  Failed to Load Accounts
+                </h3>
+                <p className="text-[#64748B] mb-6">
+                  {fetchError?.message || 'There was an error fetching your account data.'}
+                  {fetchError?.status && ` (Status: ${fetchError.status})`}
+                </p>
+                <button
+                  onClick={() => fetchData()}
+                  className="bg-[#DC2626] hover:bg-[#B91C1C] text-white px-8 py-3 rounded-lg font-semibold transition-all duration-200"
+                >
+                  Retry Loading
+                </button>
+              </div>
+            </div>
+          ) : accounts.length === 0 ? (
+            <div className="text-center py-20">
+              <div className="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-10 max-w-md mx-auto">
+                <div className="bg-white p-4 rounded-xl w-20 h-20 mx-auto mb-6">
+                  <User className="h-10 w-10 text-[#64748B] mx-auto" />
+                </div>
+                <h3 className="text-2xl font-bold text-[#0F172A] mb-3">
+                  No Accounts Found
+                </h3>
+                <p className="text-[#64748B] mb-6">
+                  Start by creating your first user account.
+                </p>
+                <div className="flex flex-col gap-3">
+                  <button
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="flex items-center justify-center gap-2 bg-[#1E293B] hover:bg-[#0F172A] text-white px-4 py-2.5 rounded-lg transition-all duration-200 font-medium"
+                  >
+                    <UserPlus className="h-4 w-4" />
+                    Create Account
+                  </button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="p-4">
+              <AccountTable
+                accounts={accounts}
+                onEdit={handleEditClick}
+                onChangePassword={handleChangePasswordClick}
+                onArchive={handleArchiveClick}
+                onManagePermissions={handleManagePermissionsClick}
+                refreshingAccount={refreshingAccount}
+              />
+
+              {accounts.length > 0 && (
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-[#E2E8F0]">
+                  <div className="text-sm text-[#64748B]">
+                    Total: {accounts.length} account{accounts.length !== 1 ? 's' : ''}
+                  </div>
+                  <div className="text-sm text-[#64748B]">
+                    <Shield className="inline h-3 w-3 mr-1" />
+                    Active: {accounts.filter(a => a.isActive).length} accounts
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Modals */}
+        <CreateAccountModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSubmit={handleCreateAccount}
+          permissions={permissions}
+        />
+
+        {selectedAccount && (
+          <>
+            <EditAccountModal
+              isOpen={isEditModalOpen}
+              onClose={() => setIsEditModalOpen(false)}
+              account={selectedAccount}
+              onSubmit={(data) => handleUpdateAccount(selectedAccount.id, data)}
+            />
+
+            <ChangePasswordModal
+              isOpen={isChangePasswordModalOpen}
+              onClose={() => setIsChangePasswordModalOpen(false)}
+              account={selectedAccount}
+              onSubmit={(password) => handleChangePassword(selectedAccount.id, password)}
+            />
+
+            <ArchiveAccountModal
+              isOpen={isArchiveModalOpen}
+              onClose={() => setIsArchiveModalOpen(false)}
+              account={selectedAccount}
+              onConfirm={() => handleDeleteAccount(selectedAccount.id)}
+            />
+
+            <PermissionManager
+              isOpen={isPermissionModalOpen}
+              onClose={() => setIsPermissionModalOpen(false)}
+              account={selectedAccount}
+              allPermissions={permissions}
+              onGrantPermission={(permissionId) => handleGrantPermission(selectedAccount.id, permissionId)}
+              onRevokePermission={(permissionId) => handleRevokePermission(selectedAccount.id, permissionId)}
+            />
+          </>
+        )}
       </div>
-
-      <AccountTable
-        accounts={accounts}
-        onEdit={handleEditClick}
-        onChangePassword={handleChangePasswordClick}
-        onArchive={handleArchiveClick}
-        onManagePermissions={handleManagePermissionsClick}
-        refreshingAccount={refreshingAccount}
-      />
-
-      {/* Modals */}
-      <CreateAccountModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        onSubmit={handleCreateAccount}
-        permissions={permissions}
-      />
-
-      {selectedAccount && (
-        <>
-          <EditAccountModal
-            isOpen={isEditModalOpen}
-            onClose={() => setIsEditModalOpen(false)}
-            account={selectedAccount}
-            onSubmit={(data) => handleUpdateAccount(selectedAccount.id, data)}
-          />
-
-          <ChangePasswordModal
-            isOpen={isChangePasswordModalOpen}
-            onClose={() => setIsChangePasswordModalOpen(false)}
-            account={selectedAccount}
-            onSubmit={(password) => handleChangePassword(selectedAccount.id, password)}
-          />
-
-          <ArchiveAccountModal
-            isOpen={isArchiveModalOpen}
-            onClose={() => setIsArchiveModalOpen(false)}
-            account={selectedAccount}
-            onConfirm={() => handleDeleteAccount(selectedAccount.id)}
-          />
-
-          <PermissionManager
-            isOpen={isPermissionModalOpen}
-            onClose={() => setIsPermissionModalOpen(false)}
-            account={selectedAccount}
-            allPermissions={permissions}
-            onGrantPermission={(permissionId) => handleGrantPermission(selectedAccount.id, permissionId)}
-            onRevokePermission={(permissionId) => handleRevokePermission(selectedAccount.id, permissionId)}
-          />
-        </>
-      )}
     </div>
   );
 };

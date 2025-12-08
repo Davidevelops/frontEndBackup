@@ -1,8 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { Permission, AccountRole } from '@/lib/types';
 import { AccountDisplay } from './AccountManagement';
-import { getAccountWithPermissions, grantPermission, revokePermission } from '@/lib/data/routes/account/account';
+import { getAccountWithPermissions } from '@/lib/data/routes/account/account';
+import {
+  X,
+  Loader2,
+  Shield,
+  Check,
+  AlertCircle,
+  RefreshCw,
+  Layers,
+} from 'lucide-react';
 
 interface PermissionManagerProps {
   isOpen: boolean;
@@ -30,12 +38,10 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
     const fetchAccountPermissions = async () => {
       if (isOpen) {
         try {
-          console.log("Fetching account permissions for account:", initialAccount.id);
           setRefreshing(true);
           const accountData = await getAccountWithPermissions(initialAccount.id);
           
           if (accountData) {
-            console.log("Received account data with permissions:", accountData.permissions?.length);
             const updatedAccount = {
               ...accountData,
               role: accountData.role as AccountRole,
@@ -43,8 +49,6 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
               permissions: accountData.permissions || []
             };
             setAccount(updatedAccount);
-          } else {
-            console.error("No account data received");
           }
         } catch (err: any) {
           console.error('Failed to fetch account permissions:', err);
@@ -59,9 +63,7 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
   }, [isOpen, initialAccount.id]);
 
   const hasPermission = (permissionId: string) => {
-    const hasPerm = account.permissions?.some(perm => perm.id === permissionId) || false;
-    console.log(`Checking permission ${permissionId}: ${hasPerm ? 'granted' : 'not granted'}`);
-    return hasPerm;
+    return account.permissions?.some(perm => perm.id === permissionId) || false;
   };
 
   const handleTogglePermission = async (permissionId: string) => {
@@ -70,21 +72,15 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
 
     try {
       const isCurrentlyGranted = hasPermission(permissionId);
-      console.log(`Toggling permission ${permissionId}: currently ${isCurrentlyGranted ? 'granted' : 'not granted'}`);
 
       if (isCurrentlyGranted) {
-        console.log(`Calling revokePermission for ${permissionId}`);
         await onRevokePermission(permissionId);
       } else {
-        console.log(`Calling grantPermission for ${permissionId}`);
         await onGrantPermission(permissionId);
       }
-      
 
-      console.log("Refreshing account permissions after update");
       const accountData = await getAccountWithPermissions(account.id);
       if (accountData) {
-        console.log("Updated permissions received:", accountData.permissions);
         const updatedAccount = {
           ...accountData,
           role: accountData.role as AccountRole,
@@ -92,15 +88,12 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
           permissions: accountData.permissions || []
         };
         setAccount(updatedAccount);
-      } else {
-        console.error("No updated account data received");
       }
     } catch (err: any) {
       console.error("Permission toggle error:", err);
       const errorMessage = err.response?.data?.message || err.message || 'Failed to update permission';
       setError(errorMessage);
       
-      // Revert the UI state on error
       setAccount(prev => ({
         ...prev,
         permissions: prev.permissions || []
@@ -133,46 +126,54 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
+      <div className="bg-white border border-[#E2E8F0] rounded-lg w-full max-w-4xl max-h-[90vh] overflow-hidden">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <div>
-              <h2 className="text-xl font-bold">Manage Permissions</h2>
-              <p className="text-gray-600">
-                Account: <strong>{account.username}</strong> | Role: <span className="capitalize">{account.role}</span>
-                {refreshing && (
-                  <span className="ml-2 text-sm text-blue-500">
-                    <svg className="inline animate-spin h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Refreshing...
-                  </span>
-                )}
-              </p>
+            <div className="flex items-center gap-3">
+              <div className="bg-purple-100 p-2 rounded-lg">
+                <Shield className="h-5 w-5 text-purple-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-[#0F172A]">Manage Permissions</h2>
+                <div className="flex items-center gap-2 text-sm text-[#64748B]">
+                  <span>Account: <strong>{account.username}</strong></span>
+                  <span>•</span>
+                  <span>Role: <span className="capitalize">{account.role}</span></span>
+                  {refreshing && (
+                    <span className="ml-2 flex items-center gap-1 text-blue-500">
+                      <RefreshCw className="h-3 w-3 animate-spin" />
+                      Refreshing...
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
             <button 
               onClick={handleClose} 
-              className="text-gray-400 hover:text-gray-600 transition-colors"
+              className="text-[#64748B] hover:text-[#0F172A] transition-colors p-1 hover:bg-[#F8FAFC] rounded"
               disabled={loading !== null}
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              <X className="w-5 h-5" />
             </button>
           </div>
 
           {error && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md mb-4">
-              <div className="font-medium">Error</div>
-              <div className="text-sm">{error}</div>
+            <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-md mb-6">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-4 w-4" />
+                <div className="font-medium">Error</div>
+              </div>
+              <div className="text-sm mt-1">{error}</div>
             </div>
           )}
 
-          <div className="mb-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-medium">Available Permissions</h3>
-              <div className="text-sm text-gray-500">
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Layers className="h-5 w-5 text-[#64748B]" />
+                <h3 className="text-lg font-medium text-[#0F172A]">Available Permissions</h3>
+              </div>
+              <div className="text-sm text-[#64748B] bg-[#F8FAFC] px-3 py-1.5 rounded-full">
                 {grantedPermissions} of {totalPermissions} permissions granted
               </div>
             </div>
@@ -180,9 +181,9 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
 
           <div className="space-y-4 max-h-[50vh] overflow-y-auto pr-2">
             {Object.entries(permissionsByModule).map(([module, modulePermissions]) => (
-              <div key={module} className="border border-gray-200 rounded-lg">
-                <div className="bg-gray-50 px-4 py-3 border-b border-gray-200">
-                  <h4 className="font-medium text-gray-900">{module}</h4>
+              <div key={module} className="border border-[#E2E8F0] rounded-lg overflow-hidden">
+                <div className="bg-[#F8FAFC] px-4 py-3 border-b border-[#E2E8F0]">
+                  <h4 className="font-medium text-[#0F172A]">{module}</h4>
                 </div>
                 <div className="p-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -193,42 +194,48 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
                       return (
                         <div
                           key={permission.id}
-                          className={`flex items-center justify-between p-3 border rounded-md transition-colors ${
-                            isGranted ? 'border-blue-200 bg-blue-50' : 'border-gray-200 hover:bg-gray-50'
+                          className={`flex items-center justify-between p-3 border rounded-lg transition-all duration-200 ${
+                            isGranted ? 'border-purple-200 bg-purple-50' : 'border-[#E2E8F0] hover:bg-[#F8FAFC]'
                           } ${isProcessing ? 'opacity-50' : ''}`}
                         >
                           <div className="flex items-center flex-1">
-                            <input
-                              type="checkbox"
-                              id={`perm-toggle-${permission.id}`}
-                              checked={isGranted}
-                              onChange={() => handleTogglePermission(permission.id)}
-                              disabled={isProcessing || refreshing}
-                              className="mr-3"
-                            />
+                            <div className="flex items-center h-5">
+                              <input
+                                type="checkbox"
+                                id={`perm-toggle-${permission.id}`}
+                                checked={isGranted}
+                                onChange={() => handleTogglePermission(permission.id)}
+                                disabled={isProcessing || refreshing}
+                                className="h-4 w-4 text-purple-600 border-[#E2E8F0] rounded focus:ring-purple-500"
+                              />
+                            </div>
                             <label
                               htmlFor={`perm-toggle-${permission.id}`}
-                              className="font-medium cursor-pointer text-sm flex-1"
+                              className="ml-3 cursor-pointer flex-1"
                             >
-                              <div className="text-gray-900">{permission.name}</div>
-                              {permission.description && (
-                                <div className="text-gray-500 text-xs mt-0.5">
-                                  {permission.description}
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <div className="text-sm font-medium text-[#0F172A]">{permission.name}</div>
+                                  {permission.description && (
+                                    <div className="text-xs text-[#64748B] mt-0.5">
+                                      {permission.description}
+                                    </div>
+                                  )}
                                 </div>
-                              )}
+                                {isGranted && (
+                                  <Check className="h-4 w-4 text-green-500" />
+                                )}
+                              </div>
                             </label>
                           </div>
-                          <div className="flex items-center">
+                          <div className="ml-3">
                             {isProcessing ? (
-                              <svg className="animate-spin h-4 w-4 text-blue-500" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                              </svg>
+                              <Loader2 className="h-4 w-4 text-purple-500 animate-spin" />
                             ) : (
                               <span className={`text-xs px-2 py-1 rounded ${
                                 isGranted 
-                                  ? 'bg-blue-100 text-blue-800' 
-                                  : 'bg-gray-100 text-gray-800'
+                                  ? 'bg-green-100 text-green-800' 
+                                  : 'bg-[#E2E8F0] text-[#64748B]'
                               }`}>
                                 {isGranted ? 'Granted' : 'Not Granted'}
                               </span>
@@ -243,10 +250,10 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
             ))}
           </div>
 
-          <div className="flex justify-end pt-6 border-t mt-6">
+          <div className="flex justify-end pt-6 border-t border-[#E2E8F0] mt-6">
             <button
               onClick={handleClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors"
+              className="px-4 py-2.5 border border-[#E2E8F0] text-[#64748B] rounded-lg hover:bg-[#F8FAFC] transition-colors text-sm font-medium"
               disabled={loading !== null}
             >
               Close

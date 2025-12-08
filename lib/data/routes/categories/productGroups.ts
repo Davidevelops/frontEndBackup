@@ -9,7 +9,8 @@ export interface ProductGroupSearchResponse {
 
 export const getProductGroups = async (
   searchTerm?: string,
-  limit: number = 10
+  limit: number = 10,
+  excludeAssignedToCategory?: string
 ): Promise<ProductGroupSearchResponse | null> => {
   try {
     const queryParams: Record<string, string | number> = {
@@ -20,12 +21,31 @@ export const getProductGroups = async (
       queryParams.search = searchTerm;
     }
     
+    // Add exclude parameter if we want to filter groups not assigned to a specific category
+    if (excludeAssignedToCategory) {
+      queryParams.excludeAssignedToCategory = excludeAssignedToCategory;
+    }
+    
     console.log("🔄 Fetching product groups with params:", queryParams);
     const res = await apiClient.get(apiEndpoints.productGroups(undefined, queryParams));
     console.log("✅ Product groups response:", res.data);
     return res.data;
   } catch (error) {
     console.error("❌ Error fetching product groups:", error);
+    return null;
+  }
+};
+
+export const getProductGroup = async (
+  groupId: string
+): Promise<ProductGroup | null> => {
+  try {
+    console.log("🔄 Fetching product group:", groupId);
+    const res = await apiClient.get(apiEndpoints.productGroups(groupId));
+    console.log("✅ Product group response:", res.data);
+    return res.data.data || res.data;
+  } catch (error) {
+    console.error("❌ Error fetching product group:", error);
     return null;
   }
 };
