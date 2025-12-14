@@ -32,6 +32,22 @@ export class ProductGroupsApi {
     }
   }
 
+  async getCount(): Promise<number> {
+    try {
+      const response = await axiosInstance.get<any>(
+        this.endpoints.productGroupsCount()
+      );
+      
+      const data = response.data;
+      console.log('COUNT RESPONSE:', data);
+      return this.extractCount(data);
+    } catch (error) {
+      console.error('Error fetching product groups count:', error);
+      // Return 0 if the endpoint doesn't exist or fails
+      return 0;
+    }
+  }
+
   async create(data: CreateProductGroupDto): Promise<ProductGroup> {
     try {
       console.log('Creating product group with data:', data);
@@ -120,7 +136,8 @@ export class ProductGroupsApi {
 
   async archive(groupId: string): Promise<void> {
     try {
-      await axiosInstance.delete(this.endpoints.productGroupArchive(groupId));
+      // FIXED: Changed from productGroupArchive to productGroups (DELETE)
+      await axiosInstance.delete(this.endpoints.productGroups(groupId));
       console.log(`Archived group ${groupId} successfully`);
     } catch (error) {
       console.error(`Error archiving product group ${groupId}:`, error);
@@ -130,6 +147,7 @@ export class ProductGroupsApi {
 
   async unarchive(groupId: string): Promise<ProductGroup> {
     try {
+      // FIXED: Changed from productGroupUnarchive to the correct endpoint
       const response = await axiosInstance.patch<any>(
         this.endpoints.productGroupUnarchive(groupId)
       );
@@ -144,17 +162,98 @@ export class ProductGroupsApi {
   // NEW: Get products for a specific group
   async getProductsByGroup(groupId: string): Promise<SingleProduct[]> {
     try {
-      const response = await axiosInstance.get<any>(
-        this.endpoints.product(groupId) // This calls /groups/{groupId}/products
-      );
+      console.log('Fetching products for group ID:', groupId);
+      // FIXED: Ensure the endpoint is called correctly
+      const endpoint = this.endpoints.product(groupId);
+      console.log('API Endpoint:', endpoint);
+      
+      const response = await axiosInstance.get<any>(endpoint);
       
       const data = response.data;
-      console.log('PRODUCTS RESPONSE FOR GROUP', groupId, ':', data);
-      return this.extractSingleProducts(data);
-    } catch (error) {
+      console.log('RAW PRODUCTS RESPONSE FOR GROUP', groupId, ':', data);
+      const extracted = this.extractSingleProducts(data);
+      console.log('EXTRACTED PRODUCTS:', extracted.length, 'products');
+      return extracted;
+    } catch (error: any) {
       console.error(`Error fetching products for group ${groupId}:`, error);
+      if (error.response) {
+        console.error('Error response:', error.response.data);
+      }
       return [];
     }
+  }
+
+  // Helper method to extract count from various response formats
+  private extractCount(data: any): number {
+    if (!data) return 0;
+    
+    console.log('EXTRACTING COUNT FROM:', data);
+    
+    // If data is a number
+    if (typeof data === 'number') {
+      console.log('Direct number extraction:', data);
+      return data;
+    }
+    
+    // If data is a string that can be converted to a number
+    if (typeof data === 'string' && !isNaN(Number(data))) {
+      console.log('String to number conversion:', Number(data));
+      return Number(data);
+    }
+    
+    if (typeof data === 'object') {
+      // FIRST: Check for the specific API response format: { "data": 2 }
+      if (data.data !== undefined) {
+        console.log('Found data property:', data.data);
+        
+        // If data.data is a number
+        if (typeof data.data === 'number') {
+          console.log('Extracted count from data.data (number):', data.data);
+          return data.data;
+        }
+        
+        // If data.data is a string that can be converted to a number
+        if (typeof data.data === 'string' && !isNaN(Number(data.data))) {
+          console.log('Extracted count from data.data (string):', Number(data.data));
+          return Number(data.data);
+        }
+      }
+      
+      // SECOND: Check for other common formats
+      const countProperties = ['count', 'total', 'totalCount', 'totalItems', 'numberOfItems', 'size', 'length'];
+      
+      for (const prop of countProperties) {
+        const value = data[prop];
+        if (value !== undefined) {
+          console.log(`Checking property "${prop}":`, value);
+          
+          if (typeof value === 'number') {
+            console.log(`Found count in property "${prop}":`, value);
+            return value;
+          }
+          
+          if (typeof value === 'string' && !isNaN(Number(value))) {
+            console.log(`Found string count in property "${prop}":`, Number(value));
+            return Number(value);
+          }
+        }
+      }
+      
+      // THIRD: Check for nested structures
+      if (data.success !== undefined && data.data !== undefined) {
+        console.log('Found success wrapper, checking nested data');
+        return this.extractCount(data.data);
+      }
+      
+      // FOURTH: Check for message wrapper
+      if (data.message && data.data) {
+        console.log('Found message wrapper, checking nested data');
+        return this.extractCount(data.data);
+      }
+    }
+    
+    console.warn('Could not extract count from response, returning 0. Data:', JSON.stringify(data, null, 2));
+    return 0;
   }
 
   // Helper method to extract product groups from various response formats

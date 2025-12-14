@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from "react"
 import { Plus, X, Save, Package, Search, ChevronDown } from "lucide-react"
+import toast from "react-hot-toast"
 import {
   CreateDeliveryData,
   CreateDeliveryItem,
@@ -15,6 +16,8 @@ import {
   getSuppliers,
 } from "@/lib/data/routes/supplier/supplier"
 import MiniRecommendationsPanel from "./MiniRecommendations"
+import { productGroupsApi } from "@/lib/data/routes/temp/service"
+
 interface CreateDeliveryProps {
   onDeliveryCreated: () => void
 }
@@ -148,6 +151,7 @@ export default function CreateDelivery({
   const [products, setProducts] = useState<SuppliedProduct[]>([])
   const [loadingSuppliers, setLoadingSuppliers] = useState(false)
   const [loadingProducts, setLoadingProducts] = useState(false)
+  const [debugInfo, setDebugInfo] = useState<string>("")
   const [formData, setFormData] = useState<CreateDeliveryData>({
     items: [{ productId: "", quantity: 0 }],
     status: "pending",
@@ -162,7 +166,11 @@ export default function CreateDelivery({
 
   useEffect(() => {
     if (formData.supplierId) {
-      fetchSuppliedProducts()
+      fetchAllProducts()
+    } else {
+      // Clear products when no supplier is selected
+      setProducts([])
+      setDebugInfo("Select a supplier to load products")
     }
   }, [formData.supplierId])
 
@@ -171,21 +179,68 @@ export default function CreateDelivery({
     try {
       const suppliersData = await getSuppliers()
       setSuppliers(suppliersData || [])
+      setDebugInfo(`Loaded ${suppliersData?.length || 0} suppliers`)
     } catch (error) {
       console.error("Error fetching suppliers:", error)
       setSuppliers([])
+      setDebugInfo(`Error loading suppliers: ${error}`)
     } finally {
       setLoadingSuppliers(false)
     }
   }
 
-  const fetchSuppliedProducts = async () => {
+  // Fetch all products using the productGroupsApi service
+  const fetchAllProducts = async () => {
     setLoadingProducts(true)
+    setDebugInfo("Starting to fetch all products...")
+    
     try {
-      const suppliedProduct = await getSuppliedProducts(formData.supplierId)
-      setProducts(suppliedProduct.products)
+      // Get all product groups using productGroupsApi
+      setDebugInfo("Fetching product groups...")
+      const productGroups = await productGroupsApi.getAll()
+      
+      console.log('Product groups fetched:', productGroups)
+      setDebugInfo(`Found ${productGroups.length} product groups`)
+      
+      // Create an array to hold all products
+      const allProducts: SuppliedProduct[] = []
+      
+      // Fetch products for each group
+      for (const group of productGroups) {
+        try {
+          setDebugInfo(`Fetching products for group: ${group.name} (${group.id})`)
+          
+          // Use productGroupsApi to get products for this group
+          const productsInGroup = await productGroupsApi.getProductsByGroup(group.id)
+          
+          console.log(`Products for group ${group.name}:`, productsInGroup)
+          
+          // Convert SingleProduct to SuppliedProduct format
+          const convertedProducts: SuppliedProduct[] = productsInGroup.map((product: SingleProduct) => ({
+            productId: product.id,
+            groupId: group.id,
+            groupName: group.name,
+            productName: product.name,
+            maxOrderable: product.stock || 100, // Use stock property
+            minOrderable: 1,
+            isDefault: false
+          }))
+          
+          allProducts.push(...convertedProducts)
+          setDebugInfo(prev => `${prev}\nGroup ${group.name}: ${convertedProducts.length} products`)
+        } catch (error) {
+          console.error(`Error fetching products for group ${group.id}:`, error)
+          setDebugInfo(prev => `${prev}\nError fetching products for group ${group.name}: ${error}`)
+        }
+      }
+      
+      setProducts(allProducts)
+      console.log('All products fetched:', allProducts)
+      setDebugInfo(prev => `${prev}\n✅ Total products loaded: ${allProducts.length}`)
     } catch (error) {
+      console.error("Error fetching all products:", error)
       setProducts([])
+      setDebugInfo(`❌ Error fetching products: ${error}`)
     } finally {
       setLoadingProducts(false)
     }
@@ -199,14 +254,14 @@ export default function CreateDelivery({
   }, [suppliers])
 
   const productOptions = useMemo(() => {
-    if (products) {
-      return products.map((product) => ({
-        id: product.productId,
-        name: `${product.groupName} - (${product.productName})`,
-      }))
-    } else {
-      return []
-    }
+    console.log('Generating product options from products:', products)
+    const options = products.map((product) => ({
+      id: product.productId,
+      name: `${product.groupName} - ${product.productName}`,
+      originalProduct: product // Keep reference for minOrderable
+    }))
+    console.log('Generated product options:', options.length, 'options')
+    return options
   }, [products])
 
   const addItem = () => {
@@ -246,12 +301,14 @@ export default function CreateDelivery({
       )
 
       if (validItems.length === 0) {
-        alert("Please add at least one valid item")
+        toast.error("Please add at least one valid item")
+        setLoading(false)
         return
       }
 
       if (!formData.supplierId) {
-        alert("Please select a supplier")
+        toast.error("Please select a supplier")
+        setLoading(false)
         return
       }
 
@@ -260,6 +317,7 @@ export default function CreateDelivery({
         items: validItems,
       })
 
+      toast.success("Delivery created successfully!")
       onDeliveryCreated()
       setIsOpen(false)
 
@@ -268,9 +326,46 @@ export default function CreateDelivery({
         status: "pending",
         supplierId: "",
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating delivery:", error)
-      alert("Failed to create delivery. Please try again.")
+      
+      // Handle specific error cases
+      if (error.response) {
+        if (error.response.status === 409) {
+          // Product is not supplied by supplier error
+          toast.error(
+            <div>
+              <div className="font-semibold">Cannot Create Delivery</div>
+              <div className="text-sm">The selected product is not supplied by this supplier.</div>
+              <div className="text-xs mt-1">Please select a product that is associated with the supplier.</div>
+            </div>,
+            {
+              duration: 5000,
+              style: {
+                background: '#fee',
+                border: '1px solid #fcc',
+              }
+            }
+          )
+        } else if (error.response.status === 400) {
+          toast.error(
+            <div>
+              <div className="font-semibold">Invalid Request</div>
+              <div className="text-sm">{error.response.data?.error || "Please check your input"}</div>
+            </div>
+          )
+        } else if (error.response.status === 401) {
+          toast.error("Unauthorized access. Please log in again.")
+        } else if (error.response.status === 500) {
+          toast.error("Server error. Please try again later.")
+        } else {
+          toast.error(`Failed to create delivery: ${error.response.data?.error || "Unknown error"}`)
+        }
+      } else if (error.request) {
+        toast.error("No response from server. Please check your connection.")
+      } else {
+        toast.error(`Failed to create delivery: ${error.message || "Unknown error"}`)
+      }
     } finally {
       setLoading(false)
     }
@@ -304,6 +399,17 @@ export default function CreateDelivery({
             </div>
 
             <form onSubmit={handleSubmit} className="p-6">
+              {/* Debug info section */}
+              {debugInfo && (
+                <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                  <div className="font-medium text-yellow-800 text-sm mb-1">Debug Info:</div>
+                  <div className="text-yellow-700 text-xs whitespace-pre-wrap">{debugInfo}</div>
+                  <div className="text-yellow-600 text-xs mt-1">
+                    Products loaded: {products.length} | Product options: {productOptions.length}
+                  </div>
+                </div>
+              )}
+
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
@@ -380,15 +486,15 @@ export default function CreateDelivery({
                               )}
                               value={item.productId}
                               onChange={(productId) => {
-                                const selectedProduct = products.find(
-                                  (p) => p.productId === productId,
-                                )
+                                // Find the selected product
+                                const selectedOption = productOptions.find(opt => opt.id === productId)
                                 updateItem(index, "productId", productId)
-                                if (selectedProduct) {
+                                // Set quantity to minOrderable if available
+                                if (selectedOption && selectedOption.originalProduct) {
                                   updateItem(
                                     index,
                                     "quantity",
-                                    selectedProduct.minOrderable,
+                                    selectedOption.originalProduct.minOrderable || 1
                                   )
                                 }
                               }}

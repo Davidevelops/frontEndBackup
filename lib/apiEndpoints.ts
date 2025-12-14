@@ -43,26 +43,31 @@ export class ApiEndpoints {
 		return `${this.backendUrl}/auth/session`
 	}
 	
-	
-productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
-  let baseUrl = `${this.backendUrl}/groups`;
-  
-  if (groupId) {
-    baseUrl += `/${groupId}`;
-  }
-  
-  if (queryParams) {
-    const params = new URLSearchParams();
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
-    });
-    baseUrl += `?${params.toString()}`;
-  }
-  
-  return baseUrl;
-}
+	// Product Groups endpoints
+	productGroups(groupId?: string, queryParams?: Record<string, string | number | boolean>) {
+		let baseUrl = `${this.backendUrl}/groups`;
+		
+		if (groupId) {
+			baseUrl += `/${groupId}`;
+		}
+		
+		if (queryParams) {
+			const params = new URLSearchParams();
+			Object.entries(queryParams).forEach(([key, value]) => {
+				if (value !== undefined && value !== null) {
+					params.append(key, value.toString());
+				}
+			});
+			baseUrl += `?${params.toString()}`;
+		}
+		
+		return baseUrl;
+	}
+
+	// Product Groups Count endpoint - ADD THIS METHOD
+	productGroupsCount() {
+		return `${this.backendUrl}/groups/count`;
+	}
 
 	// Product Group update endpoint (PUT/PATCH)
 	productGroupUpdate(groupId: string) {
@@ -108,24 +113,24 @@ productGroups(groupId?: string, queryParams?: Record<string, string | number | b
 
 	// Categories endpoints
 	categories(categoryId?: string, queryParams?: Record<string, string | number | boolean>) {
-  let baseUrl = `${this.backendUrl}/categories`;
-  
-  if (categoryId) {
-    baseUrl += `/${categoryId}`;
-  }
-  
-  if (queryParams) {
-    const params = new URLSearchParams();
-    Object.entries(queryParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
-    });
-    baseUrl += `?${params.toString()}`;
-  }
-  
-  return baseUrl;
-}
+		let baseUrl = `${this.backendUrl}/categories`;
+		
+		if (categoryId) {
+			baseUrl += `/${categoryId}`;
+		}
+		
+		if (queryParams) {
+			const params = new URLSearchParams();
+			Object.entries(queryParams).forEach(([key, value]) => {
+				if (value !== undefined && value !== null) {
+					params.append(key, value.toString());
+				}
+			});
+			baseUrl += `?${params.toString()}`;
+		}
+		
+		return baseUrl;
+	}
 
 	// Forecast endpoints
 	forecast(groupId: string, productId: string, forecastId?: string, queryParams?: Record<string, string | number | boolean>) {

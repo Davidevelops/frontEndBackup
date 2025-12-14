@@ -7,12 +7,12 @@ import {
   UpdateDeliveryScheduleData,
   DeliveryStatus,
 } from "@/lib/types";
-import apiClient from "@/lib/axiosConfig";
+import axiosInstance from '@/lib/data/routes/temp/axiosInstance'; 
 
 export const getAllDeliveries = async (status?: DeliveryStatus): Promise<Delivery[] | null> => {
   try {
     const params = status ? { status } : {};
-    const response = await apiClient.get<DeliveriesResponse>(apiEndpoints.delivery(), { params });
+    const response = await axiosInstance.get<DeliveriesResponse>(apiEndpoints.delivery(), { params });
     return response.data.data;
   } catch (error) {
     console.error("Error while getting deliveries: ", error);
@@ -22,7 +22,7 @@ export const getAllDeliveries = async (status?: DeliveryStatus): Promise<Deliver
 
 export const getDelivery = async (deliveryId: string): Promise<Delivery | null> => {
   try {
-    const response = await apiClient.get<{ data: Delivery }>(apiEndpoints.delivery(deliveryId));
+    const response = await axiosInstance.get<{ data: Delivery }>(apiEndpoints.delivery(deliveryId));
     return response.data.data;
   } catch (error) {
     return null;
@@ -31,11 +31,15 @@ export const getDelivery = async (deliveryId: string): Promise<Delivery | null> 
 
 export const createDelivery = async (deliveryData: CreateDeliveryData): Promise<Delivery> => {
   try {
-    const response = await apiClient.post<{ data: Delivery }>(apiEndpoints.delivery(), deliveryData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axiosInstance.post<{ data: Delivery }>(
+      apiEndpoints.delivery(), 
+      deliveryData, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data.data;
   } catch (error: any) {
     throw error;
@@ -45,11 +49,15 @@ export const createDelivery = async (deliveryData: CreateDeliveryData): Promise<
 export const updateDeliveryStatus = async (deliveryId: string, updateData: UpdateDeliveryStatusData): Promise<Delivery> => {
   try {
     console.log("Sending status update:", { deliveryId, updateData });
-    const response = await apiClient.patch<{ data: Delivery }>(apiEndpoints.delivery(deliveryId), updateData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axiosInstance.patch<{ data: Delivery }>(
+      apiEndpoints.delivery(deliveryId), 
+      updateData, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     console.log("Status update successful:", response.data);
     return response.data.data;
   } catch (error: any) {
@@ -68,11 +76,15 @@ export const cancelDelivery = async (deliveryId: string, cancellationData: Updat
 
 export const updateDeliverySchedule = async (deliveryId: string, scheduleData: UpdateDeliveryScheduleData): Promise<Delivery> => {
   try {
-    const response = await apiClient.patch<{ data: Delivery }>(apiEndpoints.delivery(deliveryId), scheduleData, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const response = await axiosInstance.patch<{ data: Delivery }>(
+      apiEndpoints.delivery(deliveryId), 
+      scheduleData, 
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     return response.data.data;
   } catch (error: any) {
     throw error;
@@ -81,7 +93,7 @@ export const updateDeliverySchedule = async (deliveryId: string, scheduleData: U
 
 export const deleteDelivery = async (deliveryId: string): Promise<void> => {
   try {
-    await apiClient.delete(apiEndpoints.delivery(deliveryId));
+    await axiosInstance.delete(apiEndpoints.delivery(deliveryId));
   } catch (error: any) {
     throw error;
   }

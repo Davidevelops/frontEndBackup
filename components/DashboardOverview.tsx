@@ -18,6 +18,7 @@ import { getSuppliers } from "@/lib/data/routes/supplier/supplier";
 import { getProductList } from "@/lib/data/routes/product/product";
 import { getAllDeliveries } from "@/lib/data/routes/delivery/delivery";
 import { getCategories } from "@/lib/data/routes/categories/categories";
+import { productGroupsApi } from "@/lib/data/routes/temp/service";
 import { apiEndpoints } from "@/lib/apiEndpoints";
 
 interface DashboardStats {
@@ -45,6 +46,37 @@ interface DeliveryStats {
   total: number;
 }
 
+// Helper function to get total products count
+const getTotalProductsCount = async (): Promise<number> => {
+  try {
+    // First, get all product groups
+    const productGroups = await productGroupsApi.getAll();
+    
+    // Then, fetch products for each group and sum them up
+    let totalProducts = 0;
+    
+    // Use Promise.all to fetch products for all groups in parallel
+    const productsPromises = productGroups.map(async (group) => {
+      try {
+        const products = await productGroupsApi.getProductsByGroup(group.id);
+        return products.length;
+      } catch (error) {
+        console.error(`Error fetching products for group ${group.id}:`, error);
+        return 0;
+      }
+    });
+    
+    const productsCounts = await Promise.all(productsPromises);
+    totalProducts = productsCounts.reduce((sum, count) => sum + count, 0);
+    
+    console.log('Total products counted from API:', totalProducts);
+    return totalProducts;
+  } catch (error) {
+    console.error('Error calculating total products count:', error);
+    return 0;
+  }
+};
+
 export default function DashboardOverview() {
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats>({
@@ -66,14 +98,18 @@ export default function DashboardOverview() {
     total: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [debugInfo, setDebugInfo] = useState<string>("");
 
   useEffect(() => {
     fetchDashboardData();
   }, []);
 
-  const fetchDashboardData = async () => {
+   const fetchDashboardData = async () => {
     try {
       setLoading(true);
+      setDebugInfo("Starting to fetch dashboard data...");
+      
+      console.log("Fetching dashboard data...");
       
       const [
         salesResponse,
@@ -81,23 +117,46 @@ export default function DashboardOverview() {
         productsResponse,
         deliveriesResponse,
         categoriesResponse,
+        productGroupsCountResponse,
       ] = await Promise.allSettled([
         getSales(),
         getSuppliers(),
         getProductList(),
         getAllDeliveries(),
         getCategories(),
+        productGroupsApi.getCount(),
       ]);
+
+      console.log("All responses received:", {
+        salesResponse,
+        suppliersResponse,
+        productsResponse,
+        deliveriesResponse,
+        categoriesResponse,
+        productGroupsCountResponse,
+      });
+
+      setDebugInfo(`Count response status: ${productGroupsCountResponse.status}`);
+      
+      if (productGroupsCountResponse.status === 'rejected') {
+        console.error("Count API failed:", productGroupsCountResponse.reason);
+        const reason = productGroupsCountResponse.reason;
+        const errorMessage = reason instanceof Error ? reason.message : 'Unknown error';
+        setDebugInfo(`Count API failed: ${errorMessage}`);
+      }
 
       await processDashboardData(
         salesResponse,
         suppliersResponse,
         productsResponse,
         deliveriesResponse,
-        categoriesResponse
+        categoriesResponse,
+        productGroupsCountResponse
       );
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setDebugInfo(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -108,7 +167,8 @@ export default function DashboardOverview() {
     suppliersResponse: any,
     productsResponse: any,
     deliveriesResponse: any,
-    categoriesResponse: any
+    categoriesResponse: any,
+    productGroupsCountResponse: any
   ) => {
    
     let totalSalesCount = 0;
@@ -122,18 +182,70 @@ export default function DashboardOverview() {
     let totalProductsCount = 0;
     let totalProductGroupsCount = 0;
 
-    if (productsResponse.status === 'fulfilled' && productsResponse.value) {
-      const productsData = productsResponse.value;
-      totalProductGroupsCount = productsData.length;
+    // Get product groups count
+    if (productGroupsCountResponse.status === 'fulfilled' && productGroupsCountResponse.value !== undefined) {
+      totalProductGroupsCount = productGroupsCountResponse.value;
+      console.log('✅ Product groups count from API:', totalProductGroupsCount);
+      setDebugInfo(`✅ Got product groups count from API: ${totalProductGroupsCount}`);
+    } else {
+      console.log('❌ Product groups count API failed, using fallback');
+      if (productsResponse.status === 'fulfilled' && productsResponse.value) {
+        const productsData = productsResponse.value;
+        totalProductGroupsCount = productsData.length;
+        console.log('✅ Using fallback product groups count from product list:', totalProductGroupsCount);
+        setDebugInfo(`✅ Using fallback product groups count: ${totalProductGroupsCount}`);
+      } else {
+        console.log('❌ Both API and fallback failed for product groups count');
+        setDebugInfo('❌ Both API and fallback failed for product groups count');
+      }
+    }
 
+    // Get total products count using the new helper function
+    try {
+      totalProductsCount = await getTotalProductsCount();
+      console.log('✅ Total products count from API:', totalProductsCount);
+      setDebugInfo(prev => `${prev} | ✅ Total products: ${totalProductsCount}`);
+    } catch (error) {
+      console.error('Error getting total products count:', error);
+      // Fallback to existing method if new approach fails
+      if (productsResponse.status === 'fulfilled' && productsResponse.value) {
+        const productsData = productsResponse.value;
+        console.log('Products data length for fallback:', productsData.length);
+        
+        productsData.forEach((group: any) => {
+          const groupProducts = group.products || [];
+          totalProductsCount += groupProducts.length;
+          
+          groupProducts.forEach((product: any) => {
+            const stockQuantity = product.stockQuantity || 0;
+            
+            if (stockQuantity > 0) {
+              const salesEstimate = Math.floor((100 - stockQuantity) * 0.8) || Math.floor(Math.random() * 50);
+              topProductsData.push({
+                name: product.name || 'Unnamed Product',
+                sales: salesEstimate,
+                stock: stockQuantity,
+              });
+            }
+          });
+        });
+        
+        console.log('Total products counted (fallback):', totalProductsCount);
+        setDebugInfo(prev => `${prev} | ✅ Total products (fallback): ${totalProductsCount}`);
+      } else {
+        console.log('❌ Failed to get total products count');
+        setDebugInfo(prev => `${prev} | ❌ Failed to get total products count`);
+      }
+    }
+
+    // If we haven't populated topProductsData yet, do it now
+    if (topProductsData.length === 0 && productsResponse.status === 'fulfilled' && productsResponse.value) {
+      const productsData = productsResponse.value;
       productsData.forEach((group: any) => {
         const groupProducts = group.products || [];
-        totalProductsCount += groupProducts.length;
-        
         groupProducts.forEach((product: any) => {
           const stockQuantity = product.stockQuantity || 0;
           
-       
           if (stockQuantity > 0) {
             const salesEstimate = Math.floor((100 - stockQuantity) * 0.8) || Math.floor(Math.random() * 50);
             topProductsData.push({
@@ -144,19 +256,17 @@ export default function DashboardOverview() {
           }
         });
       });
-      
-    
-      topProductsData = topProductsData
-        .sort((a, b) => b.sales - a.sales)
-        .slice(0, 4);
     }
+    
+    // Sort and limit top products
+    topProductsData = topProductsData
+      .sort((a, b) => b.sales - a.sales)
+      .slice(0, 4);
 
-   
     let activeSuppliersCount = 0;
     if (suppliersResponse.status === 'fulfilled' && suppliersResponse.value) {
       activeSuppliersCount = suppliersResponse.value.length;
     }
-
 
     let pendingDeliveries = 0;
     let completedDeliveries = 0;
@@ -185,6 +295,13 @@ export default function DashboardOverview() {
       const categoriesData = categoriesResponse.value;
       totalCategoriesCount = categoriesData.length;
     }
+
+    console.log('Final stats:', {
+      totalProducts: totalProductsCount,
+      totalProductGroups: totalProductGroupsCount,
+      activeSuppliers: activeSuppliersCount,
+      totalSales: totalSalesCount,
+    });
 
     setStats({
       totalProducts: totalProductsCount,
@@ -228,6 +345,17 @@ export default function DashboardOverview() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Debug info - can be removed after debugging
+        {debugInfo && (
+          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">
+            <div className="font-medium text-yellow-800">Debug Info:</div>
+            <div className="text-yellow-700">{debugInfo}</div>
+            <div className="text-yellow-600 text-xs mt-1">
+              Product Groups: {stats.totalProductGroups} | Total Products: {stats.totalProducts}
+            </div>
+          </div>
+        )} */}
+
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="flex items-center gap-4 mb-4 lg:mb-0">
             <div className="bg-slate-800 p-3 rounded-2xl shadow-lg">
@@ -259,12 +387,13 @@ export default function DashboardOverview() {
 
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Updated Metric Card: Showing Product Groups */}
           <MetricCard
             icon={<Package className="h-6 w-6" />}
-            title="Total Products"
-            value={stats.totalProducts.toString()}
-            description="Across all product groups"
-            trend={`${stats.totalProductGroups} product groups`}
+            title="Product Groups"
+            value={stats.totalProductGroups.toString()}
+            description="Product categories"
+            trend={`${stats.totalProducts} total products`}
             color="text-blue-600"
             bgColor="bg-blue-50"
             borderColor="border-blue-200"
@@ -439,7 +568,7 @@ export default function DashboardOverview() {
   );
 }
 
-// Supporting Components
+// Supporting Components (keep these the same as before)
 interface MetricCardProps {
   icon: React.ReactNode;
   title: string;

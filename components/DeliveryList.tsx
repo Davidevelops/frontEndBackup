@@ -16,9 +16,9 @@ import {
   Calendar,
   User,
   MapPin,
-  Eye,
+  Tag,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import UpdateDelivery from "./UpdateDelivery";
 import DeleteDelivery from "./DeleteDelivery";
 import {
@@ -68,29 +68,29 @@ export default function DeliveryList({
       case "completed":
         return {
           icon: <CheckCircle className="h-4 w-4" />,
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-          textColor: "text-gray-700",
-          badgeColor: "bg-gray-100 text-gray-800 border-gray-200",
-          gradient: "from-gray-500 to-gray-600",
+          bgColor: "bg-green-50",
+          borderColor: "border-green-200",
+          textColor: "text-green-700",
+          badgeColor: "bg-green-100 text-green-800 border-green-200",
+          gradient: "from-green-500 to-green-600",
         };
       case "cancelled":
         return {
           icon: <XCircle className="h-4 w-4" />,
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-          textColor: "text-gray-700",
-          badgeColor: "bg-gray-100 text-gray-800 border-gray-200",
-          gradient: "from-gray-500 to-gray-600",
+          bgColor: "bg-red-50",
+          borderColor: "border-red-200",
+          textColor: "text-red-700",
+          badgeColor: "bg-red-100 text-red-800 border-red-200",
+          gradient: "from-red-500 to-red-600",
         };
       default:
         return {
           icon: <Clock className="h-4 w-4" />,
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-          textColor: "text-gray-700",
-          badgeColor: "bg-gray-100 text-gray-800 border-gray-200",
-          gradient: "from-gray-500 to-gray-600",
+          bgColor: "bg-yellow-50",
+          borderColor: "border-yellow-200",
+          textColor: "text-yellow-700",
+          badgeColor: "bg-yellow-100 text-yellow-800 border-yellow-200",
+          gradient: "from-yellow-500 to-yellow-600",
         };
     }
   };
@@ -168,6 +168,18 @@ export default function DeliveryList({
                     <div className="flex items-center justify-center gap-2">
                       <Package className="h-4 w-4 text-gray-600" />
                       Items
+                    </div>
+                  </th>
+                  <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                    <div className="flex items-center justify-center gap-2">
+                      <Tag className="h-4 w-4 text-gray-600" />
+                      Product
+                    </div>
+                  </th>
+                  <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                    <div className="flex items-center justify-center gap-2">
+                      <Package className="h-4 w-4 text-gray-600" />
+                      Quantity
                     </div>
                   </th>
                   <th className="text-center py-4 px-6 font-semibold text-gray-700">
@@ -394,6 +406,14 @@ function TableRow({ delivery, onUpdate, onDelete, getStatusConfig, formatDate }:
   );
   const totalProducts = delivery.items.length;
 
+  // Get the first product and its quantity for display
+  const firstItem = delivery.items[0];
+  const productName = firstItem?.product.name || "No product";
+  const firstItemQuantity = firstItem?.quantity || 0;
+
+  // Check if there are more items
+  const remainingItemsCount = totalProducts > 1 ? totalProducts - 1 : 0;
+
   return (
     <tr className="hover:bg-gray-50/80 transition-colors duration-200 group">
       <td className="py-4 px-6">
@@ -423,8 +443,39 @@ function TableRow({ delivery, onUpdate, onDelete, getStatusConfig, formatDate }:
             {totalItemsCount} total
           </span>
           <span className="text-sm text-gray-500">
-            {totalProducts} product{totalProducts !== 1 ? 's' : ''}
+            {totalProducts} item{totalProducts !== 1 ? 's' : ''}
           </span>
+        </div>
+      </td>
+      
+      <td className="py-4 px-6">
+        <div className="flex justify-center">
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2">
+              <Tag className="h-4 w-4 text-gray-400" />
+              <span className="font-medium text-gray-900">{productName}</span>
+            </div>
+            {remainingItemsCount > 0 && (
+              <span className="text-xs text-gray-500 mt-1">
+                +{remainingItemsCount} more product{remainingItemsCount !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+        </div>
+      </td>
+      
+      <td className="py-4 px-6">
+        <div className="flex justify-center">
+          <div className="flex flex-col items-center">
+            <span className="font-bold text-gray-900 text-lg">
+              {firstItemQuantity}
+            </span>
+            {remainingItemsCount > 0 && (
+              <span className="text-xs text-gray-500">
+                for first product
+              </span>
+            )}
+          </div>
         </div>
       </td>
       
@@ -461,66 +512,43 @@ function TableRow({ delivery, onUpdate, onDelete, getStatusConfig, formatDate }:
       
       <td className="py-4 px-6">
         <div className="flex items-center justify-center gap-3">
-          {/* <Tooltip>
+          <Tooltip>
             <TooltipTrigger asChild>
               <button
-                onClick={() => {
-                  console.log('View delivery:', delivery.id);
-                }}
-                className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-xl transition-all duration-200 hover:shadow-md"
-                aria-label={`View details for delivery ${delivery.id.slice(0, 8)}`}
+                onClick={() => onUpdate(delivery)}
+                className="group relative p-3 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden"
+                aria-label={`Edit delivery ${delivery.id.slice(0, 8)}`}
               >
-                <Eye className="h-5 w-5" />
+                <div className="absolute inset-0 bg-green-500/10 backdrop-blur-sm border border-green-200/30 rounded-xl group-hover:bg-green-500/20 transition-all duration-300" />
+                <div className="relative flex items-center gap-2 text-green-700 group-hover:text-green-800">
+                  <Edit className="h-5 w-5" />
+                  <span className="font-medium text-sm">Edit</span>
+                </div>
               </button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>View Details</p>
+              <p>Edit Delivery</p>
             </TooltipContent>
-          </Tooltip> */}
+          </Tooltip>
 
-      <Tooltip>
-  <TooltipTrigger asChild>
-    <button
-      onClick={() => onUpdate(delivery)}
-      className="group relative p-3 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden"
-      aria-label={`Edit delivery ${delivery.id.slice(0, 8)}`}
-    >
-    
-      <div className="absolute inset-0 bg-green-500/10 backdrop-blur-sm border border-green-200/30 rounded-xl group-hover:bg-green-500/20 transition-all duration-300" />
-      
-
-      <div className="relative flex items-center gap-2 text-green-700 group-hover:text-green-800">
-        <Edit className="h-5 w-5" />
-        <span className="font-medium text-sm">Edit</span>
-      </div>
-    </button>
-  </TooltipTrigger>
-  <TooltipContent>
-    <p>Edit Delivery</p>
-  </TooltipContent>
-</Tooltip>
-
-<Tooltip>
-  <TooltipTrigger asChild>
-    <button
-      onClick={() => onDelete(delivery)}
-      className="group relative p-3 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden"
-      aria-label={`Delete delivery ${delivery.id.slice(0, 8)}`}
-    >
-  
-      <div className="absolute inset-0 bg-red-500/10 backdrop-blur-sm border border-red-200/30 rounded-xl group-hover:bg-red-500/20 transition-all duration-300" />
-      
-     
-      <div className="relative flex items-center gap-2 text-red-700 group-hover:text-red-800">
-        <Trash2 className="h-5 w-5" />
-        <span className="font-medium text-sm">Delete</span>
-      </div>
-    </button>
-  </TooltipTrigger>
-  <TooltipContent>
-    <p>Delete Delivery</p>
-  </TooltipContent>
-</Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => onDelete(delivery)}
+                className="group relative p-3 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden"
+                aria-label={`Delete delivery ${delivery.id.slice(0, 8)}`}
+              >
+                <div className="absolute inset-0 bg-red-500/10 backdrop-blur-sm border border-red-200/30 rounded-xl group-hover:bg-red-500/20 transition-all duration-300" />
+                <div className="relative flex items-center gap-2 text-red-700 group-hover:text-red-800">
+                  <Trash2 className="h-5 w-5" />
+                  <span className="font-medium text-sm">Delete</span>
+                </div>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Delete Delivery</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </td>
     </tr>
