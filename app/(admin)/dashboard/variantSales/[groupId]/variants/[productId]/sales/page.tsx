@@ -53,7 +53,7 @@ export default function SalesPage() {
       }
 
       // Fetch group details
-      const groupResponse = await apiClient.get(apiEndpoints.productGroup(groupId));
+      const groupResponse = await apiClient.get(apiEndpoints.productGroups(groupId));
       console.log("Group API Response:", groupResponse);
       
       if (groupResponse.data) {
@@ -102,7 +102,7 @@ export default function SalesPage() {
           groupId, 
           productId,
           productEndpoint: apiEndpoints.product(groupId, productId),
-          groupEndpoint: apiEndpoints.productGroup(groupId)
+          groupEndpoint: apiEndpoints.productGroups(groupId)
         });
         
         await Promise.all([
@@ -203,8 +203,8 @@ export default function SalesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F1F5F9] p-6">
-      <div className="max-w-[95rem] mx-auto">
+    <div className="min-h-screen p-8">
+      <div className="mx-auto">
      
         {/* <Button
           variant="ghost"

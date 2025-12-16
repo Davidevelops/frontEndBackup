@@ -33,8 +33,8 @@ export default function Supplier() {
 
 	if (loading) {
 		return (
-			<div className="min-h-screen bg-[#F1F5F9] p-6">
-				<div className="max-w-[95rem] mx-auto">
+			<div className="min-h-screen p-8">
+				<div className="mx-auto">
 					<div className="bg-white rounded-xl p-12 border border-[#E2E8F0] text-center">
 						<div className="animate-pulse flex flex-col items-center">
 							<div className="bg-[#CBD5E1] rounded-full h-16 w-16 mb-4"></div>
@@ -49,8 +49,8 @@ export default function Supplier() {
 
 	if (error) {
 		return (
-			<div className="min-h-screen bg-[#F1F5F9] p-6">
-				<div className="max-w-[95rem] mx-auto">
+			<div className="min-h-screen p-8">
+				<div className=" mx-auto">
 					<div className="bg-white rounded-xl p-8 border border-[#E2E8F0] text-center">
 						<div className="text-[#DC2626] text-xl mb-4">⚠️</div>
 						<h2 className="text-xl font-semibold text-[#475569] mb-2">

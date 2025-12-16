@@ -343,8 +343,8 @@ export default function DashboardOverview() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen p-8">
+      <div className="mx-auto">
         {/* Debug info - can be removed after debugging
         {debugInfo && (
           <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm">

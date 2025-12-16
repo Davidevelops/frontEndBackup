@@ -164,12 +164,12 @@ export default function DeliveryList({
                       Supplier
                     </div>
                   </th>
-                  <th className="text-center py-4 px-6 font-semibold text-gray-700">
+                  {/* <th className="text-center py-4 px-6 font-semibold text-gray-700">
                     <div className="flex items-center justify-center gap-2">
                       <Package className="h-4 w-4 text-gray-600" />
-                      Items
+                      Quantity
                     </div>
-                  </th>
+                  </th> */}
                   <th className="text-center py-4 px-6 font-semibold text-gray-700">
                     <div className="flex items-center justify-center gap-2">
                       <Tag className="h-4 w-4 text-gray-600" />
@@ -437,23 +437,20 @@ function TableRow({ delivery, onUpdate, onDelete, getStatusConfig, formatDate }:
         </div>
       </td>
       
-      <td className="py-4 px-6">
+      {/* <td className="py-4 px-6">
         <div className="flex flex-col items-center gap-1">
           <span className="font-semibold text-gray-900">
-            {totalItemsCount} total
+            {totalItemsCount}
           </span>
-          <span className="text-sm text-gray-500">
-            {totalProducts} item{totalProducts !== 1 ? 's' : ''}
-          </span>
+        
         </div>
-      </td>
+      </td> */}
       
       <td className="py-4 px-6">
         <div className="flex justify-center">
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-2">
-              <Tag className="h-4 w-4 text-gray-400" />
-              <span className="font-medium text-gray-900">{productName}</span>
+              <span className="font-medium text-gray-900">{productName.toUpperCase()}</span>
             </div>
             {remainingItemsCount > 0 && (
               <span className="text-xs text-gray-500 mt-1">

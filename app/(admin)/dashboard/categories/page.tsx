@@ -289,8 +289,8 @@
 
     if (loading) {
       return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
-          <div className="max-w-7xl mx-auto">
+        <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-8">
+          <div className="mx-auto">
             <div className="text-center py-20">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-800 mx-auto"></div>
               <p className="text-slate-600 mt-4">Loading categories...</p>
@@ -301,8 +301,8 @@
     }
 
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen p-8">
+        <div className="mx-auto">
           {/* Header */}
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
             <div className="flex items-center gap-4 mb-4 lg:mb-0">

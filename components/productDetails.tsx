@@ -726,10 +726,10 @@ These projections help you plan your inventory purchases, staffing needs, and ca
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        // Fetch group name first
+       
         await fetchGroupName();
         
-        // Then fetch sales and forecast data
+
         const [salesRes, forecastRes] = await Promise.all([
           apiClient.get(
             `${apiEndpoints.productSales(
@@ -809,17 +809,17 @@ These projections help you plan your inventory purchases, staffing needs, and ca
   }, [forecastData, product.stock]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-8">
         <button
             onClick={handleBackToDashboard}
-            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 mb-3"
+            className="flex items-center gap-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 p-2 rounded-lg transition-colors duration-200 mb-3 border"
             aria-label="Back to Dashboard"
           >
             <ArrowLeft className="h-5 w-5" /> Back to products
           </button>
           
       {product && (
-        <div className="max-w-7xl mx-auto space-y-6">
+        <div className=" mx-auto space-y-6">
           <ProductHeader 
             product={product}
             groupName={groupName}

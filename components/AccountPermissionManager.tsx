@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Layers,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 interface PermissionManagerProps {
   isOpen: boolean;
@@ -20,6 +21,44 @@ interface PermissionManagerProps {
   onGrantPermission: (permissionId: string) => Promise<void>;
   onRevokePermission: (permissionId: string) => Promise<void>;
 }
+
+// Helper function to extract error message from API response
+const getErrorMessage = (error: any): string => {
+  console.error('❌ API Error Details:', error);
+  
+  if (error.response?.data?.error) {
+    // Extract the exact error message from the API response
+    return error.response.data.error;
+  } else if (error.response?.data?.message) {
+    // Fallback to message if error field doesn't exist
+    return error.response.data.message;
+  } else if (error.message) {
+    // Use the error message
+    return error.message;
+  } else if (error.response?.status) {
+    // Generic error based on status code
+    switch (error.response.status) {
+      case 400:
+        return 'Bad request. Please check your input.';
+      case 401:
+        return 'Unauthorized. Please log in again.';
+      case 403:
+        return 'Forbidden. You do not have permission to perform this action.';
+      case 404:
+        return 'Resource not found.';
+      case 409:
+        return 'Conflict. This action cannot be performed.';
+      case 422:
+        return 'Validation error. Please check your input.';
+      case 500:
+        return 'Internal server error. Please try again later.';
+      default:
+        return `Error: ${error.response.status}`;
+    }
+  }
+  
+  return 'An unexpected error occurred. Please try again.';
+};
 
 const PermissionManager: React.FC<PermissionManagerProps> = ({
   isOpen,
@@ -50,9 +89,11 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
             };
             setAccount(updatedAccount);
           }
-        } catch (err: any) {
+        } catch (err) {
           console.error('Failed to fetch account permissions:', err);
-          setError(`Failed to load permissions: ${err.message}`);
+          const errorMessage = getErrorMessage(err);
+          // setError(errorMessage);
+          // toast.error(errorMessage);
         } finally {
           setRefreshing(false);
         }
@@ -89,10 +130,11 @@ const PermissionManager: React.FC<PermissionManagerProps> = ({
         };
         setAccount(updatedAccount);
       }
-    } catch (err: any) {
+    } catch (err) {
       console.error("Permission toggle error:", err);
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to update permission';
-      setError(errorMessage);
+      const errorMessage = getErrorMessage(err);
+      // setError(errorMessage);
+      // toast.error(errorMessage);
       
       setAccount(prev => ({
         ...prev,

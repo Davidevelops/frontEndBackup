@@ -890,35 +890,30 @@ export default function SalesTable({
                             {formatDateTime(sale.createdAt)}
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2 justify-end">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleViewSale(sale)}
-                              className="p-2 h-9 w-9 bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#475569] hover:text-[#1E293B] rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-md"
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
+<TableCell>
+  <div className="flex items-center gap-2 justify-end">
+    <Button
+      onClick={() => handleViewSale(sale)}
+      className="px-3 py-1.5 h-8 min-w-[80px] bg-gradient-to-br from-blue-50 to-blue-100/70 backdrop-blur-sm border border-blue-200/70 text-blue-700 hover:from-blue-100 hover:to-blue-200 rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-blue-100/50 text-sm font-medium"
+    >
+      View
+    </Button>
 
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleUpdateSale(sale)}
-                              className="p-2 h-9 w-9 bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#475569] hover:text-[#1E293B] rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-md"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDeleteSale(sale)}
-                              className="p-2 h-9 w-9 bg-[#F1F5F9] hover:bg-[#E2E8F0] border border-[#E2E8F0] text-[#475569] hover:text-[#1E293B] rounded-xl transition-all duration-200 hover:scale-105 hover:shadow-md"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
+    <Button
+      onClick={() => handleUpdateSale(sale)}
+      className="px-3 py-1.5 h-8 min-w-[80px] bg-gradient-to-br from-emerald-50 to-emerald-100/70 backdrop-blur-sm border border-emerald-200/70 text-emerald-700 hover:from-emerald-100 hover:to-emerald-200 rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-emerald-100/50 text-sm font-medium"
+    >
+      Edit
+    </Button>
+    
+    <Button
+      onClick={() => handleDeleteSale(sale)}
+      className="px-3 py-1.5 h-8 min-w-[80px] bg-gradient-to-br from-rose-50 to-rose-100/70 backdrop-blur-sm border border-rose-200/70 text-rose-700 hover:from-rose-100 hover:to-rose-200 rounded-lg transition-all duration-200 hover:shadow-md hover:shadow-rose-100/50 text-sm font-medium"
+    >
+      Delete
+    </Button>
+  </div>
+</TableCell>
                       </TableRow>
                     ))
                   )}

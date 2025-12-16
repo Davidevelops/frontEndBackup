@@ -173,8 +173,8 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
 
   if (!supplier || supplier.length === 0) {
     return (
-      <div className="min-h-screen bg-[#F1F5F9] p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen p-8">
+        <div className="mx-auto">
 
           <div className="bg-white rounded-xl p-8 border border-[#E2E8F0] mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
@@ -318,8 +318,8 @@ export default function SupplierList({ supplier, refresh }: supplierProp) {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-[#F1F5F9] p-6">
-        <div className="max-w-7xl mx-auto">
+      <div className="min-h-screen p-8">
+        <div className="mx-auto">
           {/* Header Section */}
           <div className="bg-white rounded-xl p-8 border border-[#E2E8F0] mb-8">
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">

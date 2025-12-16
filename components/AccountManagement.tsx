@@ -26,6 +26,7 @@ import {
   AlertCircle,
   Package,
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 export type AccountRole = 'admin' | 'staff' | 'manager';
 
@@ -34,6 +35,44 @@ export interface AccountDisplay extends Omit<Account, 'role'> {
   isActive: boolean;
   permissions?: AccountPermission[];
 }
+
+// Helper function to extract error message from API response
+const getErrorMessage = (error: any): string => {
+  console.error('❌ API Error Details:', error);
+  
+  if (error.response?.data?.error) {
+    // Extract the exact error message from the API response
+    return error.response.data.error;
+  } else if (error.response?.data?.message) {
+    // Fallback to message if error field doesn't exist
+    return error.response.data.message;
+  } else if (error.message) {
+    // Use the error message
+    return error.message;
+  } else if (error.response?.status) {
+    // Generic error based on status code
+    switch (error.response.status) {
+      case 400:
+        return 'Bad request. Please check your input.';
+      case 401:
+        return 'Unauthorized. Please log in again.';
+      case 403:
+        return 'Forbidden. You do not have permission to perform this action.';
+      case 404:
+        return 'Resource not found.';
+      case 409:
+        return 'Conflict. This action cannot be performed.';
+      case 422:
+        return 'Validation error. Please check your input.';
+      case 500:
+        return 'Internal server error. Please try again later.';
+      default:
+        return `Error: ${error.response.status}`;
+    }
+  }
+  
+  return 'An unexpected error occurred. Please try again.';
+};
 
 const AccountManager: React.FC = () => {
   const [accounts, setAccounts] = useState<AccountDisplay[]>([]);
@@ -73,7 +112,9 @@ const AccountManager: React.FC = () => {
       }
       setFetchError(null);
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
       setFetchError(err);
+      toast.error(errorMessage);
       console.error(err);
     }
   };
@@ -86,6 +127,8 @@ const AccountManager: React.FC = () => {
         setPermissions(permissionsData);
       }
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       console.error('Failed to fetch permissions:', err);
     }
   };
@@ -123,6 +166,8 @@ const AccountManager: React.FC = () => {
         }
       }
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       console.error('Failed to fetch account permissions:', err);
     } finally {
       setRefreshingAccount(null);
@@ -133,7 +178,7 @@ const AccountManager: React.FC = () => {
     fetchData();
   }, []);
 
-  // Account Actions
+  // Account Actions with toast notifications
   const handleCreateAccount = async (data: {
     username: string;
     password: string;
@@ -150,7 +195,10 @@ const AccountManager: React.FC = () => {
       await createAccount(apiData);
       await fetchAccounts();
       setIsCreateModalOpen(false);
+      toast.success('Account created successfully');
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -160,7 +208,10 @@ const AccountManager: React.FC = () => {
       await updateAccount(id, data);
       await fetchAccounts();
       setIsEditModalOpen(false);
+      toast.success('Account updated successfully');
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -171,7 +222,10 @@ const AccountManager: React.FC = () => {
       await fetchAccounts();
       setIsArchiveModalOpen(false);
       setSelectedAccount(null);
+      toast.success('Account archived successfully');
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -181,7 +235,10 @@ const AccountManager: React.FC = () => {
       await changePassword(id, { password });
       setIsChangePasswordModalOpen(false);
       setSelectedAccount(null);
+      toast.success('Password changed successfully');
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -191,7 +248,10 @@ const AccountManager: React.FC = () => {
       await grantPermission(accountId, permissionId);
       // Refresh the account's permissions
       await fetchAccountPermissions(accountId);
+      toast.success('Permission granted successfully');
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -201,7 +261,10 @@ const AccountManager: React.FC = () => {
       await revokePermission(accountId, permissionId);
       // Refresh the account's permissions
       await fetchAccountPermissions(accountId);
+      toast.success('Permission revoked successfully');
     } catch (err) {
+      const errorMessage = getErrorMessage(err);
+      toast.error(errorMessage);
       throw err;
     }
   };
@@ -260,8 +323,8 @@ const AccountManager: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen p-8">
+      <div className="mx-auto">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-8">
           <div className="flex items-center gap-4 mb-4 lg:mb-0">
